@@ -1,0 +1,47 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+</main>
+<footer class="site-footer">
+	<div class="wrap footer-grid">
+		<div>
+			<strong>Imgnexo</strong>
+			<p>Blur faces, text, and backgrounds in your browser, or sharpen a soft photo. Images stay on your device.</p>
+		</div>
+		<div>
+			<h2>Add blur</h2>
+			<ul>
+				<li><a href="<?= html_escape(page_url('blur-image')) ?>">Blur image</a></li>
+				<li><a href="<?= html_escape(page_url('blur-image/background')) ?>">Blur background of photo</a></li>
+				<li><a href="<?= html_escape(page_url('blur-image/face')) ?>">Blur face in photo</a></li>
+				<li><a href="<?= html_escape(page_url('blur-image/text')) ?>">Blur text image</a></li>
+				<li><a href="<?= html_escape(page_url('blur-image/effect')) ?>">Gaussian blur</a></li>
+				<li><a href="<?= html_escape(page_url('blur-image/online')) ?>">Blur image online</a></li>
+			</ul>
+		</div>
+		<div>
+			<h2>Remove blur</h2>
+			<ul>
+				<li><a href="<?= html_escape(page_url('unblur-image')) ?>">Unblur image</a></li>
+				<li><a href="<?= html_escape(page_url('unblur-image/photos')) ?>">Fix blurry photos</a></li>
+				<li><a href="<?= html_escape(page_url('unblur-image/iphone')) ?>">Blur photo iPhone</a></li>
+				<li><a href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">Motion blur photo</a></li>
+			</ul>
+		</div>
+		<div>
+			<h2>Guides</h2>
+			<ul>
+				<li><a href="<?= html_escape(page_url('blog')) ?>">All guides</a></li>
+				<li><a href="<?= html_escape(page_url('blog/how-to-make-picture-blurry')) ?>">Make a picture blurry</a></li>
+				<li><a href="<?= html_escape(page_url('blog/how-to-remove-blur-from-photo')) ?>">Remove blur from photo</a></li>
+				<li><a href="<?= html_escape(page_url('blog/how-to-fix-fuzzy-photos')) ?>">Fix fuzzy photos</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="wrap">
+		<p class="legal">Copyright <?= date('Y') ?> Imgnexo. Free browser tools for blurring and unblurring photos.</p>
+	</div>
+</footer>
+<?php if ( ! empty($load_tool)): ?>
+<script src="<?= html_escape(asset_url('js/tool.js')) ?>"></script>
+<?php endif; ?>
+</body>
+</html>

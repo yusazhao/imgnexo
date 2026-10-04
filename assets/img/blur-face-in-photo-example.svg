@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img">
+	<title>blur face in photo example</title>
+	<rect width="960" height="540" fill="#efe6d4"/>
+	<rect x="70" y="40" width="820" height="460" rx="28" fill="#f7f1e7" stroke="#e0d5c6"/>
+	<rect x="110" y="80" width="360" height="380" rx="18" fill="#d7ecf2"/>
+	<circle cx="290" cy="230" r="62" fill="#f2d7bd"/>
+	<rect x="230" y="300" width="120" height="120" rx="16" fill="#3d6d8a"/>
+	<rect x="214" y="176" width="152" height="92" rx="18" fill="#0e6c78" opacity=".45"/>
+	<text x="520" y="160" fill="#1c1915" font-family="Georgia, serif" font-size="42">Face covered</text>
+	<text x="520" y="220" fill="#5f584e" font-family="Segoe UI, sans-serif" font-size="24">The rest of the portrait stays sharp.</text>
+</svg>
