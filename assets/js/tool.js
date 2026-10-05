@@ -59,6 +59,9 @@
 	var selectBtn = dropzone.querySelector('.select-btn');
 	var jobName = 'single';
 	var batchItems = [];
+	var batchAddBtn = document.getElementById('batch-add');
+	var batchClearBtn = document.getElementById('batch-clear');
+	var batchAppend = false;
 	var loadToken = 0;
 	var BATCH_LIMIT = 12;
 
@@ -155,9 +158,12 @@
 		}
 		if (dropTitle) dropTitle.textContent = batch ? 'Click or drag images here' : 'Click or drag an image here';
 		if (selectBtn) selectBtn.textContent = batch ? 'Select images' : 'Select image';
-		replaceBtn.textContent = batch ? 'Replace images' : 'Replace image';
+		replaceBtn.textContent = 'Replace image';
 		downloadBtn.textContent = batch ? 'Download all' : 'Download';
+		if (batchAddBtn) batchAddBtn.hidden = !(batch && batchItems.length);
+		if (batchClearBtn) batchClearBtn.hidden = !(batch && batchItems.length);
 		if (batch) {
+			replaceBtn.hidden = true;
 			stage.hidden = true;
 			zoomBar.hidden = true;
 			batchBox.hidden = !batchItems.length;
@@ -709,7 +715,7 @@
 
 	function batchStatus() {
 		var count = batchItems.length;
-		setStatus(count + (count === 1 ? ' image' : ' images') + '. Hold a photo to compare it with the original.');
+		setStatus(count + (count === 1 ? ' image' : ' images') + '. Before and After use one strength, matched to the largest photo.');
 	}
 
 	function removeBatchItem(item, figure) {
@@ -727,45 +733,42 @@
 		batchStatus();
 	}
 
-	function addBatchFigure(item) {
+	function batchPane(canvas, label) {
 		var figure = document.createElement('figure');
-		var frame = document.createElement('div');
-		var compare = document.createElement('span');
 		var caption = document.createElement('figcaption');
+		caption.textContent = label;
+		figure.appendChild(canvas);
+		figure.appendChild(caption);
+		return figure;
+	}
+
+	function addBatchFigure(item) {
+		var article = document.createElement('article');
+		var meta = document.createElement('div');
+		var name = document.createElement('span');
+		var size = document.createElement('span');
 		var remove = document.createElement('button');
-		frame.className = 'batch-frame';
-		frame.title = 'Hold to compare with the original';
-		item.preview.className = 'batch-preview';
-		item.source.className = 'batch-original';
-		compare.className = 'batch-compare';
-		compare.textContent = 'Hold to compare';
+		var pair = document.createElement('div');
+		article.className = 'batch-item';
+		meta.className = 'batch-meta';
+		name.className = 'batch-name';
+		name.textContent = item.name;
+		name.title = item.name;
+		size.className = 'batch-size';
+		size.textContent = item.source.width + ' × ' + item.source.height;
 		remove.type = 'button';
 		remove.className = 'batch-remove';
 		remove.textContent = 'Remove';
-		remove.addEventListener('click', function (event) {
-			event.stopPropagation();
-			removeBatchItem(item, figure);
-		});
-		function setCompare(on) {
-			frame.classList.toggle('is-original', on);
-			compare.textContent = on ? 'Original' : 'Hold to compare';
-		}
-		frame.addEventListener('pointerdown', function (event) {
-			if (event.target.closest('.batch-remove')) return;
-			setCompare(true);
-			frame.setPointerCapture(event.pointerId);
-		});
-		frame.addEventListener('pointerup', function () { setCompare(false); });
-		frame.addEventListener('pointercancel', function () { setCompare(false); });
-		caption.textContent = item.name;
-		caption.title = item.name;
-		frame.appendChild(item.preview);
-		frame.appendChild(item.source);
-		frame.appendChild(compare);
-		frame.appendChild(remove);
-		figure.appendChild(frame);
-		figure.appendChild(caption);
-		batchBox.appendChild(figure);
+		remove.addEventListener('click', function () { removeBatchItem(item, article); });
+		meta.appendChild(name);
+		meta.appendChild(size);
+		meta.appendChild(remove);
+		pair.className = 'batch-pair';
+		pair.appendChild(batchPane(item.source, 'Before'));
+		pair.appendChild(batchPane(item.preview, 'After'));
+		article.appendChild(meta);
+		article.appendChild(pair);
+		batchBox.appendChild(article);
 	}
 
 	function showBatch() {
@@ -773,10 +776,10 @@
 		batchBox.hidden = false;
 		stage.hidden = true;
 		zoomBar.hidden = true;
-		replaceBtn.hidden = false;
 		downloadBtn.disabled = false;
 		originalBtn.disabled = true;
 		renderBatch();
+		syncJob();
 		batchStatus();
 	}
 
@@ -794,12 +797,19 @@
 			loadFile(files[0], files.length > 1 ? 'Loaded the first image. Switch to Batch to blur every file.' : '');
 			return;
 		}
-		var skipped = 0;
-		if (files.length > BATCH_LIMIT) {
-			skipped = files.length - BATCH_LIMIT;
-			files = files.slice(0, BATCH_LIMIT);
+		var appending = batchAppend || batchItems.length > 0;
+		batchAppend = false;
+		var room = BATCH_LIMIT - (appending ? batchItems.length : 0);
+		if (room <= 0) {
+			setStatus('This batch already has ' + BATCH_LIMIT + ' images.');
+			return;
 		}
-		clearBatch();
+		var skipped = 0;
+		if (files.length > room) {
+			skipped = files.length - room;
+			files = files.slice(0, room);
+		}
+		if (!appending) clearBatch();
 		var token = ++loadToken;
 		var slots = new Array(files.length);
 		var left = files.length;
@@ -813,29 +823,35 @@
 				var preview = document.createElement('canvas');
 				slots[index] = { name: file.name, source: sourceCanvas, preview: preview };
 				left--;
-				if (left === 0) finishBatch(slots, skipped);
+				if (left === 0) finishBatch(slots, skipped, appending);
 			};
 			img.onerror = function () {
 				URL.revokeObjectURL(url);
 				if (token !== loadToken) return;
 				left--;
-				if (left === 0) finishBatch(slots, skipped);
+				if (left === 0) finishBatch(slots, skipped, appending);
 			};
 			img.src = url;
 		});
 	}
 
-	function finishBatch(slots, skipped) {
-		batchItems = slots.filter(Boolean);
-		batchBox.innerHTML = '';
+	function finishBatch(slots, skipped, appending) {
+		var added = slots.filter(Boolean);
+		if (!appending) {
+			batchItems = [];
+			batchBox.innerHTML = '';
+		}
+		added.forEach(function (item) {
+			batchItems.push(item);
+			addBatchFigure(item);
+		});
 		if (!batchItems.length) {
 			dropzone.hidden = false;
 			setStatus('This browser could not read those files. Try JPG or PNG.');
 			return;
 		}
-		batchItems.forEach(addBatchFigure);
 		showBatch();
-		if (skipped) setStatus('Kept the first ' + BATCH_LIMIT + ' images. ' + skipped + ' more were left out.');
+		if (skipped) setStatus('Stopped at ' + BATCH_LIMIT + ' images. ' + skipped + ' more were left out.');
 	}
 
 	function chooseJob(name) {
@@ -854,9 +870,27 @@
 
 	fileInput.addEventListener('change', function () {
 		if (fileInput.files && fileInput.files.length) loadFiles(fileInput.files);
+		else batchAppend = false;
 		fileInput.value = '';
 	});
-	replaceBtn.addEventListener('click', function () { fileInput.click(); });
+	replaceBtn.addEventListener('click', function () {
+		batchAppend = false;
+		fileInput.click();
+	});
+	if (batchAddBtn) batchAddBtn.addEventListener('click', function () {
+		batchAppend = true;
+		fileInput.click();
+	});
+	if (batchClearBtn) batchClearBtn.addEventListener('click', function () {
+		loadToken++;
+		batchAppend = false;
+		clearBatch();
+		dropzone.hidden = false;
+		batchBox.hidden = true;
+		downloadBtn.disabled = true;
+		syncJob();
+		setStatus('Batch is empty. Add images to blur them together.');
+	});
 	sampleBtn.addEventListener('click', loadSample);
 	undoBtn.addEventListener('click', undo);
 	redoBtn.addEventListener('click', redo);

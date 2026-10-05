@@ -262,72 +262,62 @@ h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 	overflow: hidden;
 }
 .batch {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-	gap: .85rem .75rem;
-	padding: .75rem;
+	display: flex;
+	flex-direction: column;
+	gap: .75rem;
+	padding: .7rem;
 	background: #e2e8f0;
 	border-radius: 16px;
 }
-.batch figure { margin: 0; min-width: 0; }
-.batch-frame {
-	position: relative;
-	overflow: hidden;
-	border-radius: 12px;
-	background: #cbd5e1;
-	line-height: 0;
-	cursor: pointer;
-	touch-action: none;
-	user-select: none;
+.batch-item {
+	background: white;
+	border-radius: 14px;
+	padding: .7rem .75rem .6rem;
 }
-.batch canvas.batch-preview,
-.batch canvas.batch-original {
-	display: block;
-	width: 100%;
-	height: auto;
-	background: #cbd5e1;
+.batch-meta {
+	display: flex;
+	align-items: baseline;
+	gap: .5rem;
+	margin-bottom: .45rem;
 }
-.batch canvas.batch-original {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	opacity: 0;
-}
-.batch-frame.is-original canvas.batch-preview { opacity: 0; }
-.batch-frame.is-original canvas.batch-original { opacity: 1; }
-.batch-compare,
-.batch-remove {
-	position: absolute;
-	z-index: 2;
-	border: 0;
-	border-radius: 999px;
-	background: rgba(15, 23, 42, .72);
-	color: white;
-	font-size: .75rem;
-	font-weight: 700;
-	line-height: 1.2;
-}
-.batch-compare {
-	left: .5rem;
-	bottom: .5rem;
-	padding: .28rem .55rem;
-	pointer-events: none;
-}
-.batch-remove {
-	top: .5rem;
-	right: .5rem;
-	padding: .32rem .6rem;
-}
-.batch-remove:hover { background: #0f172a; color: white; }
-.batch figcaption {
-	margin: .4rem .15rem 0;
-	color: #334155;
-	font-size: .82rem;
-	font-weight: 600;
+.batch-name {
+	flex: 1;
+	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	font-size: .88rem;
+	font-weight: 700;
+	color: #1e293b;
+}
+.batch-size { color: var(--muted); font-size: .75rem; white-space: nowrap; }
+button.batch-remove {
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: #64748b;
+	font-size: .78rem;
+	font-weight: 700;
+}
+button.batch-remove:hover { background: transparent; color: #b91c1c; }
+.batch-pair {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: .55rem;
+}
+.batch-pair figure { margin: 0; min-width: 0; }
+.batch-pair canvas {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 10px;
+	background: #e2e8f0;
+}
+.batch-pair figcaption {
+	margin: .28rem 0 0;
+	color: #64748b;
+	font-size: .75rem;
+	font-weight: 650;
 }
 button.choice:disabled { opacity: .45; cursor: default; }
 .stage-viewport {

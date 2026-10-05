@@ -48,7 +48,7 @@ $preset = $tool['preset'];
 			<p class="status" id="status" role="status"></p>
 		</div>
 		<div class="controls">
-			<p class="note" id="editor-note" data-single="<?= html_escape($tool['note']) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="Batch uses one Gaussian or Pixel strength on every whole image. Hold a photo to compare it with the original."<?php endif; ?>><?= html_escape($tool['note']) ?></p>
+			<p class="note" id="editor-note" data-single="<?= html_escape($tool['note']) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="Batch uses one Gaussian or Pixel strength on every whole image. Each photo shows before and after, sized against the largest file."<?php endif; ?>><?= html_escape($tool['note']) ?></p>
 			<?php if ( ! empty($tool['batch'])): ?>
 			<div class="control-group">
 				<span class="control-label" id="job-label">Edit</span>
@@ -95,6 +95,10 @@ $preset = $tool['preset'];
 			<div class="button-row">
 				<button type="button" id="sample">Load sample</button>
 				<button type="button" id="replace" hidden>Replace image</button>
+				<?php if ( ! empty($tool['batch'])): ?>
+				<button type="button" id="batch-add" hidden>Add images</button>
+				<button type="button" id="batch-clear" hidden>Clear</button>
+				<?php endif; ?>
 				<button type="button" id="original" disabled>Hold for original</button>
 				<button type="button" id="download" class="primary" disabled>Download</button>
 			</div>
