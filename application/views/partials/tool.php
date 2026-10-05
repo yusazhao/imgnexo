@@ -48,6 +48,17 @@ $preset = $tool['preset'];
 				<button type="button" id="zoom-fit">Fit</button>
 				<p class="hint">Zoom in and the photo grows to its full height. Scroll sideways, or hold Space and drag, to reach the sides.</p>
 			</div>
+			<p class="status" id="status" role="status"></p>
+			<div class="history-bar" id="history-bar" hidden>
+				<button type="button" id="undo" class="icon-btn" disabled title="Undo (Ctrl+Z)" aria-label="Undo">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H12"/></svg>
+				</button>
+				<button type="button" id="redo" class="icon-btn" disabled title="Redo (Ctrl+Y)" aria-label="Redo">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H12"/></svg>
+				</button>
+				<button type="button" id="reset-image" disabled>Reset</button>
+				<button type="button" id="replace">Replace</button>
+			</div>
 			<div class="frame-switch" id="frame-switch" hidden>
 				<span class="control-label" id="frame-label">Download frame</span>
 				<div class="frame-row" role="radiogroup" aria-labelledby="frame-label">
@@ -59,17 +70,6 @@ $preset = $tool['preset'];
 					<button type="button" class="choice" data-frame="16:9" aria-pressed="false">16:9</button>
 				</div>
 				<p class="hint">Drag the frame. Original downloads the whole photo.</p>
-			</div>
-			<p class="status" id="status" role="status"></p>
-			<div class="history-bar" id="history-bar" hidden>
-				<button type="button" id="undo" class="icon-btn" disabled title="Undo (Ctrl+Z)" aria-label="Undo">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H12"/></svg>
-				</button>
-				<button type="button" id="redo" class="icon-btn" disabled title="Redo (Ctrl+Y)" aria-label="Redo">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H12"/></svg>
-				</button>
-				<button type="button" id="reset-image" disabled>Reset</button>
-				<button type="button" id="replace">Replace</button>
 			</div>
 			<?php if ( ! empty($tool['shortcuts'])): ?>
 			<nav class="tool-links" aria-label="Blur tools">
