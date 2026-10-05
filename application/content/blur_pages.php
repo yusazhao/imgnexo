@@ -16,10 +16,10 @@ return array(
 			'heading' => 'How to Blur an Image Online',
 			'intro' => '<p>The photo stays in your browser. Choose Single for one picture, including a brush stroke, or Batch when several pictures should get the same whole-image blur. Download a PNG, or one zip of every image.</p>',
 			'batch' => TRUE,
-			'note' => 'Gaussian softens the photo. Pixel hides faces and text. Use Brush on a single image when only part of it should change.',
+			'note' => 'Gaussian softens and Pixel blocks detail. Noise scatters pixels, Motion streaks sideways, Radial pulls toward the center, and Color smears red and blue apart. On a single image, Brush paints the change, Marquee drags a rectangle, and Lasso draws a freehand shape.',
 			'steps' => array(
-				'Choose Single or Batch, then upload a JPG, PNG, or WEBP. Single can also load the sample.',
-				'Pick Gaussian or Pixel and raise strength. Brush works on one image. Batch covers every whole image.',
+				'Choose Single or Batch, then upload a JPG, PNG, or WEBP.',
+				'Pick an effect and raise strength. Brush, Marquee, or Lasso works on one image. Batch covers every whole image.',
 				'On Single, hold “Hold for original”, then download. Batch downloads every image in one zip.',
 			),
 		),
@@ -295,7 +295,7 @@ return array(
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'effect',
-			'note' => 'Choose Gaussian or Pixel. One Strength control changes the whole image, or only where you brush.',
+			'note' => 'One Strength control runs the selected effect on the whole image, or only where you brush.',
 		),
 		'sections' => array(
 			array(

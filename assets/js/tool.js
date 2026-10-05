@@ -30,10 +30,15 @@
 	var intensity = document.getElementById('intensity');
 	var brush = document.getElementById('brush');
 	var brushGroup = document.getElementById('brush-group');
-	var effectGaussianBtn = document.getElementById('effect-gaussian');
-	var effectPixelBtn = document.getElementById('effect-pixel');
+	var effectNames = ['gaussian', 'pixel', 'noise', 'motion', 'radial', 'color'];
+	var effectButtons = {};
+	effectNames.forEach(function (name) {
+		effectButtons[name] = document.getElementById('effect-' + name);
+	});
 	var scopeWholeBtn = document.getElementById('scope-whole');
 	var scopeBrushBtn = document.getElementById('scope-brush');
+	var scopeMarqueeBtn = document.getElementById('scope-marquee');
+	var scopeLassoBtn = document.getElementById('scope-lasso');
 	var sharpen = document.getElementById('sharpen');
 	var radius = document.getElementById('radius');
 	var contrast = document.getElementById('contrast');
@@ -88,8 +93,7 @@
 	var applyingHistory = false;
 	var effectName = 'gaussian';
 	var scopeName = 'whole';
-	var gaussianStrength = 0;
-	var pixelStrength = 1;
+	var strengths = { gaussian: 0, pixel: 1, noise: 0, motion: 0, radial: 0, color: 0 };
 
 	Array.prototype.forEach.call(editor.querySelectorAll('[data-for]'), function (el) {
 		el.hidden = el.getAttribute('data-for') !== mode;
@@ -98,9 +102,9 @@
 	function applyPreset() {
 		var preset = presets[presetName] || presets.soft;
 		if (mode === 'blur') {
-			effectName = preset.effect === 'pixel' ? 'pixel' : 'gaussian';
-			gaussianStrength = preset.gaussian;
-			pixelStrength = preset.pixel;
+			effectName = strengths[preset.effect] != null ? preset.effect : 'gaussian';
+			strengths.gaussian = preset.gaussian;
+			strengths.pixel = preset.pixel;
 			scopeName = preset.scope === 'brush' ? 'brush' : 'whole';
 			brush.value = preset.brush;
 		} else {
@@ -111,13 +115,17 @@
 		syncLabels();
 	}
 
+	function effectIdle() {
+		var amount = Number(strengths[effectName] || 0);
+		return effectName === 'pixel' ? amount <= 1 : amount <= 0;
+	}
+
 	function syncLabels() {
-		var pixelMode = effectName === 'pixel';
-		var strength = pixelMode ? pixelStrength : gaussianStrength;
-		intensity.min = pixelMode ? '1' : '0';
+		var strength = Number(strengths[effectName] || 0);
+		intensity.min = effectName === 'pixel' ? '1' : '0';
 		intensity.max = '40';
 		intensity.value = String(strength);
-		document.getElementById('intensity-out').textContent = (pixelMode && strength <= 1) ? 'off' : strength + ' px';
+		document.getElementById('intensity-out').textContent = (effectName === 'pixel' && strength <= 1) ? 'off' : strength + ' px';
 		document.getElementById('brush-out').textContent = brush.value + ' px';
 		document.getElementById('zoom-out').textContent = Math.round(zoom * 100) + '%';
 		document.getElementById('sharpen-out').textContent = (Number(sharpen.value) / 100).toFixed(2);
@@ -127,21 +135,32 @@
 	}
 
 	function setChoice(button, on) {
+		if (!button) return;
 		button.classList.toggle('is-on', on);
 		button.setAttribute('aria-pressed', on ? 'true' : 'false');
 	}
 
+	function regionActive() {
+		return mode === 'blur' && jobName !== 'batch' && scopeName !== 'whole';
+	}
+
 	function syncScope() {
 		if (jobName === 'batch') scopeName = 'whole';
-		var brushing = mode === 'blur' && jobName !== 'batch' && scopeName === 'brush';
-		setChoice(effectGaussianBtn, effectName !== 'pixel');
-		setChoice(effectPixelBtn, effectName === 'pixel');
-		setChoice(scopeWholeBtn, scopeName !== 'brush');
+		var brushing = regionActive() && scopeName === 'brush';
+		var regional = regionActive();
+		effectNames.forEach(function (name) {
+			if (effectButtons[name]) setChoice(effectButtons[name], effectName === name);
+		});
+		setChoice(scopeWholeBtn, scopeName === 'whole');
 		setChoice(scopeBrushBtn, scopeName === 'brush');
-		if (scopeBrushBtn) scopeBrushBtn.disabled = jobName === 'batch';
+		setChoice(scopeMarqueeBtn, scopeName === 'marquee');
+		setChoice(scopeLassoBtn, scopeName === 'lasso');
+		[scopeBrushBtn, scopeMarqueeBtn, scopeLassoBtn].forEach(function (button) {
+			if (button) button.disabled = jobName === 'batch';
+		});
 		brushGroup.hidden = !brushing;
-		stage.classList.toggle('is-region', brushing);
-		ink.style.visibility = brushing ? 'visible' : 'hidden';
+		stage.classList.toggle('is-region', regional);
+		ink.style.visibility = regional ? 'visible' : 'hidden';
 	}
 
 	function syncJob() {
@@ -151,7 +170,7 @@
 		setChoice(jobBatchBtn, batch);
 		fileInput.multiple = batch;
 		historyBar.hidden = batch;
-		sampleBtn.hidden = batch;
+		if (sampleBtn) sampleBtn.hidden = batch;
 		originalBtn.hidden = batch;
 		if (editorNote && editorNote.getAttribute('data-batch')) {
 			editorNote.textContent = batch ? editorNote.getAttribute('data-batch') : editorNote.getAttribute('data-single');
@@ -362,8 +381,12 @@
 		if (mode === 'blur') {
 			return {
 				effect: effectName,
-				gaussian: gaussianStrength,
-				pixel: pixelStrength,
+				gaussian: strengths.gaussian,
+				pixel: strengths.pixel,
+				noise: strengths.noise,
+				motion: strengths.motion,
+				radial: strengths.radial,
+				color: strengths.color,
 				scope: scopeName,
 				brush: brush.value
 			};
@@ -391,10 +414,11 @@
 
 	function applySettings(settings) {
 		if (mode === 'blur') {
-			effectName = settings.effect === 'pixel' ? 'pixel' : 'gaussian';
-			gaussianStrength = Number(settings.gaussian);
-			pixelStrength = Number(settings.pixel);
-			scopeName = settings.scope === 'brush' ? 'brush' : 'whole';
+			effectName = strengths[settings.effect] != null ? settings.effect : 'gaussian';
+			effectNames.forEach(function (name) {
+				if (settings[name] != null) strengths[name] = Number(settings[name]);
+			});
+			scopeName = settings.scope === 'brush' || settings.scope === 'marquee' || settings.scope === 'lasso' ? settings.scope : 'whole';
 			brush.value = settings.brush;
 		} else {
 			sharpen.value = settings.sharpen;
@@ -424,6 +448,64 @@
 		ctx.stroke();
 	}
 
+	function drawMarquee(ctx, stroke) {
+		if (stroke.points.length < 2) return;
+		var a = stroke.points[0];
+		var b = stroke.points[1];
+		ctx.fillStyle = '#fff';
+		ctx.fillRect(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+	}
+
+	function drawLasso(ctx, stroke) {
+		var pts = stroke.points;
+		if (pts.length < 3) return;
+		ctx.fillStyle = '#fff';
+		ctx.beginPath();
+		ctx.moveTo(pts[0].x, pts[0].y);
+		for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+		ctx.closePath();
+		ctx.fill();
+	}
+
+	function traceSelection(ctx, stroke) {
+		var kind = stroke.kind || 'brush';
+		ctx.beginPath();
+		if (kind === 'marquee' && stroke.points.length >= 2) {
+			var a = stroke.points[0];
+			var b = stroke.points[1];
+			ctx.rect(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+		} else if (kind === 'lasso' && stroke.points.length) {
+			ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+			for (var i = 1; i < stroke.points.length; i++) ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+			ctx.closePath();
+		} else {
+			return;
+		}
+		var box = ink.getBoundingClientRect();
+		var scale = box.width ? ink.width / box.width : 1;
+		ctx.lineWidth = Math.max(1, 1.5 * scale);
+		ctx.setLineDash([]);
+		ctx.strokeStyle = 'white';
+		ctx.stroke();
+		ctx.strokeStyle = '#2563eb';
+		ctx.setLineDash([5 * scale, 4 * scale]);
+		ctx.stroke();
+		ctx.setLineDash([]);
+	}
+
+	function selectionUseful(stroke) {
+		if (!stroke || !stroke.points.length) return false;
+		var kind = stroke.kind || 'brush';
+		if (kind === 'brush') return true;
+		if (kind === 'marquee') {
+			if (stroke.points.length < 2) return false;
+			var a = stroke.points[0];
+			var b = stroke.points[1];
+			return Math.abs(a.x - b.x) >= 2 && Math.abs(a.y - b.y) >= 2;
+		}
+		return stroke.points.length >= 3;
+	}
+
 	function redrawMask() {
 		clearMask();
 		var sctx = shape.getContext('2d');
@@ -432,9 +514,14 @@
 		var list = strokes.slice();
 		if (strokeDraft && strokeDraft.points.length) list.push(strokeDraft);
 		list.forEach(function (stroke) {
-			drawStroke(sctx, stroke, '#fff');
+			var kind = stroke.kind || 'brush';
+			if (kind === 'marquee') drawMarquee(sctx, stroke);
+			else if (kind === 'lasso') drawLasso(sctx, stroke);
+			else drawStroke(sctx, stroke, '#fff');
 		});
 		mask.getContext('2d').drawImage(shape, 0, 0);
+		var ictx = ink.getContext('2d');
+		list.forEach(function (stroke) { traceSelection(ictx, stroke); });
 	}
 
 	function updateHistoryButtons() {
@@ -505,7 +592,7 @@
 		if (mode === 'unblur') {
 			return ['unblur', sharpen.value, radius.value, contrast.value, source.width, source.height].join('|');
 		}
-		return ['blur', effectName, gaussianStrength, pixelStrength, source.width, source.height].join('|');
+		return ['blur', effectName, strengths.gaussian, strengths.pixel, strengths.noise, strengths.motion, strengths.radial, strengths.color, source.width, source.height].join('|');
 	}
 
 	function batchReferenceEdge() {
@@ -516,40 +603,241 @@
 		return edge;
 	}
 
-	function paintWhole(src, dest, referenceEdge) {
-		var w = src.width;
-		var h = src.height;
-		var scale = referenceEdge ? Math.max(w, h) / referenceEdge : 1;
-		sizeTo(dest, w, h);
+	function clampInt(v, max) {
+		return v < 0 ? 0 : (v > max ? max : v);
+	}
+
+	function hashUnit(x, y) {
+		var n = (x * 374761393 + y * 668265263) | 0;
+		n = Math.imul(n ^ (n >>> 13), 1274126177);
+		return ((n ^ (n >>> 16)) >>> 0) / 4294967296;
+	}
+
+	function paintGaussian(src, dest, amount) {
 		var ctx = dest.getContext('2d');
 		ctx.filter = 'none';
-		ctx.clearRect(0, 0, w, h);
-		var pixelSize = effectName === 'pixel' ? Number(pixelStrength) * scale : 1;
-		if (pixelSize > 1) {
-			var sw = Math.max(1, Math.round(w / pixelSize));
-			var sh = Math.max(1, Math.round(h / pixelSize));
-			sizeTo(small, sw, sh);
-			var sctx = small.getContext('2d');
-			sctx.imageSmoothingEnabled = false;
-			sctx.clearRect(0, 0, sw, sh);
-			sctx.drawImage(src, 0, 0, sw, sh);
-			ctx.imageSmoothingEnabled = false;
-			ctx.drawImage(small, 0, 0, w, h);
-			ctx.imageSmoothingEnabled = true;
-		} else {
+		if (amount < 0.5) {
 			ctx.drawImage(src, 0, 0);
+			return;
 		}
-		var blurPx = effectName === 'gaussian' ? Number(gaussianStrength) * scale : 0;
-		if (blurPx > 0) {
-			sizeTo(temp, w, h);
-			var blurCtx = temp.getContext('2d');
-			blurCtx.clearRect(0, 0, w, h);
-			blurCtx.filter = 'blur(' + blurPx + 'px)';
-			blurCtx.drawImage(dest, 0, 0);
-			blurCtx.filter = 'none';
-			ctx.clearRect(0, 0, w, h);
-			ctx.drawImage(temp, 0, 0);
+		sizeTo(temp, src.width, src.height);
+		var blurCtx = temp.getContext('2d');
+		blurCtx.filter = 'blur(' + amount + 'px)';
+		blurCtx.drawImage(src, 0, 0);
+		blurCtx.filter = 'none';
+		ctx.drawImage(temp, 0, 0);
+	}
+
+	function paintPixel(src, dest, amount) {
+		var ctx = dest.getContext('2d');
+		var w = src.width;
+		var h = src.height;
+		if (amount <= 1) {
+			ctx.drawImage(src, 0, 0);
+			return;
 		}
+		var sw = Math.max(1, Math.round(w / amount));
+		var sh = Math.max(1, Math.round(h / amount));
+		sizeTo(small, sw, sh);
+		var sctx = small.getContext('2d');
+		sctx.imageSmoothingEnabled = false;
+		sctx.clearRect(0, 0, sw, sh);
+		sctx.drawImage(src, 0, 0, sw, sh);
+		ctx.imageSmoothingEnabled = false;
+		ctx.drawImage(small, 0, 0, w, h);
+		ctx.imageSmoothingEnabled = true;
+	}
+
+	function paintNoise(src, dest, amount) {
+		var w = src.width;
+		var h = src.height;
+		var ctx = dest.getContext('2d');
+		if (amount < 1) {
+			ctx.drawImage(src, 0, 0);
+			return;
+		}
+		var img = src.getContext('2d').getImageData(0, 0, w, h);
+		var out = ctx.createImageData(w, h);
+		var s = img.data;
+		var o = out.data;
+		var radius = amount;
+		var y, x, hx, hy, sx, sy, si, di;
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				hx = hashUnit(x, y);
+				hy = hashUnit(x + 17, y + 31);
+				sx = clampInt(Math.round(x + (hx - 0.5) * 2 * radius), w - 1);
+				sy = clampInt(Math.round(y + (hy - 0.5) * 2 * radius), h - 1);
+				si = (sy * w + sx) * 4;
+				di = (y * w + x) * 4;
+				o[di] = s[si];
+				o[di + 1] = s[si + 1];
+				o[di + 2] = s[si + 2];
+				o[di + 3] = s[si + 3];
+			}
+		}
+		ctx.putImageData(out, 0, 0);
+	}
+
+	function paintMotion(src, dest, amount) {
+		var w = src.width;
+		var h = src.height;
+		var ctx = dest.getContext('2d');
+		var radius = Math.round(amount);
+		if (radius < 1) {
+			ctx.drawImage(src, 0, 0);
+			return;
+		}
+		var img = src.getContext('2d').getImageData(0, 0, w, h);
+		var out = ctx.createImageData(w, h);
+		var s = img.data;
+		var o = out.data;
+		var y, x, rs, gs, bs, as, count, add, rem, ai, ri, di;
+		for (y = 0; y < h; y++) {
+			rs = 0;
+			gs = 0;
+			bs = 0;
+			as = 0;
+			count = 0;
+			for (x = 0; x <= radius && x < w; x++) {
+				ai = (y * w + x) * 4;
+				rs += s[ai];
+				gs += s[ai + 1];
+				bs += s[ai + 2];
+				as += s[ai + 3];
+				count++;
+			}
+			for (x = 0; x < w; x++) {
+				di = (y * w + x) * 4;
+				o[di] = rs / count;
+				o[di + 1] = gs / count;
+				o[di + 2] = bs / count;
+				o[di + 3] = as / count;
+				add = x + radius + 1;
+				rem = x - radius;
+				if (add < w) {
+					ai = (y * w + add) * 4;
+					rs += s[ai];
+					gs += s[ai + 1];
+					bs += s[ai + 2];
+					as += s[ai + 3];
+					count++;
+				}
+				if (rem >= 0) {
+					ri = (y * w + rem) * 4;
+					rs -= s[ri];
+					gs -= s[ri + 1];
+					bs -= s[ri + 2];
+					as -= s[ri + 3];
+					count--;
+				}
+			}
+		}
+		ctx.putImageData(out, 0, 0);
+	}
+
+	function paintRadial(src, dest, amount) {
+		var w = src.width;
+		var h = src.height;
+		var ctx = dest.getContext('2d');
+		if (amount < 1) {
+			ctx.drawImage(src, 0, 0);
+			return;
+		}
+		var img = src.getContext('2d').getImageData(0, 0, w, h);
+		var out = ctx.createImageData(w, h);
+		var s = img.data;
+		var o = out.data;
+		var cx = (w - 1) / 2;
+		var cy = (h - 1) / 2;
+		var steps = 5;
+		var y, x, dx, dy, len, ux, uy, i, dist, sx, sy, si, di, r, g, b, a;
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				dx = x - cx;
+				dy = y - cy;
+				len = Math.sqrt(dx * dx + dy * dy) || 1;
+				ux = dx / len;
+				uy = dy / len;
+				r = 0;
+				g = 0;
+				b = 0;
+				a = 0;
+				for (i = 0; i < steps; i++) {
+					dist = (i / (steps - 1)) * amount;
+					sx = clampInt(x - ux * dist, w - 1) | 0;
+					sy = clampInt(y - uy * dist, h - 1) | 0;
+					si = (sy * w + sx) * 4;
+					r += s[si];
+					g += s[si + 1];
+					b += s[si + 2];
+					a += s[si + 3];
+				}
+				di = (y * w + x) * 4;
+				o[di] = r / steps;
+				o[di + 1] = g / steps;
+				o[di + 2] = b / steps;
+				o[di + 3] = a / steps;
+			}
+		}
+		ctx.putImageData(out, 0, 0);
+	}
+
+	function paintColor(src, dest, amount) {
+		var w = src.width;
+		var h = src.height;
+		var ctx = dest.getContext('2d');
+		var distance = Math.round(amount);
+		if (distance < 1) {
+			ctx.drawImage(src, 0, 0);
+			return;
+		}
+		var img = src.getContext('2d').getImageData(0, 0, w, h);
+		var out = ctx.createImageData(w, h);
+		var s = img.data;
+		var o = out.data;
+		var steps = 5;
+		var y, x, i, t, xr, xb, yg, r, g, b, a, di;
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				r = 0;
+				g = 0;
+				b = 0;
+				a = 0;
+				for (i = 0; i < steps; i++) {
+					t = (i / (steps - 1) - 0.5) * 2;
+					xr = clampInt(Math.round(x + t * distance), w - 1);
+					xb = clampInt(Math.round(x - t * distance), w - 1);
+					yg = clampInt(Math.round(y + t * distance * 0.35), h - 1);
+					r += s[(y * w + xr) * 4];
+					g += s[(yg * w + x) * 4 + 1];
+					b += s[(y * w + xb) * 4 + 2];
+					a += s[(y * w + x) * 4 + 3];
+				}
+				di = (y * w + x) * 4;
+				o[di] = r / steps;
+				o[di + 1] = g / steps;
+				o[di + 2] = b / steps;
+				o[di + 3] = a / steps;
+			}
+		}
+		ctx.putImageData(out, 0, 0);
+	}
+
+	function paintEffect(src, dest, scale) {
+		var amount = Number(strengths[effectName] || 0) * (scale || 1);
+		sizeTo(dest, src.width, src.height);
+		if (effectName === 'pixel') paintPixel(src, dest, amount);
+		else if (effectName === 'noise') paintNoise(src, dest, amount);
+		else if (effectName === 'motion') paintMotion(src, dest, amount);
+		else if (effectName === 'radial') paintRadial(src, dest, amount);
+		else if (effectName === 'color') paintColor(src, dest, amount);
+		else paintGaussian(src, dest, amount);
+	}
+
+	function paintWhole(src, dest, referenceEdge) {
+		var scale = referenceEdge ? Math.max(src.width, src.height) / referenceEdge : 1;
+		paintEffect(src, dest, scale);
 	}
 
 	function renderBatch() {
@@ -597,33 +885,7 @@
 			return;
 		}
 
-		var pixelSize = effectName === 'pixel' ? Number(pixelStrength) : 1;
-		if (pixelSize > 1) {
-			var sw = Math.max(1, Math.round(w / pixelSize));
-			var sh = Math.max(1, Math.round(h / pixelSize));
-			sizeTo(small, sw, sh);
-			var sctx = small.getContext('2d');
-			sctx.imageSmoothingEnabled = false;
-			sctx.clearRect(0, 0, sw, sh);
-			sctx.drawImage(source, 0, 0, sw, sh);
-			ctx.imageSmoothingEnabled = false;
-			ctx.drawImage(small, 0, 0, w, h);
-			ctx.imageSmoothingEnabled = true;
-		} else {
-			ctx.drawImage(source, 0, 0);
-		}
-
-		var blurPx = effectName === 'gaussian' ? Number(gaussianStrength) : 0;
-		if (blurPx > 0) {
-			var blurCtx = temp.getContext('2d');
-			blurCtx.clearRect(0, 0, w, h);
-			blurCtx.filter = 'blur(' + blurPx + 'px)';
-			blurCtx.drawImage(effect, 0, 0);
-			blurCtx.filter = 'none';
-			ctx.clearRect(0, 0, w, h);
-			ctx.drawImage(temp, 0, 0);
-		}
-
+		paintEffect(source, effect, 1);
 	}
 
 	function render() {
@@ -634,7 +896,7 @@
 		var rctx = result.getContext('2d');
 		rctx.clearRect(0, 0, w, h);
 		rctx.globalCompositeOperation = 'source-over';
-		if (mode === 'blur' && scopeName === 'brush') {
+		if (mode === 'blur' && scopeName !== 'whole') {
 			rctx.drawImage(source, 0, 0);
 			var tctx = temp.getContext('2d');
 			tctx.save();
@@ -676,6 +938,12 @@
 	function strokeTo(x, y) {
 		if (!strokeDraft) return;
 		var pts = strokeDraft.points;
+		if (strokeDraft.kind === 'marquee') {
+			if (!pts.length) pts.push({ x: x, y: y });
+			else pts[1] = { x: x, y: y };
+			redrawMask();
+			return;
+		}
 		var prev = pts.length ? pts[pts.length - 1] : null;
 		if (prev && prev.x === x && prev.y === y) return;
 		pts.push({ x: x, y: y });
@@ -891,17 +1159,14 @@
 		syncJob();
 		setStatus('Batch is empty. Add images to blur them together.');
 	});
-	sampleBtn.addEventListener('click', loadSample);
+	if (sampleBtn) sampleBtn.addEventListener('click', loadSample);
 	undoBtn.addEventListener('click', undo);
 	redoBtn.addEventListener('click', redo);
 	resetBtn.addEventListener('click', restoreImage);
 
 	[intensity, brush, sharpen, radius, contrast].forEach(function (input) {
 		input.addEventListener('input', function () {
-			if (input === intensity) {
-				if (effectName === 'pixel') pixelStrength = Number(intensity.value);
-				else gaussianStrength = Number(intensity.value);
-			}
+			if (input === intensity) strengths[effectName] = Number(intensity.value);
 			syncLabels();
 			requestRender();
 		});
@@ -921,11 +1186,17 @@
 		syncLabels();
 		requestRender();
 		commitSettings();
+		if (name === 'marquee') setStatus('Drag a rectangle. The blur stays inside it.');
+		else if (name === 'lasso') setStatus('Draw around an area and release. The blur stays inside that shape.');
+		else if (name === 'brush') setStatus('Paint where the blur should appear.');
 	}
-	effectGaussianBtn.addEventListener('click', function () { chooseEffect('gaussian'); });
-	effectPixelBtn.addEventListener('click', function () { chooseEffect('pixel'); });
+	effectNames.forEach(function (name) {
+		if (effectButtons[name]) effectButtons[name].addEventListener('click', function () { chooseEffect(name); });
+	});
 	scopeWholeBtn.addEventListener('click', function () { chooseScope('whole'); });
 	scopeBrushBtn.addEventListener('click', function () { chooseScope('brush'); });
+	if (scopeMarqueeBtn) scopeMarqueeBtn.addEventListener('click', function () { chooseScope('marquee'); });
+	if (scopeLassoBtn) scopeLassoBtn.addEventListener('click', function () { chooseScope('lasso'); });
 
 	editor.addEventListener('dragover', function (event) {
 		event.preventDefault();
@@ -957,7 +1228,7 @@
 	}
 
 	function stopPaint() {
-		if (painting && strokeDraft && strokeDraft.points.length) {
+		if (painting && selectionUseful(strokeDraft)) {
 			strokes.push(strokeDraft);
 			pushHistory();
 		}
@@ -980,11 +1251,15 @@
 			return;
 		}
 		if (event.button !== 0) return;
-		if (mode !== 'blur' || scopeName !== 'brush') return;
+		if (mode !== 'blur' || scopeName === 'whole') return;
 		if (event.target !== ink) return;
 		painting = true;
-		strokeDraft = { size: Number(brush.value), points: [] };
-		if ((effectName !== 'pixel' && gaussianStrength <= 0) || (effectName === 'pixel' && pixelStrength <= 1)) {
+		strokeDraft = {
+			kind: scopeName === 'marquee' || scopeName === 'lasso' ? scopeName : 'brush',
+			size: Number(brush.value),
+			points: []
+		};
+		if (effectIdle()) {
 			setStatus('Raise Strength to see the blur. At the minimum the photo stays unchanged.');
 		}
 		try { stageViewport.setPointerCapture(event.pointerId); } catch (err) {}

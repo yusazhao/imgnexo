@@ -48,7 +48,7 @@ $preset = $tool['preset'];
 			<p class="status" id="status" role="status"></p>
 		</div>
 		<div class="controls">
-			<p class="note" id="editor-note" data-single="<?= html_escape($tool['note']) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="Batch uses one Gaussian or Pixel strength on every whole image. Each photo shows before and after, sized against the largest file."<?php endif; ?>><?= html_escape($tool['note']) ?></p>
+			<p class="note" id="editor-note" data-single="<?= html_escape($tool['note']) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="Batch uses one blur strength on every whole image. Each photo shows before and after, sized against the largest file."<?php endif; ?>><?= html_escape($tool['note']) ?></p>
 			<?php if ( ! empty($tool['batch'])): ?>
 			<div class="control-group">
 				<span class="control-label" id="job-label">Edit</span>
@@ -63,6 +63,10 @@ $preset = $tool['preset'];
 				<div class="choice-row" role="radiogroup" aria-labelledby="effect-label">
 					<button type="button" class="choice is-on" id="effect-gaussian" aria-pressed="true">Gaussian</button>
 					<button type="button" class="choice" id="effect-pixel" aria-pressed="false">Pixel</button>
+					<button type="button" class="choice" id="effect-noise" aria-pressed="false">Noise</button>
+					<button type="button" class="choice" id="effect-motion" aria-pressed="false">Motion</button>
+					<button type="button" class="choice" id="effect-radial" aria-pressed="false">Radial</button>
+					<button type="button" class="choice" id="effect-color" aria-pressed="false">Color</button>
 				</div>
 			</div>
 			<div class="control-group" data-for="blur">
@@ -70,6 +74,8 @@ $preset = $tool['preset'];
 				<div class="choice-row" role="radiogroup" aria-labelledby="scope-label">
 					<button type="button" class="choice is-on" id="scope-whole" aria-pressed="true">Whole image</button>
 					<button type="button" class="choice" id="scope-brush" aria-pressed="false">Brush</button>
+					<button type="button" class="choice" id="scope-marquee" aria-pressed="false" title="Rectangular marquee">Marquee</button>
+					<button type="button" class="choice" id="scope-lasso" aria-pressed="false" title="Freehand lasso">Lasso</button>
 				</div>
 			</div>
 			<div class="control-group" data-for="blur">
@@ -93,7 +99,9 @@ $preset = $tool['preset'];
 				<input id="contrast" type="range" min="0" max="40" value="8">
 			</div>
 			<div class="button-row">
+				<?php if ($mode === 'unblur'): ?>
 				<button type="button" id="sample">Load sample</button>
+				<?php endif; ?>
 				<button type="button" id="replace" hidden>Replace image</button>
 				<?php if ( ! empty($tool['batch'])): ?>
 				<button type="button" id="batch-add" hidden>Add images</button>
