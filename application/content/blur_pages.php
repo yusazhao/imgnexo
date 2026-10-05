@@ -27,7 +27,7 @@ return array(
 			'steps' => array(
 				'Choose Single or Batch, then upload a JPG, PNG, or WEBP.',
 				'Pick an effect and raise strength. Brush, Marquee, or Lasso works on one image. Batch covers every whole image.',
-				'On Single, hold “Hold for original”, then download. Batch downloads every image in one zip.',
+				'On Single, hold “Hold for original”, then download the whole photo or the frame you placed. Batch downloads every image in one zip.',
 			),
 		),
 		'sections' => array(

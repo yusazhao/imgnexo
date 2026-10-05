@@ -71,13 +71,6 @@ $preset = $tool['preset'];
 				</div>
 				<p class="hint">Drag the frame. Original downloads the whole photo.</p>
 			</div>
-			<?php if ( ! empty($tool['shortcuts'])): ?>
-			<nav class="tool-links" aria-label="Blur tools">
-				<?php foreach ($tool['shortcuts'] as $link): ?>
-				<a href="<?= html_escape(page_url($link['path'])) ?>"><?= html_escape($link['label']) ?></a>
-				<?php endforeach; ?>
-			</nav>
-			<?php endif; ?>
 		</div>
 		<div class="controls">
 			<?php
@@ -89,6 +82,7 @@ $preset = $tool['preset'];
 			$editor_note = ob_get_clean();
 			if ( ! $note_below) echo $editor_note;
 			?>
+			<div class="tune">
 			<div class="control-group" data-for="blur">
 				<span class="control-label" id="effect-label">Blur effect</span>
 				<div class="choice-row" role="radiogroup" aria-labelledby="effect-label">
@@ -128,6 +122,7 @@ $preset = $tool['preset'];
 			<div class="control-group" data-for="unblur">
 				<label for="contrast">Contrast <output id="contrast-out"></output></label>
 				<input id="contrast" type="range" min="0" max="40" value="8">
+			</div>
 			</div>
 			<div class="button-row">
 				<?php if ($mode === 'unblur'): ?>

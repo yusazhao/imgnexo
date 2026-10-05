@@ -228,6 +228,7 @@
 		effectKey = '';
 		source.getContext('2d').drawImage(img, 0, 0, w, h);
 		ready = true;
+		editor.classList.add('is-editing');
 		dropzone.hidden = true;
 		stage.hidden = false;
 		historyBar.hidden = false;
@@ -251,6 +252,7 @@
 	}
 
 	function maxViewportHeight() {
+		if (window.matchMedia('(max-width: 900px)').matches) return Math.round(window.innerHeight * 0.42);
 		return Math.round(Math.min(window.innerHeight * 0.7, 720));
 	}
 
@@ -272,7 +274,8 @@
 	function layoutStage(focus) {
 		if (!ready) return;
 		var maxH = maxViewportHeight();
-		var outerW = editorStage.clientWidth;
+		var narrow = window.matchMedia('(max-width: 900px)').matches;
+		var outerW = editorStage.clientWidth || editor.querySelector('.editor-layout').clientWidth;
 		if (outerW < 2 || maxH < 2 || !view.width || !view.height) return;
 		var fit = Math.min(outerW / view.width, maxH / view.height);
 		var frameW = Math.max(1, Math.min(outerW, Math.floor(view.width * fit)));
@@ -291,7 +294,7 @@
 			ratioX = (anchorX - canvasRect.left) / canvasRect.width;
 			ratioY = (anchorY - canvasRect.top) / canvasRect.height;
 		}
-		stage.style.width = frameW + 'px';
+		stage.style.width = narrow ? '100%' : (frameW + 'px');
 		stage.style.maxWidth = '100%';
 		stageViewport.style.width = '100%';
 		stageViewport.style.overflowX = hugged ? 'hidden' : 'auto';
@@ -299,6 +302,8 @@
 		stageViewport.style.height = dispH + 'px';
 		stageSizer.style.width = dispW + 'px';
 		stageSizer.style.height = dispH + 'px';
+		stageSizer.style.marginLeft = narrow ? 'auto' : '';
+		stageSizer.style.marginRight = narrow ? 'auto' : '';
 		stageCanvas.style.width = dispW + 'px';
 		stageCanvas.style.height = dispH + 'px';
 		paintCanvasBox(view, dispW, dispH);
@@ -1078,6 +1083,7 @@
 
 	function clearSingleWork() {
 		ready = false;
+		editor.classList.remove('is-editing');
 		strokes = [];
 		strokeDraft = null;
 		history = [];
@@ -1471,7 +1477,17 @@
 		spaceDown = false;
 		stage.classList.remove('is-space');
 	});
+	function syncHeaderOffset() {
+		var header = document.querySelector('.site-header');
+		if (header) document.documentElement.style.setProperty('--header-offset', header.offsetHeight + 'px');
+	}
+	syncHeaderOffset();
+	if (window.ResizeObserver) {
+		var header = document.querySelector('.site-header');
+		if (header) new ResizeObserver(syncHeaderOffset).observe(header);
+	}
 	window.addEventListener('resize', function () {
+		syncHeaderOffset();
 		if (ready) layoutStage();
 	});
 

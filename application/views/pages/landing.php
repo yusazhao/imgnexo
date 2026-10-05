@@ -3,6 +3,16 @@
 	<?php $this->load->view('partials/breadcrumbs', array('crumbs' => $crumbs)); ?>
 	<h1><?= html_escape($page['h1']) ?></h1>
 	<div class="lead prose"><?= $page['lead'] ?></div>
+	<?php if ( ! empty($page['tool']['shortcuts'])): ?>
+	<nav class="tool-links" aria-label="Blur tools">
+		<p class="tool-links-title">Common jobs</p>
+		<div class="tool-links-row">
+			<?php foreach ($page['tool']['shortcuts'] as $link): ?>
+			<a href="<?= html_escape(page_url($link['path'])) ?>"><?= html_escape($link['label']) ?></a>
+			<?php endforeach; ?>
+		</div>
+	</nav>
+	<?php endif; ?>
 
 	<?php if ( ! empty($page['figure'])): ?>
 	<figure class="demo">
