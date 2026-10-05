@@ -16,6 +16,9 @@
 	<?php if ( ! empty($page['tool'])): ?>
 	<section class="tool-block">
 		<?php $this->load->view('partials/tool', array('tool' => $page['tool'])); ?>
+	</section>
+	<?php if ( ! empty($page['tool']['heading']) || ! empty($page['tool']['intro']) || ! empty($page['tool']['steps'])): ?>
+	<section class="how-to">
 		<?php if ( ! empty($page['tool']['heading'])): ?>
 		<h2><?= html_escape($page['tool']['heading']) ?></h2>
 		<?php endif; ?>
@@ -30,6 +33,7 @@
 		</ol>
 		<?php endif; ?>
 	</section>
+	<?php endif; ?>
 	<?php endif; ?>
 
 	<?php foreach ($page['sections'] as $section): ?>
