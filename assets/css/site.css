@@ -88,7 +88,7 @@ img { max-width: 100%; height: auto; }
 	text-transform: uppercase;
 }
 
-.site-nav, .header-actions { display: flex; align-items: center; gap: .15rem 1rem; }
+.site-nav { display: flex; align-items: center; gap: .15rem 1rem; }
 .site-nav a, .menu summary {
 	color: #334155;
 	text-decoration: none;
@@ -114,21 +114,6 @@ img { max-width: 100%; height: auto; }
 }
 .menu-panel a { display: block; padding: .55rem .7rem; border-radius: 8px; color: var(--ink); text-decoration: none; }
 .menu-panel a:hover { background: var(--soft); }
-
-.chip {
-	display: inline-flex;
-	align-items: center;
-	border-radius: 999px;
-	padding: .45rem .85rem;
-	text-decoration: none;
-	font-size: .92rem;
-	font-weight: 600;
-	border: 1px solid #dbe4f0;
-	background: white;
-	color: var(--ink);
-}
-.chip-accent { background: var(--accent); color: white; border-color: transparent; }
-.chip-accent:hover { color: white; background: var(--accent-dark); }
 
 h1, h2, h3 { font-weight: 700; letter-spacing: -0.035em; line-height: 1.15; color: var(--ink); }
 h1 { font-size: clamp(2.05rem, 3.6vw, 3.25rem); margin: .35rem 0 .9rem; font-weight: 800; }
@@ -494,7 +479,6 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	.steps, .step-cards { gap: .35rem; margin-top: .4rem; }
 	.steps li, .step-cards li { padding: .4rem .55rem; font-size: .88rem; line-height: 1.35; }
 	.header-bar { flex-wrap: wrap; padding: .7rem 0; }
-	.header-actions { margin-left: auto; }
 	.menu-panel { position: static; margin-top: .4rem; }
 	h1 { font-size: 1.9rem; }
 }

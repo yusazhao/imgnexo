@@ -103,9 +103,6 @@ if (isset($nav) && $nav === 'home')
 			<a href="<?= html_escape(page_url('unblur-image')) ?>"<?= nav_is_current('unblur-image') ? ' aria-current="page"' : '' ?>>Unblur</a>
 			<a href="<?= html_escape(page_url('blog')) ?>"<?= nav_is_current('blog') ? ' aria-current="page"' : '' ?>>Blog</a>
 		</nav>
-		<div class="header-actions">
-			<a class="chip chip-accent" href="<?= html_escape(page_url('blur-image')) ?>#editor">Free tool</a>
-		</div>
 	</div>
 </header>
 <main id="content">
