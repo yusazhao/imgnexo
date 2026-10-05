@@ -1,7 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <article class="sheet home">
 	<section class="home-intro">
-		<p class="eyebrow">Two separate jobs</p>
 		<h1>Blur &amp; Unblur Image Online – Add or Remove Blur From Photos</h1>
 		<p class="dek">One editor adds Gaussian or Pixel blur. The other tries to sharpen a photo that is already soft. Pick the job first. The picture stays in this browser either way.</p>
 	</section>
