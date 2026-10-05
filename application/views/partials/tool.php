@@ -3,24 +3,23 @@ $mode = $tool['mode'];
 $preset = $tool['preset'];
 ?>
 <section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
+	<?php if ( ! empty($tool['batch'])): ?>
+	<div class="job-switch">
+		<div class="choice-row" role="radiogroup" aria-label="Single or batch">
+			<button type="button" class="choice is-on" id="job-single" aria-pressed="true">Single</button>
+			<button type="button" class="choice" id="job-batch" aria-pressed="false">Batch</button>
+		</div>
+	</div>
+	<?php endif; ?>
 	<div class="editor-layout">
 		<div class="editor-stage">
-			<div class="history-bar" id="history-bar">
-				<button type="button" id="undo" class="icon-btn" disabled title="Undo (Ctrl+Z)" aria-label="Undo">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H12"/></svg>
-				</button>
-				<button type="button" id="redo" class="icon-btn" disabled title="Redo (Ctrl+Y)" aria-label="Redo">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H12"/></svg>
-				</button>
-				<button type="button" id="reset-image" disabled>Reset image</button>
-			</div>
 			<label class="dropzone" id="dropzone">
 				<input id="file" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
 				<span class="cloud" aria-hidden="true">
 					<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 18h10a4 4 0 0 0 .4-8 6 6 0 0 0-11.5-1.5A3.5 3.5 0 0 0 7 18z"/><path d="M12 12v6M9.5 14.5 12 12l2.5 2.5"/></svg>
 				</span>
 				<span class="drop-title"><?= $mode === 'unblur' ? 'Click or drag a blurry photo here' : 'Click or drag an image here' ?></span>
-				<span>JPG, PNG, or WEBP. Nothing is uploaded.</span>
+				<span>JPG, PNG, or WEBP, up to 15 MB. Nothing is uploaded.</span>
 				<span class="select-btn">Select Image</span>
 			</label>
 			<div class="batch" id="batch" hidden></div>
@@ -43,6 +42,16 @@ $preset = $tool['preset'];
 				<p class="hint">Zoom in and the photo grows to its full height. Scroll sideways, or hold Space and drag, to reach the sides.</p>
 			</div>
 			<p class="status" id="status" role="status"></p>
+			<div class="history-bar" id="history-bar" hidden>
+				<button type="button" id="undo" class="icon-btn" disabled title="Undo (Ctrl+Z)" aria-label="Undo">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H12"/></svg>
+				</button>
+				<button type="button" id="redo" class="icon-btn" disabled title="Redo (Ctrl+Y)" aria-label="Redo">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H12"/></svg>
+				</button>
+				<button type="button" id="reset-image" disabled>Reset</button>
+				<button type="button" id="replace">Replace</button>
+			</div>
 			<?php if ( ! empty($tool['shortcuts'])): ?>
 			<nav class="tool-links" aria-label="Blur tools">
 				<?php foreach ($tool['shortcuts'] as $link): ?>
@@ -61,15 +70,6 @@ $preset = $tool['preset'];
 			$editor_note = ob_get_clean();
 			if ( ! $note_below) echo $editor_note;
 			?>
-			<?php if ( ! empty($tool['batch'])): ?>
-			<div class="control-group">
-				<span class="control-label" id="job-label">Edit</span>
-				<div class="choice-row" role="radiogroup" aria-labelledby="job-label">
-					<button type="button" class="choice is-on" id="job-single" aria-pressed="true">Single</button>
-					<button type="button" class="choice" id="job-batch" aria-pressed="false">Batch</button>
-				</div>
-			</div>
-			<?php endif; ?>
 			<div class="control-group" data-for="blur">
 				<span class="control-label" id="effect-label">Blur effect</span>
 				<div class="choice-row" role="radiogroup" aria-labelledby="effect-label">
@@ -114,7 +114,6 @@ $preset = $tool['preset'];
 				<?php if ($mode === 'unblur'): ?>
 				<button type="button" id="sample">Load sample</button>
 				<?php endif; ?>
-				<button type="button" id="replace" hidden>Replace image</button>
 				<?php if ( ! empty($tool['batch'])): ?>
 				<button type="button" id="batch-add" hidden>Add images</button>
 				<button type="button" id="batch-clear" hidden>Clear</button>

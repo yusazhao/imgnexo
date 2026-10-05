@@ -68,7 +68,8 @@
 	var batchClearBtn = document.getElementById('batch-clear');
 	var batchAppend = false;
 	var loadToken = 0;
-	var BATCH_LIMIT = 12;
+	var FILE_LIMIT = 15 * 1024 * 1024;
+	var WORK_EDGE = 1600;
 
 	var source = document.createElement('canvas');
 	var effect = document.createElement('canvas');
@@ -169,7 +170,7 @@
 		setChoice(jobSingleBtn, !batch);
 		setChoice(jobBatchBtn, batch);
 		fileInput.multiple = batch;
-		historyBar.hidden = batch;
+		historyBar.hidden = batch || !ready;
 		if (sampleBtn) sampleBtn.hidden = batch;
 		originalBtn.hidden = batch;
 		if (editorNote && editorNote.getAttribute('data-batch')) {
@@ -177,7 +178,7 @@
 		}
 		if (dropTitle) dropTitle.textContent = batch ? 'Click or drag images here' : 'Click or drag an image here';
 		if (selectBtn) selectBtn.textContent = batch ? 'Select images' : 'Select image';
-		replaceBtn.textContent = 'Replace image';
+		replaceBtn.textContent = 'Replace';
 		downloadBtn.textContent = batch ? 'Download all' : 'Download';
 		if (batchAddBtn) batchAddBtn.hidden = !(batch && batchItems.length);
 		if (batchClearBtn) batchClearBtn.hidden = !(batch && batchItems.length);
@@ -201,8 +202,7 @@
 	}
 
 	function setSourceFromImage(img) {
-		var maxEdge = 1600;
-		var scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+		var scale = Math.min(1, WORK_EDGE / Math.max(img.width, img.height));
 		var w = Math.max(1, Math.round(img.width * scale));
 		var h = Math.max(1, Math.round(img.height * scale));
 		[source, effect, result, mask, shape, temp, view, ink].forEach(function (canvas) {
@@ -213,6 +213,7 @@
 		ready = true;
 		dropzone.hidden = true;
 		stage.hidden = false;
+		historyBar.hidden = false;
 		replaceBtn.hidden = false;
 		downloadBtn.disabled = false;
 		originalBtn.disabled = false;
@@ -313,23 +314,112 @@
 		updateZoomControls();
 	}
 
+	function batchLimit() {
+		return window.matchMedia('(max-width: 900px)').matches ? 6 : 12;
+	}
+
+	function releaseDecoded(image) {
+		if (image && typeof image.close === 'function') image.close();
+	}
+
+	function imageSizeFromHeader(bytes) {
+		if (bytes.length >= 24 && bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
+			return {
+				width: ((bytes[16] << 24) | (bytes[17] << 16) | (bytes[18] << 8) | bytes[19]) >>> 0,
+				height: ((bytes[20] << 24) | (bytes[21] << 16) | (bytes[22] << 8) | bytes[23]) >>> 0
+			};
+		}
+		if (bytes.length >= 10 && bytes[0] === 71 && bytes[1] === 73 && bytes[2] === 70) {
+			return { width: bytes[6] | (bytes[7] << 8), height: bytes[8] | (bytes[9] << 8) };
+		}
+		if (bytes.length >= 30 && bytes[0] === 82 && bytes[1] === 73 && bytes[2] === 70 && bytes[3] === 70 && bytes[8] === 87 && bytes[9] === 69 && bytes[10] === 66 && bytes[11] === 80 && bytes[12] === 86 && bytes[13] === 80 && bytes[14] === 56 && bytes[15] === 88) {
+			return {
+				width: 1 + bytes[24] + (bytes[25] << 8) + (bytes[26] << 16),
+				height: 1 + bytes[27] + (bytes[28] << 8) + (bytes[29] << 16)
+			};
+		}
+		if (bytes.length < 4 || bytes[0] !== 255 || bytes[1] !== 216) return null;
+		var i = 2;
+		while (i < bytes.length - 8) {
+			if (bytes[i] !== 255) break;
+			while (i < bytes.length && bytes[i] === 255) i++;
+			if (i >= bytes.length) break;
+			var marker = bytes[i++];
+			if (marker === 217 || marker === 218) break;
+			if (marker === 1 || (marker >= 208 && marker <= 216)) continue;
+			if (i + 1 >= bytes.length) break;
+			var seg = (bytes[i] << 8) | bytes[i + 1];
+			if (seg < 2) break;
+			if ((marker === 192 || marker === 193 || marker === 194) && i + 7 < bytes.length) {
+				return { width: (bytes[i + 5] << 8) | bytes[i + 6], height: (bytes[i + 3] << 8) | bytes[i + 4] };
+			}
+			i += seg;
+		}
+		return null;
+	}
+
+	function readImageSize(file) {
+		return file.slice(0, 524288).arrayBuffer().then(function (buf) {
+			return imageSizeFromHeader(new Uint8Array(buf));
+		}, function () { return null; });
+	}
+
+	function decodeWithImage(file) {
+		return new Promise(function (resolve, reject) {
+			var url = URL.createObjectURL(file);
+			var img = new Image();
+			img.onload = function () {
+				URL.revokeObjectURL(url);
+				resolve(img);
+			};
+			img.onerror = function () {
+				URL.revokeObjectURL(url);
+				reject();
+			};
+			img.src = url;
+		});
+	}
+
+	function decodeFile(file) {
+		var bitmap = typeof createImageBitmap === 'function';
+		return readImageSize(file).then(function (dim) {
+			if (!bitmap) return decodeWithImage(file);
+			var opts;
+			if (dim && dim.width > 0 && dim.height > 0 && Math.max(dim.width, dim.height) > WORK_EDGE) {
+				var scale = WORK_EDGE / Math.max(dim.width, dim.height);
+				opts = {
+					resizeWidth: Math.max(1, Math.round(dim.width * scale)),
+					resizeHeight: Math.max(1, Math.round(dim.height * scale)),
+					resizeQuality: 'high'
+				};
+			}
+			var attempt = opts ? createImageBitmap(file, opts) : createImageBitmap(file);
+			return attempt.catch(function () { return decodeWithImage(file); });
+		});
+	}
+
 	function loadFile(file, note) {
 		if (!file || file.type.indexOf('image/') !== 0) {
 			setStatus('Choose a JPG, PNG, or WEBP image.');
 			return;
 		}
-		var url = URL.createObjectURL(file);
-		var img = new Image();
-		img.onload = function () {
-			URL.revokeObjectURL(url);
+		if (file.size > FILE_LIMIT) {
+			setStatus('This image is over 15 MB. Choose a smaller file.');
+			return;
+		}
+		var token = ++loadToken;
+		decodeFile(file).then(function (img) {
+			if (token !== loadToken) {
+				releaseDecoded(img);
+				return;
+			}
 			setSourceFromImage(img);
+			releaseDecoded(img);
 			setStatus(note || 'Preview ready. Your image stays in this browser.');
-		};
-		img.onerror = function () {
-			URL.revokeObjectURL(url);
+		}, function () {
+			if (token !== loadToken) return;
 			setStatus('This browser could not read that file. Try JPG or PNG.');
-		};
-		img.src = url;
+		});
 	}
 
 	function drawSampleScene(ctx, w, h) {
@@ -954,8 +1044,7 @@
 	}
 
 	function scaledSource(img) {
-		var maxEdge = 1600;
-		var scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+		var scale = Math.min(1, WORK_EDGE / Math.max(img.width, img.height));
 		var canvas = document.createElement('canvas');
 		canvas.width = Math.max(1, Math.round(img.width * scale));
 		canvas.height = Math.max(1, Math.round(img.height * scale));
@@ -978,6 +1067,7 @@
 		clearMask();
 		stage.hidden = true;
 		zoomBar.hidden = true;
+		historyBar.hidden = true;
 		replaceBtn.hidden = true;
 		downloadBtn.disabled = true;
 		originalBtn.disabled = true;
@@ -1064,15 +1154,29 @@
 			setStatus('Choose a JPG, PNG, or WEBP image.');
 			return;
 		}
+		var oversized = 0;
+		var accepted = [];
+		files.forEach(function (file) {
+			if (file.size > FILE_LIMIT) oversized++;
+			else accepted.push(file);
+		});
+		files = accepted;
+		if (!files.length) {
+			setStatus(oversized === 1
+				? 'This image is over 15 MB. Choose a smaller file.'
+				: 'Each image must be 15 MB or smaller.');
+			return;
+		}
 		if (jobName !== 'batch') {
 			loadFile(files[0], files.length > 1 ? 'Loaded the first image. Switch to Batch to blur every file.' : '');
 			return;
 		}
 		var appending = batchAppend || batchItems.length > 0;
 		batchAppend = false;
-		var room = BATCH_LIMIT - (appending ? batchItems.length : 0);
+		var limit = batchLimit();
+		var room = limit - (appending ? batchItems.length : 0);
 		if (room <= 0) {
-			setStatus('This batch already has ' + BATCH_LIMIT + ' images.');
+			setStatus('This batch already has ' + limit + ' images.');
 			return;
 		}
 		var skipped = 0;
@@ -1085,28 +1189,26 @@
 		var slots = new Array(files.length);
 		var left = files.length;
 		files.forEach(function (file, index) {
-			var url = URL.createObjectURL(file);
-			var img = new Image();
-			img.onload = function () {
-				URL.revokeObjectURL(url);
-				if (token !== loadToken) return;
+			decodeFile(file).then(function (img) {
+				if (token !== loadToken) {
+					releaseDecoded(img);
+					return;
+				}
 				var sourceCanvas = scaledSource(img);
+				releaseDecoded(img);
 				var preview = document.createElement('canvas');
 				slots[index] = { name: file.name, source: sourceCanvas, preview: preview };
 				left--;
-				if (left === 0) finishBatch(slots, skipped, appending);
-			};
-			img.onerror = function () {
-				URL.revokeObjectURL(url);
+				if (left === 0) finishBatch(slots, skipped, appending, oversized, limit);
+			}, function () {
 				if (token !== loadToken) return;
 				left--;
-				if (left === 0) finishBatch(slots, skipped, appending);
-			};
-			img.src = url;
+				if (left === 0) finishBatch(slots, skipped, appending, oversized, limit);
+			});
 		});
 	}
 
-	function finishBatch(slots, skipped, appending) {
+	function finishBatch(slots, skipped, appending, oversized, limit) {
 		var added = slots.filter(Boolean);
 		if (!appending) {
 			batchItems = [];
@@ -1122,7 +1224,10 @@
 			return;
 		}
 		showBatch();
-		if (skipped) setStatus('Stopped at ' + BATCH_LIMIT + ' images. ' + skipped + ' more were left out.');
+		var notes = [];
+		if (skipped) notes.push('Stopped at ' + limit + ' images. ' + skipped + (skipped === 1 ? ' more was left out.' : ' more were left out.'));
+		if (oversized) notes.push(oversized === 1 ? '1 file was over 15 MB.' : oversized + ' files were over 15 MB.');
+		if (notes.length) setStatus(notes.join(' '));
 	}
 
 	function chooseJob(name) {
@@ -1135,7 +1240,7 @@
 		batchBox.hidden = true;
 		syncJob();
 		setStatus(name === 'batch'
-			? 'Batch blurs up to 12 whole images with one setting, then downloads a zip.'
+			? 'Batch blurs up to ' + batchLimit() + ' whole images with one setting, then downloads a zip.'
 			: 'Single image. Use Brush when only part of the photo should change.');
 	}
 
