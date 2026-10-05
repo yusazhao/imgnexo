@@ -334,6 +334,21 @@ button.choice:disabled { opacity: .45; cursor: default; }
 .hint { margin: .15rem 0 0; color: var(--muted); font-size: .82rem; }
 
 .controls { display: flex; flex-direction: column; gap: .8rem; text-align: left; }
+.editor-stage .tool-links { margin-top: .75rem; }
+.tool-links { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
+.tool-links a {
+	display: block;
+	padding: .55rem .4rem;
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	background: white;
+	color: #334155;
+	text-align: center;
+	text-decoration: none;
+	font-size: .9rem;
+	font-weight: 600;
+}
+.tool-links a:hover { background: var(--soft); color: var(--accent); border-color: #93c5fd; }
 .note, .status, .post-date, .crumbs { color: var(--muted); }
 .control-group { display: grid; gap: .25rem; }
 .control-group label, .control-label { font-size: .92rem; font-weight: 600; color: #334155; }

@@ -43,6 +43,13 @@ $preset = $tool['preset'];
 				<p class="hint">Zoom in and the photo grows to its full height. Scroll sideways, or hold Space and drag, to reach the sides.</p>
 			</div>
 			<p class="status" id="status" role="status"></p>
+			<?php if ( ! empty($tool['shortcuts'])): ?>
+			<nav class="tool-links" aria-label="Blur tools">
+				<?php foreach ($tool['shortcuts'] as $link): ?>
+				<a href="<?= html_escape(page_url($link['path'])) ?>"><?= html_escape($link['label']) ?></a>
+				<?php endforeach; ?>
+			</nav>
+			<?php endif; ?>
 		</div>
 		<div class="controls">
 			<?php
