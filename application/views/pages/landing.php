@@ -15,13 +15,20 @@
 
 	<?php if ( ! empty($page['tool'])): ?>
 	<section class="tool-block">
+		<?php $this->load->view('partials/tool', array('tool' => $page['tool'])); ?>
 		<?php if ( ! empty($page['tool']['heading'])): ?>
 		<h2><?= html_escape($page['tool']['heading']) ?></h2>
 		<?php endif; ?>
 		<?php if ( ! empty($page['tool']['intro'])): ?>
 		<div class="prose"><?= $page['tool']['intro'] ?></div>
 		<?php endif; ?>
-		<?php $this->load->view('partials/tool', array('tool' => $page['tool'])); ?>
+		<?php if ( ! empty($page['tool']['steps'])): ?>
+		<ol class="steps">
+			<?php foreach ($page['tool']['steps'] as $step): ?>
+			<li><?= html_escape($step) ?></li>
+			<?php endforeach; ?>
+		</ol>
+		<?php endif; ?>
 	</section>
 	<?php endif; ?>
 

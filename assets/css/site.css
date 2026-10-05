@@ -190,6 +190,7 @@ h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 .tool-shell, .tool-block { padding: 1.6rem 1.4rem 1.3rem; margin-top: .4rem; }
 .tool-shell { text-align: center; }
 .tool-shell h2, .tool-block h2 { margin-top: 0; color: var(--accent); text-align: center; }
+.tool-block .editor + h2 { margin-top: 1.75rem; }
 .tool-shell .dek, .tool-block .prose { text-align: center; }
 .tool-shell .dek { margin-inline: auto; }
 .tool-block .editor, .tool-shell .editor { background: transparent; border: 0; box-shadow: none; padding: 0; text-align: left; }

@@ -3,13 +3,6 @@ $mode = $tool['mode'];
 $preset = $tool['preset'];
 ?>
 <section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
-	<?php if ( ! empty($tool['steps'])): ?>
-	<ol class="steps">
-		<?php foreach ($tool['steps'] as $step): ?>
-		<li><?= html_escape($step) ?></li>
-		<?php endforeach; ?>
-	</ol>
-	<?php endif; ?>
 	<div class="editor-layout">
 		<div class="editor-stage">
 			<div class="history-bar" id="history-bar">
