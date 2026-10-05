@@ -108,7 +108,7 @@ return array(
 			'mode' => 'blur',
 			'preset' => 'background',
 			'subject' => TRUE,
-			'note' => 'First run downloads the finder (about 6 MB) and keeps the photo in this tab. It only knows common people, animals, and objects. Edges are coarse, so hair and fur often look cut out. Paint anything it misses. Feather softens that edge.',
+			'note' => 'Only common people, animals, and objects are recognized. The outline is coarse, so hair and fur often look cut out. Paint anything it misses. Feather softens that edge.',
 		),
 		'sections' => array(
 			array(

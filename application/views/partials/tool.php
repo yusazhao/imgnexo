@@ -93,11 +93,7 @@ $preset = $tool['preset'];
 				<p class="hint" id="protect-hint">People and animals, or common objects such as a bottle, chair, or car.</p>
 				<button type="button" class="primary" id="blur-background" disabled>Blur background</button>
 				<div class="auto-progress" id="auto-progress" hidden>
-					<div class="auto-progress-row">
-						<span class="auto-spinner" aria-hidden="true"></span>
-						<div class="auto-progress-track" aria-hidden="true"><div class="auto-progress-bar" id="auto-progress-bar"></div></div>
-					</div>
-					<p class="hint" id="auto-progress-label" role="status">Preparing…</p>
+					<div class="auto-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Working"><div class="auto-progress-bar" id="auto-progress-bar"></div></div>
 				</div>
 			</div>
 			<?php endif; ?>

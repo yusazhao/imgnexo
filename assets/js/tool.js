@@ -1482,7 +1482,10 @@
 	function setAutoProgress(visible, ratio, label) {
 		if (!autoProgress) return;
 		autoProgress.hidden = !visible;
-		if (autoProgressBar) autoProgressBar.style.width = Math.round(Math.max(0, Math.min(1, ratio || 0)) * 100) + '%';
+		var pct = Math.round(Math.max(0, Math.min(1, ratio || 0)) * 100);
+		if (autoProgressBar) autoProgressBar.style.width = pct + '%';
+		var track = autoProgress.querySelector('.auto-progress-track');
+		if (track) track.setAttribute('aria-valuenow', String(visible ? pct : 0));
 		if (label && autoProgressLabel) autoProgressLabel.textContent = label;
 	}
 
@@ -2099,8 +2102,8 @@
 
 	function placeCrop() {
 		var batch = jobName === 'batch';
-		frameSwitch.hidden = !ready || batch;
-		var active = ready && !batch && cropName !== 'original';
+		frameSwitch.hidden = !ready || batch || subjectMode;
+		var active = ready && !batch && !subjectMode && cropName !== 'original';
 		cropLayer.hidden = !active;
 		frameButtons.forEach(function (button) {
 			setChoice(button, button.getAttribute('data-frame') === cropName);
@@ -2116,6 +2119,7 @@
 	}
 
 	function setFrame(name) {
+		if (subjectMode) return;
 		if (!cropRatios[name] && name !== 'original') return;
 		cropName = name;
 		if (name !== 'original' && ready) centerCrop();
