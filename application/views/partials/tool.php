@@ -2,7 +2,7 @@
 $mode = $tool['mode'];
 $preset = $tool['preset'];
 ?>
-<section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
+<section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?><?php if ( ! empty($tool['subject'])): ?> data-subject="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
 	<?php if ( ! empty($tool['batch'])): ?>
 	<div class="job-switch">
 		<div class="choice-row" role="radiogroup" aria-label="Single or batch">
@@ -83,7 +83,25 @@ $preset = $tool['preset'];
 			if ( ! $note_below) echo $editor_note;
 			?>
 			<div class="tune">
-			<div class="control-group" data-for="blur">
+			<?php if ( ! empty($tool['subject'])): ?>
+			<div class="control-group" id="auto-group">
+				<span class="control-label" id="protect-label">Keep sharp</span>
+				<div class="choice-row" role="radiogroup" aria-labelledby="protect-label">
+					<button type="button" class="choice is-on" id="protect-life" aria-pressed="true">People and animals</button>
+					<button type="button" class="choice" id="protect-things" aria-pressed="false">Objects</button>
+				</div>
+				<p class="hint" id="protect-hint">People and animals, or common objects such as a bottle, chair, or car.</p>
+				<button type="button" class="primary" id="blur-background" disabled>Blur background</button>
+				<div class="auto-progress" id="auto-progress" hidden>
+					<div class="auto-progress-row">
+						<span class="auto-spinner" aria-hidden="true"></span>
+						<div class="auto-progress-track" aria-hidden="true"><div class="auto-progress-bar" id="auto-progress-bar"></div></div>
+					</div>
+					<p class="hint" id="auto-progress-label" role="status">Preparing…</p>
+				</div>
+			</div>
+			<?php endif; ?>
+			<div class="control-group" id="effect-group" data-for="blur">
 				<span class="control-label" id="effect-label">Blur effect</span>
 				<div class="choice-row" role="radiogroup" aria-labelledby="effect-label">
 					<button type="button" class="choice is-on" id="effect-gaussian" aria-pressed="true">Gaussian</button>
@@ -111,6 +129,19 @@ $preset = $tool['preset'];
 				<label for="brush">Brush size <output id="brush-out">48 px</output></label>
 				<input id="brush" type="range" min="8" max="140" value="48">
 			</div>
+			<?php if ( ! empty($tool['subject'])): ?>
+			<div class="control-group" id="subject-group">
+				<span class="control-label" id="subject-label">Subject</span>
+				<div class="choice-row choice-row-one">
+					<button type="button" class="choice is-on" id="subject-auto" aria-pressed="true">Invert</button>
+				</div>
+				<p class="hint" id="subject-hint">Paint the person or product. Invert softens everything outside that paint.</p>
+			</div>
+			<div class="control-group" id="feather-group">
+				<label for="feather">Feather <output id="feather-out">16 px</output></label>
+				<input id="feather" type="range" min="0" max="48" value="16">
+			</div>
+			<?php endif; ?>
 			<div class="control-group" data-for="unblur">
 				<label for="sharpen">Clarity <output id="sharpen-out"></output></label>
 				<input id="sharpen" type="range" min="0" max="250" value="110">

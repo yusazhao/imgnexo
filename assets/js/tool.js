@@ -30,6 +30,17 @@
 	var intensity = document.getElementById('intensity');
 	var brush = document.getElementById('brush');
 	var brushGroup = document.getElementById('brush-group');
+	var subjectMode = editor.getAttribute('data-subject') === '1';
+	var subjectAutoBtn = document.getElementById('subject-auto');
+	var subjectHint = document.getElementById('subject-hint');
+	var feather = document.getElementById('feather');
+	var subjectAuto = subjectMode;
+	var protectLifeBtn = document.getElementById('protect-life');
+	var protectThingsBtn = document.getElementById('protect-things');
+	var blurBgBtn = document.getElementById('blur-background');
+	var autoProgress = document.getElementById('auto-progress');
+	var autoProgressBar = document.getElementById('auto-progress-bar');
+	var autoProgressLabel = document.getElementById('auto-progress-label');
 	var effectNames = ['gaussian', 'pixel', 'noise', 'motion', 'radial', 'color'];
 	var effectButtons = {};
 	effectNames.forEach(function (name) {
@@ -93,7 +104,19 @@
 	var mask = document.createElement('canvas');
 	var shape = document.createElement('canvas');
 	var temp = document.createElement('canvas');
+	var featherPad = document.createElement('canvas');
+	var featherBlur = document.createElement('canvas');
+	var autoShape = document.createElement('canvas');
 	var small = document.createElement('canvas');
+	var categoryCache = null;
+	var autoHasPixels = false;
+	var protectMode = 'life';
+	var autoBusy = false;
+	var autoToken = 0;
+	var segmenter = null;
+	var segmenterPromise = null;
+	var LIFE_CLASSES = { 3: 1, 8: 1, 10: 1, 12: 1, 13: 1, 15: 1, 17: 1 };
+	var THING_CLASSES = { 1: 1, 2: 1, 4: 1, 5: 1, 6: 1, 7: 1, 9: 1, 11: 1, 14: 1, 16: 1, 18: 1, 19: 1, 20: 1 };
 	var ready = false;
 	var showingOriginal = false;
 	var painting = false;
@@ -124,6 +147,14 @@
 			strengths.pixel = preset.pixel;
 			scopeName = preset.scope === 'brush' ? 'brush' : 'whole';
 			brush.value = preset.brush;
+			if (subjectMode) {
+				subjectAuto = true;
+				if (feather) feather.value = '16';
+				['motion', 'radial', 'color'].forEach(function (name) {
+					if (effectButtons[name]) effectButtons[name].hidden = true;
+				});
+				if (scopeWholeBtn) scopeWholeBtn.hidden = true;
+			}
 		} else {
 			sharpen.value = preset.sharpen;
 			radius.value = preset.radius;
@@ -148,6 +179,16 @@
 		document.getElementById('sharpen-out').textContent = (Number(sharpen.value) / 100).toFixed(2);
 		document.getElementById('radius-out').textContent = Number(radius.value).toFixed(1) + ' px';
 		document.getElementById('contrast-out').textContent = contrast.value;
+		if (feather) document.getElementById('feather-out').textContent = feather.value + ' px';
+		if (subjectAutoBtn) {
+			setChoice(subjectAutoBtn, subjectAuto);
+			if (subjectHint) {
+				subjectHint.textContent = subjectAuto
+					? 'Paint anything the finder missed. Invert softens everything outside that paint and the found subject.'
+					: 'Paint the backdrop itself. What you leave unpainted stays sharp.';
+			}
+		}
+		syncProtectChoices();
 		syncScope();
 	}
 
@@ -197,6 +238,7 @@
 		replaceBtn.textContent = 'Replace';
 		downloadBtn.textContent = batch ? 'Download all' : 'Download';
 		placeCrop();
+		syncAutoButton();
 		if (batchAddBtn) batchAddBtn.hidden = !(batch && batchItems.length);
 		if (batchClearBtn) batchClearBtn.hidden = !(batch && batchItems.length);
 		if (batch) {
@@ -222,9 +264,14 @@
 		var scale = Math.min(1, WORK_EDGE / Math.max(img.width, img.height));
 		var w = Math.max(1, Math.round(img.width * scale));
 		var h = Math.max(1, Math.round(img.height * scale));
-		[source, effect, result, mask, shape, temp, view, ink].forEach(function (canvas) {
+		[source, effect, result, mask, shape, temp, view, ink, autoShape].forEach(function (canvas) {
 			sizeTo(canvas, w, h);
 		});
+		autoToken++;
+		autoBusy = false;
+		categoryCache = null;
+		autoHasPixels = false;
+		setAutoProgress(false, 0, '');
 		effectKey = '';
 		source.getContext('2d').drawImage(img, 0, 0, w, h);
 		ready = true;
@@ -247,6 +294,7 @@
 		layoutStage();
 		requestRender();
 		syncJob();
+		syncAutoButton();
 		if (cropName !== 'original') centerCrop();
 		placeCrop();
 	}
@@ -439,7 +487,9 @@
 			}
 			setSourceFromImage(img);
 			releaseDecoded(img);
-			setStatus(note || 'Preview ready. Your image stays in this browser.');
+			setStatus(note || (subjectMode
+				? 'Choose People and animals, or Objects, then blur the background.'
+				: 'Preview ready. Your image stays in this browser.'));
 		}, function () {
 			if (token !== loadToken) return;
 			setStatus('This browser could not read that file. Try JPG or PNG.');
@@ -493,7 +543,7 @@
 
 	function currentSettings() {
 		if (mode === 'blur') {
-			return {
+			var settings = {
 				effect: effectName,
 				gaussian: strengths.gaussian,
 				pixel: strengths.pixel,
@@ -504,6 +554,13 @@
 				scope: scopeName,
 				brush: brush.value
 			};
+			if (subjectMode) {
+				settings.subjectAuto = subjectAuto ? 1 : 0;
+				settings.feather = feather ? feather.value : 0;
+				settings.protect = protectMode;
+				settings.autoMask = autoHasPixels ? 1 : 0;
+			}
+			return settings;
 		}
 		return {
 			sharpen: sharpen.value,
@@ -533,7 +590,15 @@
 				if (settings[name] != null) strengths[name] = Number(settings[name]);
 			});
 			scopeName = settings.scope === 'brush' || settings.scope === 'marquee' || settings.scope === 'lasso' ? settings.scope : 'whole';
+			if (subjectMode && scopeName === 'whole') scopeName = 'brush';
 			brush.value = settings.brush;
+			if (subjectMode && settings.subjectAuto != null) subjectAuto = String(settings.subjectAuto) === '1';
+			if (subjectMode && settings.feather != null && feather) feather.value = settings.feather;
+			if (subjectMode && (settings.protect === 'life' || settings.protect === 'things')) protectMode = settings.protect;
+			if (subjectMode) {
+				if (String(settings.autoMask) === '1' && categoryCache) rasterizeCategory();
+				else clearAutoShape();
+			}
 		} else {
 			sharpen.value = settings.sharpen;
 			radius.value = settings.radius;
@@ -633,7 +698,6 @@
 			else if (kind === 'lasso') drawLasso(sctx, stroke);
 			else drawStroke(sctx, stroke, '#fff');
 		});
-		mask.getContext('2d').drawImage(shape, 0, 0);
 		var ictx = ink.getContext('2d');
 		list.forEach(function (stroke) { traceSelection(ictx, stroke); });
 		if (painting && strokeDraft && (strokeDraft.kind || 'brush') === 'brush') {
@@ -697,12 +761,15 @@
 		zoomInput.value = '100';
 		strokes = [];
 		strokeDraft = null;
+		clearAutoShape();
 		redrawMask();
 		applyingHistory = false;
 		layoutStage();
 		pushHistory();
 		requestRender();
-		setStatus('Image restored. Paint and adjustments are back to the start.');
+		setStatus(subjectMode
+			? 'Image restored. Choose what to keep sharp, then blur the background again.'
+			: 'Image restored. Paint and adjustments are back to the start.');
 	}
 
 	function effectCacheKey() {
@@ -1005,6 +1072,70 @@
 		paintEffect(source, effect, 1);
 	}
 
+	function shapeIsEmpty() {
+		if (strokeDraft && selectionUseful(strokeDraft)) return false;
+		for (var i = 0; i < strokes.length; i++) {
+			if (selectionUseful(strokes[i])) return false;
+		}
+		return true;
+	}
+
+	function softenMask(amount, protect) {
+		var w = mask.width;
+		var h = mask.height;
+		var pad = amount * 2;
+		sizeTo(featherPad, w + pad * 2, h + pad * 2);
+		var pctx = featherPad.getContext('2d');
+		pctx.setTransform(1, 0, 0, 1, 0, 0);
+		pctx.clearRect(0, 0, featherPad.width, featherPad.height);
+		pctx.drawImage(mask, pad, pad);
+		if (protect) {
+			pctx.fillStyle = '#fff';
+			pctx.fillRect(0, 0, featherPad.width, pad);
+			pctx.fillRect(0, pad + h, featherPad.width, pad);
+			pctx.fillRect(0, pad, pad, h);
+			pctx.fillRect(pad + w, pad, pad, h);
+		}
+		sizeTo(featherBlur, featherPad.width, featherPad.height);
+		var bctx = featherBlur.getContext('2d');
+		bctx.setTransform(1, 0, 0, 1, 0, 0);
+		bctx.clearRect(0, 0, featherBlur.width, featherBlur.height);
+		bctx.filter = 'blur(' + Math.max(0.5, amount * 0.35) + 'px)';
+		bctx.drawImage(featherPad, 0, 0);
+		bctx.filter = 'none';
+		var mctx = mask.getContext('2d');
+		mctx.setTransform(1, 0, 0, 1, 0, 0);
+		mctx.clearRect(0, 0, w, h);
+		mctx.drawImage(featherBlur, pad, pad, w, h, 0, 0, w, h);
+	}
+
+	function applyCoverage() {
+		var w = shape.width;
+		var h = shape.height;
+		var mctx = mask.getContext('2d');
+		mctx.setTransform(1, 0, 0, 1, 0, 0);
+		mctx.globalCompositeOperation = 'source-over';
+		mctx.clearRect(0, 0, w, h);
+		if (!w || !h) return;
+		var protect = subjectMode && subjectAuto && scopeName !== 'whole';
+		var hasShape = !shapeIsEmpty();
+		var hasAuto = subjectMode && autoHasPixels;
+		if (!hasShape && !hasAuto) return;
+		if (protect) {
+			mctx.fillStyle = '#fff';
+			mctx.fillRect(0, 0, w, h);
+			mctx.globalCompositeOperation = 'destination-out';
+			if (hasAuto) mctx.drawImage(autoShape, 0, 0);
+			if (hasShape) mctx.drawImage(shape, 0, 0);
+			mctx.globalCompositeOperation = 'source-over';
+		} else {
+			if (hasAuto) mctx.drawImage(autoShape, 0, 0);
+			if (hasShape) mctx.drawImage(shape, 0, 0);
+		}
+		var amount = feather ? Math.round(Number(feather.value)) : 0;
+		if (subjectMode && amount > 0) softenMask(amount, protect);
+	}
+
 	function render() {
 		if (!ready) return;
 		buildEffect();
@@ -1014,6 +1145,7 @@
 		rctx.clearRect(0, 0, w, h);
 		rctx.globalCompositeOperation = 'source-over';
 		if (mode === 'blur' && scopeName !== 'whole') {
+			applyCoverage();
 			rctx.drawImage(source, 0, 0);
 			var tctx = temp.getContext('2d');
 			tctx.save();
@@ -1089,6 +1221,11 @@
 		history = [];
 		historyAt = -1;
 		showingOriginal = false;
+		autoToken++;
+		autoBusy = false;
+		categoryCache = null;
+		clearAutoShape();
+		setAutoProgress(false, 0, '');
 		clearMask();
 		stage.hidden = true;
 		zoomBar.hidden = true;
@@ -1096,6 +1233,7 @@
 		replaceBtn.hidden = true;
 		downloadBtn.disabled = true;
 		originalBtn.disabled = true;
+		syncAutoButton();
 		placeCrop();
 		updateHistoryButtons();
 	}
@@ -1298,7 +1436,8 @@
 	redoBtn.addEventListener('click', redo);
 	resetBtn.addEventListener('click', restoreImage);
 
-	[intensity, brush, sharpen, radius, contrast].forEach(function (input) {
+	[intensity, brush, sharpen, radius, contrast, feather].forEach(function (input) {
+		if (!input) return;
 		input.addEventListener('input', function () {
 			if (input === intensity) strengths[effectName] = Number(intensity.value);
 			syncLabels();
@@ -1320,10 +1459,276 @@
 		syncLabels();
 		requestRender();
 		commitSettings();
+		if (subjectMode && subjectAuto && name !== 'whole') {
+			if (name === 'marquee') setStatus('Drag around the subject. Invert softens everything outside the rectangle.');
+			else if (name === 'lasso') setStatus('Draw around the subject. Invert softens everything outside that shape.');
+			else if (name === 'brush') setStatus('Paint the person or product. Invert softens the rest.');
+			return;
+		}
 		if (name === 'marquee') setStatus('Drag a rectangle. The blur stays inside it.');
 		else if (name === 'lasso') setStatus('Draw around an area and release. The blur stays inside that shape.');
 		else if (name === 'brush') setStatus('Paint where the blur should appear.');
 	}
+	function syncProtectChoices() {
+		setChoice(protectLifeBtn, protectMode === 'life');
+		setChoice(protectThingsBtn, protectMode === 'things');
+	}
+
+	function syncAutoButton() {
+		if (!blurBgBtn) return;
+		blurBgBtn.disabled = !ready || autoBusy;
+	}
+
+	function setAutoProgress(visible, ratio, label) {
+		if (!autoProgress) return;
+		autoProgress.hidden = !visible;
+		if (autoProgressBar) autoProgressBar.style.width = Math.round(Math.max(0, Math.min(1, ratio || 0)) * 100) + '%';
+		if (label && autoProgressLabel) autoProgressLabel.textContent = label;
+	}
+
+	function clearAutoShape() {
+		autoHasPixels = false;
+		if (!autoShape.width) return;
+		autoShape.getContext('2d').clearRect(0, 0, autoShape.width, autoShape.height);
+	}
+
+	function reportAuto(ratio, label) {
+		if (!autoBusy) return;
+		setAutoProgress(true, ratio, label);
+	}
+
+	function waitFrame() {
+		return new Promise(function (resolve) {
+			requestAnimationFrame(function () { setTimeout(resolve, 40); });
+		});
+	}
+
+	function trackFetch(url, onRatio) {
+		return fetch(url).then(function (res) {
+			if (!res.ok || !res.body || !res.body.getReader) {
+				if (!res.ok) throw new Error('download failed');
+				return res.arrayBuffer().then(function (buf) {
+					onRatio(1);
+					return buf;
+				});
+			}
+			var total = Number(res.headers.get('Content-Length')) || 0;
+			var reader = res.body.getReader();
+			var parts = [];
+			var got = 0;
+			function read() {
+				return reader.read().then(function (step) {
+					if (step.done) {
+						var out = new Uint8Array(got);
+						var at = 0;
+						parts.forEach(function (part) {
+							out.set(part, at);
+							at += part.length;
+						});
+						onRatio(1);
+						return out.buffer;
+					}
+					parts.push(step.value);
+					got += step.value.length;
+					onRatio(total > 0 ? Math.min(0.99, got / total) : 0.5);
+					return read();
+				});
+			}
+			return read();
+		});
+	}
+
+	function rasterizeCategory() {
+		if (!categoryCache || !source.width) {
+			clearAutoShape();
+			return false;
+		}
+		var keep = protectMode === 'things' ? THING_CLASSES : LIFE_CLASSES;
+		var mw = categoryCache.width;
+		var mh = categoryCache.height;
+		var src = categoryCache.data;
+		var img = new ImageData(mw, mh);
+		var px = img.data;
+		var count = 0;
+		var i;
+		for (i = 0; i < mw * mh && i < src.length; i++) {
+			if (!keep[src[i]]) continue;
+			var o = i * 4;
+			px[o] = 255;
+			px[o + 1] = 255;
+			px[o + 2] = 255;
+			px[o + 3] = 255;
+			count++;
+		}
+		var scratch = document.createElement('canvas');
+		scratch.width = mw;
+		scratch.height = mh;
+		scratch.getContext('2d').putImageData(img, 0, 0);
+		sizeTo(autoShape, source.width, source.height);
+		var actx = autoShape.getContext('2d');
+		actx.setTransform(1, 0, 0, 1, 0, 0);
+		actx.imageSmoothingEnabled = true;
+		actx.clearRect(0, 0, autoShape.width, autoShape.height);
+		actx.drawImage(scratch, 0, 0, autoShape.width, autoShape.height);
+		autoHasPixels = count > 0;
+		return autoHasPixels;
+	}
+
+	function readCategory(maskResult) {
+		var category = maskResult && maskResult.categoryMask;
+		if (!category) return null;
+		var bytes = category.getAsUint8Array();
+		var width = category.width;
+		var height = category.height;
+		var needed = width * height;
+		if (bytes.length < needed) {
+			if (maskResult.close) maskResult.close();
+			return null;
+		}
+		var copy = new Uint8Array(needed);
+		copy.set(bytes.subarray(0, needed));
+		if (maskResult.close) maskResult.close();
+		return { data: copy, width: width, height: height };
+	}
+
+	function loadSegmenter() {
+		var visionUrl = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/+esm';
+		var wasmBase = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm';
+		var modelUrl = 'https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/1/deeplab_v3.tflite';
+		reportAuto(0.02, 'Downloading the runtime…');
+		return trackFetch(visionUrl, function (ratio) {
+			reportAuto(0.02 + ratio * 0.08, 'Downloading the runtime…');
+		}).then(function () {
+			return import(visionUrl);
+		}).then(function (vision) {
+			return vision.FilesetResolver.isSimdSupported().then(function (simd) {
+				var stem = simd ? 'vision_wasm_internal' : 'vision_wasm_nosimd_internal';
+				return trackFetch(wasmBase + '/' + stem + '.js', function (ratio) {
+					reportAuto(0.10 + ratio * 0.06, 'Downloading the runtime…');
+				}).then(function () {
+					return trackFetch(wasmBase + '/' + stem + '.wasm', function (ratio) {
+						reportAuto(0.16 + ratio * 0.46, 'Downloading the runtime…');
+					});
+				}).then(function () {
+					reportAuto(0.62, 'Downloading the model…');
+					return trackFetch(modelUrl, function (ratio) {
+						reportAuto(0.62 + ratio * 0.26, 'Downloading the model…');
+					}).then(function (modelBuffer) {
+						return { vision: vision, model: new Uint8Array(modelBuffer) };
+					});
+				});
+			});
+		}).then(function (pack) {
+			reportAuto(0.90, 'Finding the subject…');
+			return pack.vision.FilesetResolver.forVisionTasks(wasmBase).then(function (fileset) {
+				function create(delegate) {
+					return pack.vision.ImageSegmenter.createFromOptions(fileset, {
+						baseOptions: { modelAssetBuffer: pack.model, delegate: delegate },
+						runningMode: 'IMAGE',
+						outputCategoryMask: true,
+						outputConfidenceMasks: false
+					});
+				}
+				return create('GPU').catch(function () { return create('CPU'); });
+			});
+		});
+	}
+
+	function ensureSegmenter() {
+		if (segmenter) return Promise.resolve(segmenter);
+		if (!segmenterPromise) {
+			segmenterPromise = loadSegmenter().then(function (created) {
+				segmenter = created;
+				return created;
+			}, function (err) {
+				segmenterPromise = null;
+				throw err;
+			});
+		}
+		return segmenterPromise;
+	}
+
+	function segmentSource(token) {
+		if (categoryCache) {
+			reportAuto(0.97, 'Blurring the background…');
+			return Promise.resolve(rasterizeCategory());
+		}
+		reportAuto(0.92, 'Finding the subject…');
+		return waitFrame().then(function () {
+			if (token !== autoToken || !segmenter) return null;
+			var result = segmenter.segment(source);
+			if (token !== autoToken) {
+				if (result && result.categoryMask) result.categoryMask.close();
+				if (result && result.close) result.close();
+				return null;
+			}
+			categoryCache = readCategory(result);
+			if (!categoryCache) throw new Error('no mask');
+			reportAuto(0.97, 'Blurring the background…');
+			return rasterizeCategory();
+		});
+	}
+
+	function chooseProtect(mode) {
+		if (!subjectMode || autoBusy || protectMode === mode) return;
+		protectMode = mode;
+		syncProtectChoices();
+		if (categoryCache) {
+			var found = rasterizeCategory();
+			if (found) {
+				subjectAuto = true;
+				setStatus('Kept that choice sharp. Paint any missed part. Hair and fur often need a touch-up.');
+			} else {
+				setStatus('Nothing in that choice was found. Try the other choice, or paint the subject.');
+			}
+			requestRender();
+		}
+		syncLabels();
+		if (ready) commitSettings();
+	}
+
+	function blurBackground() {
+		if (!subjectMode || !ready || autoBusy) return;
+		var token = ++autoToken;
+		autoBusy = true;
+		syncAutoButton();
+		setAutoProgress(true, categoryCache ? 0.9 : 0.02, categoryCache ? 'Finding the subject…' : 'Downloading the runtime…');
+		ensureSegmenter().then(function () {
+			if (token !== autoToken) return null;
+			return segmentSource(token);
+		}).then(function (found) {
+			if (token !== autoToken || found == null) return;
+			if (!found) {
+				clearAutoShape();
+				requestRender();
+				setStatus('Nothing in that choice was found. Try the other choice, or paint the subject.');
+				return;
+			}
+			subjectAuto = true;
+			syncLabels();
+			requestRender();
+			commitSettings();
+			setStatus('Background softened. Paint any missed part. Hair and fur often need a touch-up.');
+		}).catch(function () {
+			if (token !== autoToken) return;
+			setStatus('The finder could not run in this browser. Paint the subject instead.');
+		}).then(function () {
+			if (token !== autoToken) return;
+			autoBusy = false;
+			setAutoProgress(false, 0, '');
+			syncAutoButton();
+		});
+	}
+
+	if (subjectAutoBtn) subjectAutoBtn.addEventListener('click', function () {
+		subjectAuto = !subjectAuto;
+		syncLabels();
+		requestRender();
+		commitSettings();
+	});
+	if (protectLifeBtn) protectLifeBtn.addEventListener('click', function () { chooseProtect('life'); });
+	if (protectThingsBtn) protectThingsBtn.addEventListener('click', function () { chooseProtect('things'); });
+	if (blurBgBtn) blurBgBtn.addEventListener('click', blurBackground);
 	effectNames.forEach(function (name) {
 		if (effectButtons[name]) effectButtons[name].addEventListener('click', function () { chooseEffect(name); });
 	});
@@ -1786,5 +2191,7 @@
 	applyPreset();
 	updateZoomControls();
 	syncJob();
-	setStatus('Click or drag an image here. Editing stays in this browser.');
+	setStatus(subjectMode
+		? 'Click or drag an image here. Then choose what to keep sharp and blur the background.'
+		: 'Click or drag an image here. Editing stays in this browser.');
 })();
