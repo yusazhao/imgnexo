@@ -49,6 +49,18 @@
 	var zoomOutBtn = document.getElementById('zoom-out-btn');
 	var zoomInBtn = document.getElementById('zoom-in-btn');
 	var zoomFitBtn = document.getElementById('zoom-fit');
+	var batchEnabled = editor.getAttribute('data-batch') === '1';
+	var jobSingleBtn = document.getElementById('job-single');
+	var jobBatchBtn = document.getElementById('job-batch');
+	var batchBox = document.getElementById('batch');
+	var historyBar = document.getElementById('history-bar');
+	var editorNote = document.getElementById('editor-note');
+	var dropTitle = dropzone.querySelector('.drop-title');
+	var selectBtn = dropzone.querySelector('.select-btn');
+	var jobName = 'single';
+	var batchItems = [];
+	var loadToken = 0;
+	var BATCH_LIMIT = 12;
 
 	var source = document.createElement('canvas');
 	var effect = document.createElement('canvas');
@@ -117,14 +129,41 @@
 	}
 
 	function syncScope() {
-		var brushing = mode === 'blur' && scopeName === 'brush';
+		if (jobName === 'batch') scopeName = 'whole';
+		var brushing = mode === 'blur' && jobName !== 'batch' && scopeName === 'brush';
 		setChoice(effectGaussianBtn, effectName !== 'pixel');
 		setChoice(effectPixelBtn, effectName === 'pixel');
 		setChoice(scopeWholeBtn, scopeName !== 'brush');
 		setChoice(scopeBrushBtn, scopeName === 'brush');
+		if (scopeBrushBtn) scopeBrushBtn.disabled = jobName === 'batch';
 		brushGroup.hidden = !brushing;
 		stage.classList.toggle('is-region', brushing);
 		ink.style.visibility = brushing ? 'visible' : 'hidden';
+	}
+
+	function syncJob() {
+		if (!batchEnabled) return;
+		var batch = jobName === 'batch';
+		setChoice(jobSingleBtn, !batch);
+		setChoice(jobBatchBtn, batch);
+		fileInput.multiple = batch;
+		historyBar.hidden = batch;
+		sampleBtn.hidden = batch;
+		originalBtn.hidden = batch;
+		if (editorNote && editorNote.getAttribute('data-batch')) {
+			editorNote.textContent = batch ? editorNote.getAttribute('data-batch') : editorNote.getAttribute('data-single');
+		}
+		if (dropTitle) dropTitle.textContent = batch ? 'Click or drag images here' : 'Click or drag an image here';
+		if (selectBtn) selectBtn.textContent = batch ? 'Select images' : 'Select image';
+		replaceBtn.textContent = batch ? 'Replace images' : 'Replace image';
+		downloadBtn.textContent = batch ? 'Download all' : 'Download';
+		if (batch) {
+			stage.hidden = true;
+			zoomBar.hidden = true;
+			batchBox.hidden = !batchItems.length;
+			dropzone.hidden = batchItems.length > 0;
+		}
+		syncScope();
 	}
 
 	function setStatus(message) {
@@ -163,6 +202,7 @@
 		pushHistory();
 		layoutStage();
 		requestRender();
+		syncJob();
 	}
 
 	function maxViewportHeight() {
@@ -248,7 +288,7 @@
 		updateZoomControls();
 	}
 
-	function loadFile(file) {
+	function loadFile(file, note) {
 		if (!file || file.type.indexOf('image/') !== 0) {
 			setStatus('Choose a JPG, PNG, or WEBP image.');
 			return;
@@ -258,7 +298,7 @@
 		img.onload = function () {
 			URL.revokeObjectURL(url);
 			setSourceFromImage(img);
-			setStatus('Preview ready. Your image stays in this browser.');
+			setStatus(note || 'Preview ready. Your image stays in this browser.');
 		};
 		img.onerror = function () {
 			URL.revokeObjectURL(url);
@@ -435,7 +475,7 @@
 	}
 
 	function commitSettings() {
-		if (!ready || applyingHistory) return;
+		if (jobName === 'batch' || !ready || applyingHistory) return;
 		pushHistory();
 	}
 
@@ -460,6 +500,57 @@
 			return ['unblur', sharpen.value, radius.value, contrast.value, source.width, source.height].join('|');
 		}
 		return ['blur', effectName, gaussianStrength, pixelStrength, source.width, source.height].join('|');
+	}
+
+	function batchReferenceEdge() {
+		var edge = 1;
+		batchItems.forEach(function (item) {
+			edge = Math.max(edge, item.source.width, item.source.height);
+		});
+		return edge;
+	}
+
+	function paintWhole(src, dest, referenceEdge) {
+		var w = src.width;
+		var h = src.height;
+		var scale = referenceEdge ? Math.max(w, h) / referenceEdge : 1;
+		sizeTo(dest, w, h);
+		var ctx = dest.getContext('2d');
+		ctx.filter = 'none';
+		ctx.clearRect(0, 0, w, h);
+		var pixelSize = effectName === 'pixel' ? Number(pixelStrength) * scale : 1;
+		if (pixelSize > 1) {
+			var sw = Math.max(1, Math.round(w / pixelSize));
+			var sh = Math.max(1, Math.round(h / pixelSize));
+			sizeTo(small, sw, sh);
+			var sctx = small.getContext('2d');
+			sctx.imageSmoothingEnabled = false;
+			sctx.clearRect(0, 0, sw, sh);
+			sctx.drawImage(src, 0, 0, sw, sh);
+			ctx.imageSmoothingEnabled = false;
+			ctx.drawImage(small, 0, 0, w, h);
+			ctx.imageSmoothingEnabled = true;
+		} else {
+			ctx.drawImage(src, 0, 0);
+		}
+		var blurPx = effectName === 'gaussian' ? Number(gaussianStrength) * scale : 0;
+		if (blurPx > 0) {
+			sizeTo(temp, w, h);
+			var blurCtx = temp.getContext('2d');
+			blurCtx.clearRect(0, 0, w, h);
+			blurCtx.filter = 'blur(' + blurPx + 'px)';
+			blurCtx.drawImage(dest, 0, 0);
+			blurCtx.filter = 'none';
+			ctx.clearRect(0, 0, w, h);
+			ctx.drawImage(temp, 0, 0);
+		}
+	}
+
+	function renderBatch() {
+		var referenceEdge = batchReferenceEdge();
+		batchItems.forEach(function (item) {
+			paintWhole(item.source, item.preview, referenceEdge);
+		});
 	}
 
 	function buildEffect() {
@@ -556,7 +647,10 @@
 
 	function requestRender() {
 		cancelAnimationFrame(frame);
-		frame = requestAnimationFrame(render);
+		frame = requestAnimationFrame(function () {
+			if (jobName === 'batch') renderBatch();
+			else render();
+		});
 	}
 
 	function paintView() {
@@ -582,8 +676,185 @@
 		redrawMask();
 	}
 
+	function scaledSource(img) {
+		var maxEdge = 1600;
+		var scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+		var canvas = document.createElement('canvas');
+		canvas.width = Math.max(1, Math.round(img.width * scale));
+		canvas.height = Math.max(1, Math.round(img.height * scale));
+		canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+		return canvas;
+	}
+
+	function clearBatch() {
+		batchItems = [];
+		if (batchBox) batchBox.innerHTML = '';
+	}
+
+	function clearSingleWork() {
+		ready = false;
+		strokes = [];
+		strokeDraft = null;
+		history = [];
+		historyAt = -1;
+		showingOriginal = false;
+		clearMask();
+		stage.hidden = true;
+		zoomBar.hidden = true;
+		replaceBtn.hidden = true;
+		downloadBtn.disabled = true;
+		originalBtn.disabled = true;
+		updateHistoryButtons();
+	}
+
+	function batchStatus() {
+		var count = batchItems.length;
+		setStatus(count + (count === 1 ? ' image' : ' images') + '. Hold a photo to compare it with the original.');
+	}
+
+	function removeBatchItem(item, figure) {
+		batchItems = batchItems.filter(function (entry) { return entry !== item; });
+		figure.remove();
+		if (!batchItems.length) {
+			clearBatch();
+			dropzone.hidden = false;
+			replaceBtn.hidden = true;
+			downloadBtn.disabled = true;
+			syncJob();
+			setStatus('Batch is empty. Add images to blur them together.');
+			return;
+		}
+		batchStatus();
+	}
+
+	function addBatchFigure(item) {
+		var figure = document.createElement('figure');
+		var frame = document.createElement('div');
+		var compare = document.createElement('span');
+		var caption = document.createElement('figcaption');
+		var remove = document.createElement('button');
+		frame.className = 'batch-frame';
+		frame.title = 'Hold to compare with the original';
+		item.preview.className = 'batch-preview';
+		item.source.className = 'batch-original';
+		compare.className = 'batch-compare';
+		compare.textContent = 'Hold to compare';
+		remove.type = 'button';
+		remove.className = 'batch-remove';
+		remove.textContent = 'Remove';
+		remove.addEventListener('click', function (event) {
+			event.stopPropagation();
+			removeBatchItem(item, figure);
+		});
+		function setCompare(on) {
+			frame.classList.toggle('is-original', on);
+			compare.textContent = on ? 'Original' : 'Hold to compare';
+		}
+		frame.addEventListener('pointerdown', function (event) {
+			if (event.target.closest('.batch-remove')) return;
+			setCompare(true);
+			frame.setPointerCapture(event.pointerId);
+		});
+		frame.addEventListener('pointerup', function () { setCompare(false); });
+		frame.addEventListener('pointercancel', function () { setCompare(false); });
+		caption.textContent = item.name;
+		caption.title = item.name;
+		frame.appendChild(item.preview);
+		frame.appendChild(item.source);
+		frame.appendChild(compare);
+		frame.appendChild(remove);
+		figure.appendChild(frame);
+		figure.appendChild(caption);
+		batchBox.appendChild(figure);
+	}
+
+	function showBatch() {
+		dropzone.hidden = true;
+		batchBox.hidden = false;
+		stage.hidden = true;
+		zoomBar.hidden = true;
+		replaceBtn.hidden = false;
+		downloadBtn.disabled = false;
+		originalBtn.disabled = true;
+		renderBatch();
+		batchStatus();
+	}
+
+	function loadFiles(list) {
+		var files = [];
+		var i;
+		for (i = 0; i < list.length; i++) {
+			if (list[i] && list[i].type.indexOf('image/') === 0) files.push(list[i]);
+		}
+		if (!files.length) {
+			setStatus('Choose a JPG, PNG, or WEBP image.');
+			return;
+		}
+		if (jobName !== 'batch') {
+			loadFile(files[0], files.length > 1 ? 'Loaded the first image. Switch to Batch to blur every file.' : '');
+			return;
+		}
+		var skipped = 0;
+		if (files.length > BATCH_LIMIT) {
+			skipped = files.length - BATCH_LIMIT;
+			files = files.slice(0, BATCH_LIMIT);
+		}
+		clearBatch();
+		var token = ++loadToken;
+		var slots = new Array(files.length);
+		var left = files.length;
+		files.forEach(function (file, index) {
+			var url = URL.createObjectURL(file);
+			var img = new Image();
+			img.onload = function () {
+				URL.revokeObjectURL(url);
+				if (token !== loadToken) return;
+				var sourceCanvas = scaledSource(img);
+				var preview = document.createElement('canvas');
+				slots[index] = { name: file.name, source: sourceCanvas, preview: preview };
+				left--;
+				if (left === 0) finishBatch(slots, skipped);
+			};
+			img.onerror = function () {
+				URL.revokeObjectURL(url);
+				if (token !== loadToken) return;
+				left--;
+				if (left === 0) finishBatch(slots, skipped);
+			};
+			img.src = url;
+		});
+	}
+
+	function finishBatch(slots, skipped) {
+		batchItems = slots.filter(Boolean);
+		batchBox.innerHTML = '';
+		if (!batchItems.length) {
+			dropzone.hidden = false;
+			setStatus('This browser could not read those files. Try JPG or PNG.');
+			return;
+		}
+		batchItems.forEach(addBatchFigure);
+		showBatch();
+		if (skipped) setStatus('Kept the first ' + BATCH_LIMIT + ' images. ' + skipped + ' more were left out.');
+	}
+
+	function chooseJob(name) {
+		if (!batchEnabled || jobName === name) return;
+		loadToken++;
+		jobName = name;
+		clearSingleWork();
+		clearBatch();
+		dropzone.hidden = false;
+		batchBox.hidden = true;
+		syncJob();
+		setStatus(name === 'batch'
+			? 'Batch blurs up to 12 whole images with one setting, then downloads a zip.'
+			: 'Single image. Use Brush when only part of the photo should change.');
+	}
+
 	fileInput.addEventListener('change', function () {
-		if (fileInput.files[0]) loadFile(fileInput.files[0]);
+		if (fileInput.files && fileInput.files.length) loadFiles(fileInput.files);
+		fileInput.value = '';
 	});
 	replaceBtn.addEventListener('click', function () { fileInput.click(); });
 	sampleBtn.addEventListener('click', loadSample);
@@ -611,7 +882,7 @@
 		commitSettings();
 	}
 	function chooseScope(name) {
-		if (scopeName === name) return;
+		if (jobName === 'batch' || scopeName === name) return;
 		scopeName = name;
 		syncLabels();
 		requestRender();
@@ -630,7 +901,7 @@
 	editor.addEventListener('drop', function (event) {
 		event.preventDefault();
 		dropzone.classList.remove('hot');
-		if (event.dataTransfer.files[0]) loadFile(event.dataTransfer.files[0]);
+		if (event.dataTransfer.files.length) loadFiles(event.dataTransfer.files);
 	});
 
 	function onScrollbar(event) {
@@ -782,19 +1053,146 @@
 		}
 	});
 
+	function crc32(data) {
+		var table = crc32.table;
+		if (!table) {
+			table = new Uint32Array(256);
+			for (var n = 0; n < 256; n++) {
+				var c = n;
+				for (var k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+				table[n] = c >>> 0;
+			}
+			crc32.table = table;
+		}
+		var crc = 0xffffffff;
+		for (var i = 0; i < data.length; i++) crc = table[(crc ^ data[i]) & 0xff] ^ (crc >>> 8);
+		return (crc ^ 0xffffffff) >>> 0;
+	}
+
+	function zipStore(files) {
+		var now = new Date();
+		var dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+		var dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+		var parts = [];
+		var central = [];
+		var offset = 0;
+		files.forEach(function (file) {
+			var nameBytes = new TextEncoder().encode(file.name);
+			var crc = crc32(file.bytes);
+			var local = new DataView(new ArrayBuffer(30));
+			local.setUint32(0, 0x04034b50, true);
+			local.setUint16(4, 20, true);
+			local.setUint16(6, 0x0800, true);
+			local.setUint16(8, 0, true);
+			local.setUint16(10, dosTime, true);
+			local.setUint16(12, dosDate, true);
+			local.setUint32(14, crc, true);
+			local.setUint32(18, file.bytes.length, true);
+			local.setUint32(22, file.bytes.length, true);
+			local.setUint16(26, nameBytes.length, true);
+			parts.push(new Uint8Array(local.buffer), nameBytes, file.bytes);
+			var cen = new DataView(new ArrayBuffer(46));
+			cen.setUint32(0, 0x02014b50, true);
+			cen.setUint16(4, 20, true);
+			cen.setUint16(6, 20, true);
+			cen.setUint16(8, 0x0800, true);
+			cen.setUint16(10, 0, true);
+			cen.setUint16(12, dosTime, true);
+			cen.setUint16(14, dosDate, true);
+			cen.setUint32(16, crc, true);
+			cen.setUint32(20, file.bytes.length, true);
+			cen.setUint32(24, file.bytes.length, true);
+			cen.setUint16(28, nameBytes.length, true);
+			cen.setUint32(42, offset, true);
+			central.push(new Uint8Array(cen.buffer), nameBytes);
+			offset += 30 + nameBytes.length + file.bytes.length;
+		});
+		var centralSize = 0;
+		central.forEach(function (part) { centralSize += part.length; });
+		var end = new DataView(new ArrayBuffer(22));
+		end.setUint32(0, 0x06054b50, true);
+		end.setUint16(8, files.length, true);
+		end.setUint16(10, files.length, true);
+		end.setUint32(12, centralSize, true);
+		end.setUint32(16, offset, true);
+		return new Blob(parts.concat(central, [new Uint8Array(end.buffer)]), { type: 'application/zip' });
+	}
+
+	function saveBlob(blob, filename) {
+		var link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = filename;
+		link.click();
+		setTimeout(function () { URL.revokeObjectURL(link.href); }, 1500);
+	}
+
+	function batchDownloadName(name, used) {
+		var base = String(name || 'image').replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|]/g, '-');
+		if (!base) base = 'image';
+		var filename = base + '-blurred.png';
+		var n = 2;
+		while (used[filename]) {
+			filename = base + '-' + n + '-blurred.png';
+			n++;
+		}
+		used[filename] = true;
+		return filename;
+	}
+
+	function downloadBatch() {
+		if (!batchItems.length) return;
+		downloadBtn.disabled = true;
+		setStatus('Preparing ' + batchItems.length + ' images.');
+		var files = new Array(batchItems.length);
+		var left = batchItems.length;
+		var used = {};
+		batchItems.forEach(function (item, index) {
+			var full = document.createElement('canvas');
+			paintWhole(item.source, full, batchReferenceEdge());
+			full.toBlob(function (blob) {
+				if (!blob) {
+					left--;
+					if (left === 0) finishZip(files);
+					return;
+				}
+				var reader = new FileReader();
+				reader.onload = function () {
+					files[index] = { name: batchDownloadName(item.name, used), bytes: new Uint8Array(reader.result) };
+					left--;
+					if (left === 0) finishZip(files);
+				};
+				reader.readAsArrayBuffer(blob);
+			}, 'image/png');
+		});
+		function finishZip(entries) {
+			var readyFiles = entries.filter(Boolean);
+			downloadBtn.disabled = false;
+			if (!readyFiles.length) {
+				setStatus('The browser could not prepare those images.');
+				return;
+			}
+			saveBlob(zipStore(readyFiles), 'blurred-images.zip');
+			setStatus('Downloaded ' + readyFiles.length + ' images in blurred-images.zip.');
+		}
+	}
+
 	downloadBtn.addEventListener('click', function () {
+		if (jobName === 'batch') {
+			downloadBatch();
+			return;
+		}
 		if (!ready) return;
 		result.toBlob(function (blob) {
 			if (!blob) return;
-			var link = document.createElement('a');
-			link.href = URL.createObjectURL(blob);
-			link.download = mode === 'unblur' ? 'unblurred-photo.png' : 'blurred-image.png';
-			link.click();
-			URL.revokeObjectURL(link.href);
+			saveBlob(blob, mode === 'unblur' ? 'unblurred-photo.png' : 'blurred-image.png');
 		}, 'image/png');
 	});
 
+	if (jobSingleBtn) jobSingleBtn.addEventListener('click', function () { chooseJob('single'); });
+	if (jobBatchBtn) jobBatchBtn.addEventListener('click', function () { chooseJob('batch'); });
+
 	applyPreset();
 	updateZoomControls();
+	syncJob();
 	setStatus('Click or drag an image here. Editing stays in this browser.');
 })();

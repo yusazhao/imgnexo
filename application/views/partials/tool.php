@@ -2,7 +2,7 @@
 $mode = $tool['mode'];
 $preset = $tool['preset'];
 ?>
-<section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>" aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
+<section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
 	<?php if ( ! empty($tool['steps'])): ?>
 	<ol class="steps">
 		<?php foreach ($tool['steps'] as $step): ?>
@@ -12,7 +12,7 @@ $preset = $tool['preset'];
 	<?php endif; ?>
 	<div class="editor-layout">
 		<div class="editor-stage">
-			<div class="history-bar">
+			<div class="history-bar" id="history-bar">
 				<button type="button" id="undo" disabled title="Undo (Ctrl+Z)">Undo</button>
 				<button type="button" id="redo" disabled title="Redo (Ctrl+Y)">Redo</button>
 				<button type="button" id="reset-image" disabled>Reset image</button>
@@ -22,10 +22,11 @@ $preset = $tool['preset'];
 				<span class="cloud" aria-hidden="true">
 					<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 18h10a4 4 0 0 0 .4-8 6 6 0 0 0-11.5-1.5A3.5 3.5 0 0 0 7 18z"/><path d="M12 12v6M9.5 14.5 12 12l2.5 2.5"/></svg>
 				</span>
-				<span class="drop-title"><?= $mode === 'unblur' ? 'Click or drag a blurry photo here' : 'Click or drag images here to upload' ?></span>
+				<span class="drop-title"><?= $mode === 'unblur' ? 'Click or drag a blurry photo here' : 'Click or drag an image here' ?></span>
 				<span>JPG, PNG, or WEBP. Nothing is uploaded.</span>
 				<span class="select-btn">Select Image</span>
 			</label>
+			<div class="batch" id="batch" hidden></div>
 			<div class="stage" id="stage" hidden>
 				<div class="stage-viewport" id="stage-viewport">
 					<div class="stage-sizer">
@@ -47,7 +48,16 @@ $preset = $tool['preset'];
 			<p class="status" id="status" role="status"></p>
 		</div>
 		<div class="controls">
-			<p class="note"><?= html_escape($tool['note']) ?></p>
+			<p class="note" id="editor-note" data-single="<?= html_escape($tool['note']) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="Batch uses one Gaussian or Pixel strength on every whole image. Hold a photo to compare it with the original."<?php endif; ?>><?= html_escape($tool['note']) ?></p>
+			<?php if ( ! empty($tool['batch'])): ?>
+			<div class="control-group">
+				<span class="control-label" id="job-label">Edit</span>
+				<div class="choice-row" role="radiogroup" aria-labelledby="job-label">
+					<button type="button" class="choice is-on" id="job-single" aria-pressed="true">Single</button>
+					<button type="button" class="choice" id="job-batch" aria-pressed="false">Batch</button>
+				</div>
+			</div>
+			<?php endif; ?>
 			<div class="control-group" data-for="blur">
 				<span class="control-label" id="effect-label">Blur effect</span>
 				<div class="choice-row" role="radiogroup" aria-labelledby="effect-label">

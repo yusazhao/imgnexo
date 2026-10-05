@@ -9,17 +9,18 @@ return array(
 		'title' => 'Blur Image Online – Add Blur Effect to Pictures & Photos',
 		'description' => 'Free online tool to blur image, blur pic, add blur for pictures. Apply blur on image, make photos blurry in seconds.',
 		'h1' => 'Blur Image Online – Add Blur Effect to Pictures & Photos',
-		'lead' => '<p>Blur a picture in your browser when part of the frame should be harder to read. Upload the image, soften the whole photo, or paint over a face, some text, or a busy background. Preview the result, then download a PNG. The original stays on your device.</p>',
+		'lead' => '<p>Blur a picture in your browser when part of the frame should be harder to read. On a single image, soften the whole photo or paint over a face, some text, or a busy background. Batch applies that same whole-image blur to several photos and downloads them together. The originals stay on your device.</p>',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'soft',
 			'heading' => 'How to Blur an Image Online',
-			'intro' => '<p>The photo stays in your browser. Choose Gaussian or Pixel, then download a PNG copy. The original file on your device is left alone.</p>',
-			'note' => 'Gaussian softens the photo. Pixel hides faces and text. Use Brush when only part of the picture should change.',
+			'intro' => '<p>The photo stays in your browser. Choose Single for one picture, including a brush stroke, or Batch when several pictures should get the same whole-image blur. Download a PNG, or one zip of every image.</p>',
+			'batch' => TRUE,
+			'note' => 'Gaussian softens the photo. Pixel hides faces and text. Use Brush on a single image when only part of it should change.',
 			'steps' => array(
-				'Upload a JPG, PNG, or WEBP, or load the sample.',
-				'Pick Gaussian or Pixel and raise strength. Switch to Brush to paint one area.',
-				'Hold “Hold for original” to compare, then download.',
+				'Choose Single or Batch, then upload a JPG, PNG, or WEBP. Single can also load the sample.',
+				'Pick Gaussian or Pixel and raise strength. Brush works on one image. Batch covers every whole image.',
+				'On Single, hold “Hold for original”, then download. Batch downloads every image in one zip.',
 			),
 		),
 		'sections' => array(
@@ -29,7 +30,7 @@ return array(
 				'children' => array(
 					array(
 						'h3' => 'Different Ways to Blur Photo Background',
-						'html' => '<p>A wide gaussian blur looks like a shallow depth of field. Pixelate is harsher and better when the background contains a sign or a screen. Fade washes the backdrop toward a light tone if you want less texture, not just less sharpness.</p>',
+						'html' => '<p>A wide gaussian blur looks like a shallow depth of field. Pixelate is harsher and better when the background contains a sign or a screen. Paint that area with Brush on a single image. Batch softens every whole photo the same way, then downloads them in one zip.</p>',
 					),
 				),
 			),
@@ -47,7 +48,7 @@ return array(
 			),
 			array(
 				'h2' => 'Make Picture Blurry',
-				'html' => '<p>Make picture blurry when the whole frame should be hard to inspect: a teaser, a spoiler cover, or a placeholder. The same slider lets you make image blurry, make a pic blurry, or make images blurry in a series. This blurry image maker is also the blurry picture maker for a one-off edit.</p>',
+				'html' => '<p>Make picture blurry when the whole frame should be hard to inspect: a teaser, a spoiler cover, or a placeholder. The same slider lets you make image blurry or make a pic blurry. For make images blurry across a series, switch the editor to Batch: one strength covers every whole photo, then one zip downloads them. This blurry image maker is also the blurry picture maker for a one-off edit.</p>',
 			),
 			array(
 				'h2' => 'Online Blur Image Tool',
@@ -70,7 +71,7 @@ return array(
 			array('q' => 'Is there a blurry image maker for quick edits?', 'a' => '<p>Yes. The blurry image maker above is a short edit: upload, choose Gaussian or Pixel, set Strength, download. For a face-only or text-only pass, set Apply to Brush.</p>'),
 			array('q' => 'What is the difference between blur pic and blur picture?', 'a' => '<p>Blur pic and blur picture are the same request. So are blur and image, blur for pictures, and the common misspelling blure picture. All of them mean you want the photograph softened or partly hidden, not sharpened.</p>'),
 			array('q' => 'Can I apply blur for pictures without download app?', 'a' => '<p>Yes. Blur for pictures in this browser and download only the finished PNG. There is no app to install.</p>'),
-			array('q' => 'How to put blur on image easily?', 'a' => '<p>To put blur on image, drop the file on the editor and move the blur slider. Paint mode is there when blur on image should cover only a license plate, a face, or a line of text.</p>'),
+			array('q' => 'How to put blur on image easily?', 'a' => '<p>To put blur on image, drop the file on the editor, choose Gaussian or Pixel, and move Strength. Set Apply to Brush when only a license plate, a face, or a line of text should change. Batch is the whole-image path for several files at once.</p>'),
 		),
 		'opposite' => array(
 			'text' => 'This page adds blur. If the photo is already soft and you want it clearer, switch tools.',

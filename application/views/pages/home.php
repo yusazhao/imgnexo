@@ -42,7 +42,7 @@
 					<span>
 						<span class="kicker">Add blur</span>
 						<h3>Add Blur To Images</h3>
-						<p>Blur image, blur picture, soften a background, or cover a face and text. Choose Gaussian or Pixel, then the whole frame or a brush stroke.</p>
+						<p>Blur one picture with Gaussian or Pixel, including a brush stroke. Or blur several whole photos the same way and download them together.</p>
 						<span class="feature-go">Go to Blur Image Tool</span>
 					</span>
 				</a>
