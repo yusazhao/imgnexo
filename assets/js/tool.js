@@ -1495,9 +1495,32 @@
 		showingOriginal = on;
 		if (ready) paintView();
 	}
-	originalBtn.addEventListener('pointerdown', function () { showOriginal(true); });
-	originalBtn.addEventListener('pointerup', function () { showOriginal(false); });
-	originalBtn.addEventListener('pointerleave', function () { showOriginal(false); });
+	function releaseOriginal() {
+		showOriginal(false);
+	}
+	originalBtn.addEventListener('pointerdown', function (event) {
+		if (event.pointerType === 'touch') return;
+		event.preventDefault();
+		showOriginal(true);
+	});
+	originalBtn.addEventListener('pointerup', function (event) {
+		if (event.pointerType === 'touch') return;
+		releaseOriginal();
+	});
+	originalBtn.addEventListener('pointerleave', function (event) {
+		if (event.pointerType === 'touch') return;
+		releaseOriginal();
+	});
+	originalBtn.addEventListener('pointercancel', releaseOriginal);
+	originalBtn.addEventListener('touchstart', function (event) {
+		event.preventDefault();
+		showOriginal(true);
+	}, { passive: false });
+	originalBtn.addEventListener('touchend', releaseOriginal);
+	originalBtn.addEventListener('touchcancel', releaseOriginal);
+	originalBtn.addEventListener('contextmenu', function (event) {
+		event.preventDefault();
+	});
 	originalBtn.addEventListener('keyup', function (event) {
 		if (event.key === ' ' || event.key === 'Enter') showOriginal(false);
 	});
