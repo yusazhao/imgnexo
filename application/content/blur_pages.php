@@ -16,6 +16,7 @@ return array(
 			'heading' => 'How to Blur an Image Online',
 			'intro' => '<p>The photo stays in your browser. Choose Single for one picture, including a brush stroke, or Batch when several pictures should get the same whole-image blur. Download a PNG, or one zip of every image.</p>',
 			'batch' => TRUE,
+			'note_below' => TRUE,
 			'note' => 'Gaussian softens and Pixel blocks detail. Noise scatters pixels, Motion streaks sideways, Radial pulls toward the center, and Color smears red and blue apart. On a single image, Brush paints the change, Marquee drags a rectangle, and Lasso draws a freehand shape.',
 			'steps' => array(
 				'Choose Single or Batch, then upload a JPG, PNG, or WEBP.',

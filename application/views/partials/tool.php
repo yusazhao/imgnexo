@@ -45,7 +45,15 @@ $preset = $tool['preset'];
 			<p class="status" id="status" role="status"></p>
 		</div>
 		<div class="controls">
+			<?php
+			$note_below = ! empty($tool['note_below']);
+			ob_start();
+			?>
 			<p class="note" id="editor-note" data-single="<?= html_escape($tool['note']) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="Batch uses one blur strength on every whole image. Each photo shows before and after, sized against the largest file."<?php endif; ?>><?= html_escape($tool['note']) ?></p>
+			<?php
+			$editor_note = ob_get_clean();
+			if ( ! $note_below) echo $editor_note;
+			?>
 			<?php if ( ! empty($tool['batch'])): ?>
 			<div class="control-group">
 				<span class="control-label" id="job-label">Edit</span>
@@ -107,6 +115,7 @@ $preset = $tool['preset'];
 				<button type="button" id="original" disabled>Hold for original</button>
 				<button type="button" id="download" class="primary" disabled>Download</button>
 			</div>
+			<?php if ($note_below) echo $editor_note; ?>
 		</div>
 	</div>
 </section>
