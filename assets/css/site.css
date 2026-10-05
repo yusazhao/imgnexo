@@ -334,6 +334,34 @@ button.choice:disabled { opacity: .45; cursor: default; }
 .stage.is-panning .ink { cursor: grabbing; }
 .hint { margin: .15rem 0 0; color: var(--muted); font-size: .82rem; }
 
+.frame-switch { margin-top: .75rem; }
+.frame-row { display: flex; flex-wrap: wrap; gap: .4rem; }
+.frame-row .choice { padding: .4rem .72rem; }
+.frame-switch .hint { margin: .4rem 0 0; }
+.crop-layer { position: absolute; inset: 0; z-index: 2; }
+.crop-shade { position: absolute; background: rgba(15, 23, 42, 0.45); pointer-events: none; }
+.crop-frame {
+	position: absolute;
+	border: 2px solid #fff;
+	box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35);
+	cursor: grab;
+	touch-action: none;
+}
+.crop-frame.is-dragging { cursor: grabbing; }
+.crop-tag {
+	position: absolute;
+	left: .45rem;
+	top: .45rem;
+	padding: .05rem .4rem;
+	border-radius: 999px;
+	background: rgba(15, 23, 42, 0.72);
+	color: #fff;
+	font-size: .72rem;
+	font-weight: 700;
+	line-height: 1.4;
+	pointer-events: none;
+}
+
 .editor-stage .status { margin: .65rem 0 0; }
 .controls { display: flex; flex-direction: column; gap: .8rem; text-align: left; }
 .editor-stage .tool-links { margin-top: .75rem; }

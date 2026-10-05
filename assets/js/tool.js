@@ -54,6 +54,22 @@
 	var zoomOutBtn = document.getElementById('zoom-out-btn');
 	var zoomInBtn = document.getElementById('zoom-in-btn');
 	var zoomFitBtn = document.getElementById('zoom-fit');
+	var frameSwitch = document.getElementById('frame-switch');
+	var frameButtons = frameSwitch.querySelectorAll('[data-frame]');
+	var cropLayer = document.getElementById('crop-layer');
+	var cropFrame = document.getElementById('crop-frame');
+	var cropTag = document.getElementById('crop-tag');
+	var cropShades = {
+		top: document.getElementById('crop-top'),
+		left: document.getElementById('crop-left'),
+		right: document.getElementById('crop-right'),
+		bottom: document.getElementById('crop-bottom')
+	};
+	var cropRatios = { '9:16': [9, 16], '3:4': [3, 4], '4:5': [4, 5], '1:1': [1, 1], '16:9': [16, 9] };
+	var cropName = 'original';
+	var cropX = 0;
+	var cropY = 0;
+	var cropDrag = null;
 	var batchEnabled = editor.getAttribute('data-batch') === '1';
 	var jobSingleBtn = document.getElementById('job-single');
 	var jobBatchBtn = document.getElementById('job-batch');
@@ -180,6 +196,7 @@
 		if (selectBtn) selectBtn.textContent = batch ? 'Select images' : 'Select image';
 		replaceBtn.textContent = 'Replace';
 		downloadBtn.textContent = batch ? 'Download all' : 'Download';
+		placeCrop();
 		if (batchAddBtn) batchAddBtn.hidden = !(batch && batchItems.length);
 		if (batchClearBtn) batchClearBtn.hidden = !(batch && batchItems.length);
 		if (batch) {
@@ -229,6 +246,8 @@
 		layoutStage();
 		requestRender();
 		syncJob();
+		if (cropName !== 'original') centerCrop();
+		placeCrop();
 	}
 
 	function maxViewportHeight() {
@@ -1071,6 +1090,7 @@
 		replaceBtn.hidden = true;
 		downloadBtn.disabled = true;
 		originalBtn.disabled = true;
+		placeCrop();
 		updateHistoryButtons();
 	}
 
@@ -1595,15 +1615,129 @@
 		}
 	}
 
+	function fittedCrop() {
+		var pair = cropRatios[cropName];
+		if (!pair || !view.width || !view.height) return { w: view.width, h: view.height };
+		var w = view.width;
+		var h = Math.round(view.width * pair[1] / pair[0]);
+		if (h > view.height) {
+			h = view.height;
+			w = Math.round(view.height * pair[0] / pair[1]);
+		}
+		return {
+			w: Math.max(1, Math.min(view.width, w)),
+			h: Math.max(1, Math.min(view.height, h))
+		};
+	}
+
+	function clampCrop() {
+		var size = fittedCrop();
+		if (cropX < 0) cropX = 0;
+		if (cropY < 0) cropY = 0;
+		if (cropX + size.w > view.width) cropX = view.width - size.w;
+		if (cropY + size.h > view.height) cropY = view.height - size.h;
+		return size;
+	}
+
+	function centerCrop() {
+		var size = fittedCrop();
+		cropX = Math.round((view.width - size.w) / 2);
+		cropY = Math.round((view.height - size.h) / 2);
+		return clampCrop();
+	}
+
+	function shadeBox(node, x, y, w, h) {
+		node.style.left = (x / view.width * 100) + '%';
+		node.style.top = (y / view.height * 100) + '%';
+		node.style.width = (w / view.width * 100) + '%';
+		node.style.height = (h / view.height * 100) + '%';
+	}
+
+	function placeCrop() {
+		var batch = jobName === 'batch';
+		frameSwitch.hidden = !ready || batch;
+		var active = ready && !batch && cropName !== 'original';
+		cropLayer.hidden = !active;
+		frameButtons.forEach(function (button) {
+			setChoice(button, button.getAttribute('data-frame') === cropName);
+		});
+		if (!active) return;
+		var size = clampCrop();
+		shadeBox(cropShades.top, 0, 0, view.width, cropY);
+		shadeBox(cropShades.left, 0, cropY, cropX, size.h);
+		shadeBox(cropShades.right, cropX + size.w, cropY, view.width - cropX - size.w, size.h);
+		shadeBox(cropShades.bottom, 0, cropY + size.h, view.width, view.height - cropY - size.h);
+		shadeBox(cropFrame, cropX, cropY, size.w, size.h);
+		cropTag.textContent = cropName;
+	}
+
+	function setFrame(name) {
+		if (!cropRatios[name] && name !== 'original') return;
+		cropName = name;
+		if (name !== 'original' && ready) centerCrop();
+		placeCrop();
+		if (name === 'original') setStatus('Download keeps the whole photo.');
+		else setStatus('Drag the frame. Download keeps that area.');
+	}
+
+	frameButtons.forEach(function (button) {
+		button.addEventListener('click', function () {
+			setFrame(button.getAttribute('data-frame'));
+		});
+	});
+	cropFrame.addEventListener('pointerdown', function (event) {
+		if (cropName === 'original' || !ready) return;
+		event.preventDefault();
+		event.stopPropagation();
+		cropDrag = { px: event.clientX, py: event.clientY, x: cropX, y: cropY };
+		cropFrame.classList.add('is-dragging');
+		cropFrame.setPointerCapture(event.pointerId);
+	});
+	cropFrame.addEventListener('pointermove', function (event) {
+		if (!cropDrag) return;
+		event.preventDefault();
+		event.stopPropagation();
+		var rect = view.getBoundingClientRect();
+		cropX = cropDrag.x + (event.clientX - cropDrag.px) * (view.width / rect.width);
+		cropY = cropDrag.y + (event.clientY - cropDrag.py) * (view.height / rect.height);
+		placeCrop();
+	});
+	function endCropDrag(event) {
+		if (!cropDrag) return;
+		cropDrag = null;
+		cropFrame.classList.remove('is-dragging');
+		if (event) event.stopPropagation();
+	}
+	cropFrame.addEventListener('pointerup', endCropDrag);
+	cropFrame.addEventListener('pointercancel', endCropDrag);
+
+	function downloadCanvas() {
+		if (cropName === 'original') return result;
+		var size = clampCrop();
+		var canvas = document.createElement('canvas');
+		canvas.width = size.w;
+		canvas.height = size.h;
+		canvas.getContext('2d').drawImage(result, cropX, cropY, size.w, size.h, 0, 0, size.w, size.h);
+		return canvas;
+	}
+
+	function downloadName() {
+		var ratioBit = cropName === 'original' ? '' : '-' + cropName.replace(':', 'x');
+		return (mode === 'unblur' ? 'unblurred-photo' : 'blurred-image') + ratioBit + '.png';
+	}
+
 	downloadBtn.addEventListener('click', function () {
 		if (jobName === 'batch') {
 			downloadBatch();
 			return;
 		}
 		if (!ready) return;
-		result.toBlob(function (blob) {
+		var output = downloadCanvas();
+		var sizeLabel = output.width + '×' + output.height;
+		output.toBlob(function (blob) {
 			if (!blob) return;
-			saveBlob(blob, mode === 'unblur' ? 'unblurred-photo.png' : 'blurred-image.png');
+			saveBlob(blob, downloadName());
+			setStatus('Downloaded ' + sizeLabel + ' PNG.');
 		}, 'image/png');
 	});
 

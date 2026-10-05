@@ -29,6 +29,13 @@ $preset = $tool['preset'];
 						<div class="stage-canvas" id="stage-canvas">
 							<canvas id="view" class="view"></canvas>
 							<canvas id="ink" class="ink" aria-hidden="true"></canvas>
+							<div class="crop-layer" id="crop-layer" hidden>
+								<div class="crop-shade" id="crop-top"></div>
+								<div class="crop-shade" id="crop-left"></div>
+								<div class="crop-shade" id="crop-right"></div>
+								<div class="crop-shade" id="crop-bottom"></div>
+								<div class="crop-frame" id="crop-frame"><span class="crop-tag" id="crop-tag">9:16</span></div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -40,6 +47,18 @@ $preset = $tool['preset'];
 				<output id="zoom-out" class="zoom-readout">100%</output>
 				<button type="button" id="zoom-fit">Fit</button>
 				<p class="hint">Zoom in and the photo grows to its full height. Scroll sideways, or hold Space and drag, to reach the sides.</p>
+			</div>
+			<div class="frame-switch" id="frame-switch" hidden>
+				<span class="control-label" id="frame-label">Download frame</span>
+				<div class="frame-row" role="radiogroup" aria-labelledby="frame-label">
+					<button type="button" class="choice is-on" data-frame="original" aria-pressed="true">Original</button>
+					<button type="button" class="choice" data-frame="9:16" aria-pressed="false">9:16</button>
+					<button type="button" class="choice" data-frame="3:4" aria-pressed="false">3:4</button>
+					<button type="button" class="choice" data-frame="4:5" aria-pressed="false">4:5</button>
+					<button type="button" class="choice" data-frame="1:1" aria-pressed="false">1:1</button>
+					<button type="button" class="choice" data-frame="16:9" aria-pressed="false">16:9</button>
+				</div>
+				<p class="hint">Drag the frame. Original downloads the whole photo.</p>
 			</div>
 			<p class="status" id="status" role="status"></p>
 			<div class="history-bar" id="history-bar" hidden>
