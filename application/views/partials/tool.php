@@ -13,8 +13,12 @@ $preset = $tool['preset'];
 	<div class="editor-layout">
 		<div class="editor-stage">
 			<div class="history-bar" id="history-bar">
-				<button type="button" id="undo" disabled title="Undo (Ctrl+Z)">Undo</button>
-				<button type="button" id="redo" disabled title="Redo (Ctrl+Y)">Redo</button>
+				<button type="button" id="undo" class="icon-btn" disabled title="Undo (Ctrl+Z)" aria-label="Undo">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H12"/></svg>
+				</button>
+				<button type="button" id="redo" class="icon-btn" disabled title="Redo (Ctrl+Y)" aria-label="Redo">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H12"/></svg>
+				</button>
 				<button type="button" id="reset-image" disabled>Reset image</button>
 			</div>
 			<label class="dropzone" id="dropzone">

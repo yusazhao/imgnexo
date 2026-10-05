@@ -522,6 +522,9 @@
 		mask.getContext('2d').drawImage(shape, 0, 0);
 		var ictx = ink.getContext('2d');
 		list.forEach(function (stroke) { traceSelection(ictx, stroke); });
+		if (painting && strokeDraft && (strokeDraft.kind || 'brush') === 'brush') {
+			drawStroke(ictx, strokeDraft, 'rgba(37, 99, 235, 0.45)');
+		}
 	}
 
 	function updateHistoryButtons() {
@@ -1228,6 +1231,7 @@
 	}
 
 	function stopPaint() {
+		var hadDraft = !!strokeDraft;
 		if (painting && selectionUseful(strokeDraft)) {
 			strokes.push(strokeDraft);
 			pushHistory();
@@ -1237,6 +1241,7 @@
 		panning = false;
 		panStart = null;
 		stage.classList.remove('is-panning');
+		if (hadDraft) redrawMask();
 	}
 
 	stageViewport.addEventListener('mousedown', function (event) {
