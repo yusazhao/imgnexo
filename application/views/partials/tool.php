@@ -42,7 +42,7 @@ $preset = $tool['preset'];
 				<button type="button" id="zoom-in-btn" aria-label="Zoom in">+</button>
 				<output id="zoom-out" class="zoom-readout">100%</output>
 				<button type="button" id="zoom-fit">Fit</button>
-				<p class="hint">The frame stays the same size. Zoom in, then scroll or hold Space and drag to paint a small area.</p>
+				<p class="hint">Zoom in and the photo grows to its full height. Scroll sideways, or hold Space and drag, to reach the sides.</p>
 			</div>
 			<p class="status" id="status" role="status"></p>
 		</div>

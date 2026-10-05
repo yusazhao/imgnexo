@@ -209,14 +209,19 @@
 		stage.style.width = frameW + 'px';
 		stage.style.maxWidth = '100%';
 		stageViewport.style.width = '100%';
-		stageViewport.style.height = frameH + 'px';
-		stageViewport.style.overflow = hugged ? 'hidden' : 'auto';
+		stageViewport.style.overflowX = hugged ? 'hidden' : 'auto';
+		stageViewport.style.overflowY = 'hidden';
+		stageViewport.style.height = dispH + 'px';
 		stageSizer.style.width = dispW + 'px';
 		stageSizer.style.height = dispH + 'px';
 		stageCanvas.style.width = dispW + 'px';
 		stageCanvas.style.height = dispH + 'px';
 		paintCanvasBox(view, dispW, dispH);
 		paintCanvasBox(ink, dispW, dispH);
+		if (!hugged && stageViewport.scrollWidth > stageViewport.clientWidth) {
+			var bar = stageViewport.offsetHeight - stageViewport.clientHeight;
+			if (bar > 0) stageViewport.style.height = (dispH + bar) + 'px';
+		}
 		stage.classList.toggle('is-zoomed', !hugged);
 		if (hugged) {
 			stageViewport.scrollLeft = 0;
