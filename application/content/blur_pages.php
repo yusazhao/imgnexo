@@ -43,7 +43,7 @@ return array(
 			),
 			array(
 				'h2' => 'Blur Effect on Photos & Pictures',
-				'html' => '<p>A blur effect on pictures can be a light soft-focus look or a heavy blur effect on photos. Blur effect image settings and other blurry effects are grouped on the <a href="{{path:blur-image/effect}}">blur effect</a> page, including gaussian blur, pixelate blur, and fade images.</p>',
+				'html' => '<p>A blur effect on pictures can be a light soft-focus look or a heavy blur effect on photos. Blur effect image settings are on the <a href="{{path:blur-image/effect}}">blur effect</a> page. The editor offers gaussian blur or pixelate blur, one at a time.</p>',
 			),
 			array(
 				'h2' => 'Make Picture Blurry',
@@ -55,19 +55,19 @@ return array(
 			),
 			array(
 				'h2' => 'Image Blurring Tool & Photo Blur App',
-				'html' => '<p>This image blurring tool works as a photo blur tool and a picture blur tool in the browser, so a separate blur image app or blurry pic app is optional. If you were looking for a blur photo editing app, start here and skip the install. This photo editor blur image flow adds blur. It does not repair a shot that is already soft.</p>',
+				'html' => '<p>This image blurring tool works as a photo blur tool and a picture blur tool in the browser, so a separate blur image app or blurry pic app is optional. If you were looking for a blur photo editing app, start here and skip the install. A photo that is already soft belongs on <a href="{{path:unblur-image}}">unblur image</a>.</p>',
 			),
 		),
 		'faqs' => array(
-			array('q' => 'How do I blur out picture?', 'a' => '<p>Upload the file, raise the blur slider until the detail you care about disappears, and download the PNG. To blur out picture content in only one spot, turn on paint mode and stroke that area.</p>'),
+			array('q' => 'How do I blur out picture?', 'a' => '<p>Upload the file, choose Gaussian or Pixel, and raise Strength until the detail you care about disappears. Download the PNG. To blur out picture content in only one spot, set Apply to Brush and stroke that area.</p>'),
 			array('q' => 'How can I blur out photo?', 'a' => '<p>Open the editor, choose the photo, and blur out photo regions that show a face, a plate, or private writing. Hold the original button if you want to confirm you did not soften the wrong part.</p>'),
 			array('q' => 'How to blur out image?', 'a' => '<p>To blur out image detail, use gaussian blur for a smooth cover or pixelate for blocks. Pixelate is harder to reverse by squinting at the file.</p>'),
 			array('q' => 'What is gaussian blur?', 'a' => '<p>Gaussian blur averages nearby pixels with a bell-curve falloff, so edges melt instead of turning into squares. The blur slider on this page is that style of soften. A longer guide is in <a href="{{path:blog/gaussian-blur-guide}}">the gaussian blur article</a>.</p>'),
-			array('q' => 'How to use pixelate blur on pictures?', 'a' => '<p>Set pixelate above 1. Larger blocks hide faces and text more reliably than a light soft blur. You can still add a little gaussian blur on top if the squares look too sharp.</p>'),
+			array('q' => 'How to use pixelate blur on pictures?', 'a' => '<p>Choose Pixel and raise Strength. At 1 the picture stays as it is. Larger blocks hide faces and text more reliably than a light Gaussian soften. Pixel and Gaussian are separate, so switch effects instead of stacking them.</p>'),
 			array('q' => 'Can I blur image for WhatsApp?', 'a' => '<p>Yes. Edit first, download the PNG, then send that file in WhatsApp. Blurring inside this page does not connect to WhatsApp. A whatsapp blur image search usually means you want the censored file before you attach it to a chat.</p>'),
-			array('q' => 'What does fade images effect do?', 'a' => '<p>Fade images lifts the picture toward a pale tone so contrast drops. It is a wash, not a privacy mask. Pair it with blur if you still need text or a face to be unreadable.</p>'),
+			array('q' => 'What does fade images effect do?', 'a' => '<p>Fade images washes a photo toward a pale tone so contrast drops. It is not a privacy mask, and this editor does not include it. Use Gaussian to soften or Pixel to block a face or a line of text.</p>'),
 			array('q' => 'Where can I get a blurry picture maker?', 'a' => '<p>This page is the blurry picture maker. Use the editor above, then download. You do not need a separate account.</p>'),
-			array('q' => 'Is there a blurry image maker for quick edits?', 'a' => '<p>Yes. The blurry image maker above is meant for a short edit: upload, set the strength, download. For a face-only or text-only pass, switch on paint mode.</p>'),
+			array('q' => 'Is there a blurry image maker for quick edits?', 'a' => '<p>Yes. The blurry image maker above is a short edit: upload, choose Gaussian or Pixel, set Strength, download. For a face-only or text-only pass, set Apply to Brush.</p>'),
 			array('q' => 'What is the difference between blur pic and blur picture?', 'a' => '<p>Blur pic and blur picture are the same request. So are blur and image, blur for pictures, and the common misspelling blure picture. All of them mean you want the photograph softened or partly hidden, not sharpened.</p>'),
 			array('q' => 'Can I apply blur for pictures without download app?', 'a' => '<p>Yes. Blur for pictures in this browser and download only the finished PNG. There is no app to install.</p>'),
 			array('q' => 'How to put blur on image easily?', 'a' => '<p>To put blur on image, drop the file on the editor and move the blur slider. Paint mode is there when blur on image should cover only a license plate, a face, or a line of text.</p>'),
@@ -99,7 +99,7 @@ return array(
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'background',
-			'note' => 'Turn on paint mode and stroke the backdrop. Leave the person or product unpainted so it stays sharp.',
+			'note' => 'Choose Brush, then stroke the backdrop. Leave the person or product unpainted so it stays sharp.',
 		),
 		'sections' => array(
 			array(
@@ -108,7 +108,7 @@ return array(
 			),
 			array(
 				'h2' => 'How to blur picture background step-by-step',
-				'html' => '<ol><li>Upload the portrait or product shot.</li><li>Keep paint mode on and brush over the area behind the subject.</li><li>Raise blur until the backdrop is soft, then download.</li></ol><p>That is the practical way to blur picture background without a desktop suite.</p>',
+				'html' => '<ol><li>Upload the portrait or product shot.</li><li>Set Apply to Brush and paint the area behind the subject.</li><li>Choose Gaussian and raise Strength until the backdrop is soft, then download.</li></ol><p>That is the practical way to blur picture background without a desktop suite.</p>',
 			),
 			array(
 				'h2' => 'Tips for background picture blur',
@@ -166,7 +166,7 @@ return array(
 			),
 			array(
 				'h2' => 'How to blur a face in a picture',
-				'html' => '<p>Upload the shot, leave paint mode on, and stroke from forehead to chin, ear to ear. Then blur a face in a picture with pixelate first. Add a little soft blur only if the block edges need to blend. Use the zoom control to check for a missed eye or ear.</p>',
+				'html' => '<p>Upload the shot, set Apply to Brush, and stroke from forehead to chin, ear to ear. Blur a face in a picture with Pixel so the features become blocks. Switch to Gaussian only if you want a soft cover instead of blocks. Use zoom to check for a missed eye or ear.</p>',
 			),
 			array(
 				'h2' => 'Pixelate vs soft blur for photo blur face',
@@ -243,7 +243,7 @@ return array(
 		'title' => 'Blur Image Online Free – No Software Installation',
 		'description' => 'Use blur image online tool without app. Blur picture online, blur pic online directly inside browser.',
 		'h1' => 'Blur Image Online Free – No Software Installation',
-		'lead' => '<p>Blur image online when you do not want another desktop program. Blur picture online and blur pic online from a laptop or a phone browser, then save the PNG.</p>',
+		'lead' => '<p>Blur image online in the browser you already have. The file is not uploaded. Blur picture online and blur pic online from a laptop or a phone, then save a PNG of the working copy.</p>',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'online',
@@ -252,15 +252,15 @@ return array(
 		'sections' => array(
 			array(
 				'h2' => 'Benefits of blur image online editor',
-				'html' => '<p>A blur image online editor skips installers and accounts. The picture is not uploaded, which matters if the file contains a face or an address you are about to hide. You can still do background, face, and text edits from the <a href="{{path:blur-image}}">main blur image page</a>.</p>',
+				'html' => '<p>A blur image online editor on this site skips installers and accounts. Pixels are processed in the tab, then discarded when you close it. There is no saved library. Background, face, and text steps stay on the <a href="{{path:blur-image}}">main blur image page</a> so this page can stay about the browser limits.</p>',
 			),
 			array(
 				'h2' => 'How to use blur picture online',
-				'html' => '<p>To blur picture online, drop the file, move blur or pixelate, and download. Paint mode limits the change to one region. If you only needed a stylistic soften, leave paint mode off and blur the full frame.</p>',
+				'html' => '<p>To blur picture online, drop the file, choose Gaussian or Pixel, and raise Strength. Strength opens at 0, so the photo stays unchanged until you move it. Brush limits the change to one region. Whole image softens the full frame.</p>',
 			),
 			array(
 				'h2' => 'Supported formats for blur pic online',
-				'html' => '<p>Blur pic online accepts JPG, PNG, and WEBP in current browsers. Very large files are scaled down for the edit so the page stays responsive. The download is PNG.</p>',
+				'html' => '<p>Blur pic online accepts JPG, PNG, and WEBP. If the long edge is above 1600 pixels, the editor scales the working copy down before you paint. The download is a PNG of that working copy, not a re-save of the camera original at full size.</p>',
 			),
 		),
 		'faqs' => array(
@@ -287,14 +287,14 @@ return array(
 		'slug' => 'effect',
 		'path' => 'blur-image/effect',
 		'faq_heading' => 'FAQ',
-		'title' => 'Blur Effect Image Online – Gaussian, Pixelate & Fade Effects',
-		'description' => 'Apply blur effect image, gaussian blur, pixelate blur and fade images. Add blurry effects on photos and pictures.',
-		'h1' => 'Blur Effect Image Online – Gaussian, Pixelate & Fade Effects',
-		'lead' => '<p>Apply a blur effect image when you want a look, not only a censorship box. Gaussian blur, pixelate blur, and fade images can be used alone or together. These blurry effects sit on top of the original instead of trying to invent detail.</p>',
+		'title' => 'Blur Effect Image Online – Gaussian and Pixelate',
+		'description' => 'Apply a blur effect image with gaussian blur or pixelate blur. One strength at a time, on the whole photo or a brush stroke.',
+		'h1' => 'Blur Effect Image Online – Gaussian and Pixelate',
+		'lead' => '<p>Apply a blur effect image with the two effects this editor actually has. Gaussian blur softens. Pixelate blur builds blocks. They are not stacked, and there is no fade wash.</p>',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'effect',
-			'note' => 'The sample starts with a light gaussian blur, visible pixel blocks, and a fade wash. Move each slider independently.',
+			'note' => 'Choose Gaussian or Pixel. One Strength control changes the whole image, or only where you brush.',
 		),
 		'sections' => array(
 			array(
@@ -306,18 +306,18 @@ return array(
 				'html' => '<p>Pixelate blur replaces detail with flat blocks. It is the right blur effect on pictures when a face, plate, or line of type must not be reconstructed by looking harder. A light pixelate reads as a style. A heavy one reads as a mask.</p>',
 			),
 			array(
-				'h2' => 'Fade images soft transition effect',
-				'html' => '<p>Fade images by washing the frame toward a pale paper tone. It lowers contrast so the shot feels faded rather than out of focus. It will not hide a secret by itself. Combine fade with blur if privacy is the goal.</p>',
+				'h2' => 'Fade images are not offered here',
+				'html' => '<p>Fade images wash a photo toward a pale color so contrast falls. That is a color treatment, not a blur, and this editor does not do it. It also does not add motion streaks or a separate soft-background filter. Gaussian softens the pixels you choose. Pixel replaces them with blocks.</p>',
 			),
 			array(
 				'h2' => 'Apply blurry effects on pictures & photos',
-				'html' => '<p>You can stack blurry effects: pixelate first, then gaussian blur, then a short fade. That combination is a common blur effect on photos for thumbnails and spoilers. A blur effect on pictures that only needs atmosphere can stop at a small gaussian blur. More region tools live on the <a href="{{path:blur-image}}">blur image</a> page.</p>',
+				'html' => '<p>Pick one blurry effect. Gaussian is enough for a blur effect on photos that should still hint at the scene. Pixel is the blur effect on pictures when a face or a line of type must stay unreadable. Switch effects instead of stacking them. Region edits live on the <a href="{{path:blur-image}}">blur image</a> page.</p>',
 			),
 		),
 		'faqs' => array(
 			array('q' => 'What is difference between gaussian blur and pixelate blur?', 'a' => '<p>Gaussian blur melts edges into neighboring colors. Pixelate blur builds visible squares. Use gaussian blur for a soft portrait look and pixelate blur when someone must not be identified.</p>'),
-			array('q' => 'Can I combine multiple blurry effects in one picture?', 'a' => '<p>Yes. The three sliders apply together. If the stack looks muddy, lower fade first, then blur, and leave pixelate only where you still need blocks.</p>'),
-			array('q' => 'How to create fade images for social media?', 'a' => '<p>Raise fade until the highlights look dusty, keep blur low, and download the PNG. For a story cover that must hide the ending, add gaussian blur on top of that fade images treatment.</p>'),
+			array('q' => 'Can I combine multiple blurry effects in one picture?', 'a' => '<p>No. Gaussian and Pixel are alternatives. Choose one, set Strength, and apply it to the whole image or with Brush. Switching effects replaces the previous look.</p>'),
+			array('q' => 'How to create fade images for social media?', 'a' => '<p>This editor does not create fade images. For a teaser, choose Gaussian, leave Apply to on Whole image, and raise Strength until the subject is hard to recognize. Download the PNG.</p>'),
 		),
 		'opposite' => array(
 			'text' => 'These effects add softness. They are the wrong control if you are trying to clear a blurry photo.',

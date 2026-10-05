@@ -18,9 +18,9 @@ return array(
 		'html' => <<<'HTML'
 <p>People make a picture blurry for spoilers, for a thumbnail, or to hide one private detail. The goal is added softness. If your photo is already a blurry photo and you want it sharper, this is the wrong guide. Use <a href="{{path:unblur-image}}">unblur image</a> instead.</p>
 <h2>Decide what should become hard to see</h2>
-<p>Blurring the entire frame is the fastest option when the whole scene is the secret. Blurring one region is better when the rest of the picture should stay useful. A license plate, a badge, and a bystander are region jobs. Open the <a href="{{path:blur-image}}">blur image</a> editor, upload the file, and turn on paint mode only if you need that limit.</p>
-<h2>Pick blur, pixelate, or fade</h2>
-<p>Gaussian blur looks smooth and is enough for a teaser. Pixelate is stronger when someone might try to read the hidden part. Fade lowers contrast but does not hide identity by itself. You can stack them on the <a href="{{path:blur-image/effect}}">blur effect</a> page. For a backdrop-only pass, follow <a href="{{path:blur-image/background}}">blur background of photo</a>.</p>
+<p>Blurring the entire frame is the fastest option when the whole scene is the secret. Blurring one region is better when the rest of the picture should stay useful. A license plate, a badge, and a bystander are region jobs. Open the <a href="{{path:blur-image}}">blur image</a> editor, upload the file, and set Apply to Brush only if you need that limit.</p>
+<h2>Pick Gaussian or Pixel</h2>
+<p>Gaussian blur looks smooth and is enough for a teaser. Pixel is stronger when someone might try to read the hidden part. The <a href="{{path:blur-image/effect}}">blur effect</a> page uses one of those at a time. It does not wash the photo toward a fade, and it does not add motion streaks. For a backdrop-only pass, follow <a href="{{path:blur-image/background}}">blur background of photo</a>.</p>
 <h2>Check the download, not just the preview</h2>
 <p>Download the PNG and open it outside the editor. Look for a sharp island you missed: an ear, a digit, a reflection in a window. The original on your device is unchanged unless you overwrite it. You can <a href="{{path:blur-image/online}}">blur picture online</a> again if the first pass was too light.</p>
 HTML
@@ -87,7 +87,7 @@ HTML
 		'html' => <<<'HTML'
 <p>Gaussian blur is a weighted average. Pixels near an edge mix with their neighbors, and nearer neighbors count more than far ones. The result looks soft instead of blocky. It is the effect behind the blur slider on the <a href="{{path:blur-image/effect}}">blur effect</a> page.</p>
 <h2>What the radius actually changes</h2>
-<p>A small radius is a slight defocus, useful for a busy background or a gentle portrait. A large radius turns the picture into broad color shapes. Privacy is not guaranteed at a small radius: a face can still be recognized. If recognition is the risk, switch to pixelate or stack pixelate under the blur.</p>
+<p>A small radius is a slight defocus, useful for a busy background or a gentle portrait. A large radius turns the picture into broad color shapes. Privacy is not guaranteed at a small radius: a face can still be recognized. If recognition is the risk, switch to Pixel instead of stacking it under Gaussian.</p>
 <h2>Gaussian blur versus pixelate</h2>
 <p>Gaussian blur hides by mixing. Pixelate hides by replacing a neighborhood with one flat color. Mixing can be reversed a little by sharpening, which is why it is a weak privacy tool. Blocks throw away the variation inside each cell. For faces, start with pixelate on <a href="{{path:blur-image/face}}">blur face in photo</a>.</p>
 <h2>Where beginners should use it</h2>
@@ -183,7 +183,7 @@ HTML
 <h2>What it cannot see</h2>
 <p>If neighboring pixels were averaged for good, the difference between the original and a further blur is small and noisy. Amplifying it does not recreate a license plate or a pupil. Motion streaks have the extra problem that the edge is in the wrong place. Read <a href="{{path:blog/unblur-motion-blur-photo}}">motion blur limits</a> before you spend time on a streaked frame.</p>
 <h2>Use the matching tool</h2>
-<p>Blur removal is only for pictures that should become clearer. Adding blur, pixelate, or fade is <a href="{{path:blur-image}}">blur image</a>. Mixing those jobs on one page confuses both the edit and the reason you opened the file.</p>
+<p>Blur removal is only for pictures that should become clearer. Adding Gaussian or Pixel blur is <a href="{{path:blur-image}}">blur image</a>. Mixing those jobs on one page confuses both the edit and the reason you opened the file.</p>
 HTML
 	),
 );

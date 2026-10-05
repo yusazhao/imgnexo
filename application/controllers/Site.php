@@ -10,19 +10,19 @@ class Site extends CI_Controller {
 	{
 		$this->render('pages/home', array(
 			'meta' => array(
-				'title' => 'Blur Image Online Free – Easily Blur or Unblur Your Photos',
-				'description' => 'Blur faces, text, and backgrounds online for free. Upload an image, preview the blur, and download it in your browser. Unblur a soft photo when you need the opposite.',
+				'title' => 'Blur & Unblur Image Online – Add or Remove Blur From Photos',
+				'description' => 'Free online tool to blur image or unblur image. Add blur effect, blur face and background, or fix blurry photos.',
 				'path' => '',
 			),
 			'nav' => 'home',
-			'load_tool' => TRUE,
+			'load_tool' => FALSE,
 			'crumbs' => array(
 				array('name' => 'Home', 'path' => ''),
 			),
 			'faqs' => array(
 				array(
 					'q' => 'Can I blur and unblur an image in the same tool?',
-					'a' => '<p>These are opposite jobs, so they live on separate pages. The blur image tool softens, pixelates, or fades part of a picture. The unblur tool sharpens a blurry photo. Pick the page that matches what you want the picture to look like when you are done.</p>',
+					'a' => '<p>These are opposite jobs, so they live on separate pages. Blur image applies Gaussian or Pixel. Unblur sharpens a blurry photo. Open the page that matches the result you want.</p>',
 				),
 				array(
 					'q' => 'Is this blur image tool free to use?',

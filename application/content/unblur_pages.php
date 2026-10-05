@@ -212,7 +212,7 @@ return array(
 			array('q' => 'What photo quality gives best motion blur repair result?', 'a' => '<p>The best motion blur repair result comes from the original file, not a compressed preview, and from blur that is only a few pixels wide. Large, clean edges respond better than fine text or a distant face.</p>'),
 		),
 		'opposite' => array(
-			'text' => 'Motion repair tries to reduce streaks. To add blur on purpose, including a soft background, use the blur editor.',
+			'text' => 'Motion repair tries to reduce streaks. To add blur on purpose, including Gaussian blur on the background, use the blur editor.',
 			'path' => 'blur-image',
 			'label' => 'Blur image',
 		),
