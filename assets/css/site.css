@@ -350,8 +350,9 @@ button.choice:disabled { opacity: .45; cursor: default; }
 .crop-frame.is-dragging { cursor: grabbing; }
 .crop-tag {
 	position: absolute;
-	left: .45rem;
-	top: .45rem;
+	left: 50%;
+	top: .4rem;
+	transform: translateX(-50%);
 	padding: .05rem .4rem;
 	border-radius: 999px;
 	background: rgba(15, 23, 42, 0.72);
@@ -361,10 +362,61 @@ button.choice:disabled { opacity: .45; cursor: default; }
 	line-height: 1.4;
 	pointer-events: none;
 }
+button.crop-handle, button.crop-handle:hover {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	border: 2px solid #2563eb;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.25);
+	z-index: 3;
+	touch-action: none;
+}
+button.crop-handle[data-corner="nw"] { left: 5px; top: 5px; cursor: nwse-resize; }
+button.crop-handle[data-corner="ne"] { right: 5px; top: 5px; cursor: nesw-resize; }
+button.crop-handle[data-corner="sw"] { left: 5px; bottom: 5px; cursor: nesw-resize; }
+button.crop-handle[data-corner="se"] { right: 5px; bottom: 5px; cursor: nwse-resize; }
 
 .editor-stage .status { margin: .65rem 0 0; }
 .controls { display: flex; flex-direction: column; gap: .8rem; text-align: left; }
 .tune { display: flex; flex-direction: column; gap: .8rem; }
+.tune-step { display: grid; gap: .5rem; padding-top: .85rem; border-top: 1px solid var(--line); }
+.tune-step:first-child { padding-top: 0; border-top: 0; }
+.tune-step-title { margin: 0; color: var(--muted); font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.refine-shapes { margin-top: .05rem; }
+button.text-btn, button.text-btn:hover {
+	justify-self: start;
+	padding: .15rem 0;
+	border-color: transparent;
+	background: transparent;
+	color: var(--muted);
+	font-size: .82rem;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: .15em;
+}
+button.text-btn.is-on, button.text-btn.is-on:hover { color: var(--accent); }
+.mask-toggle[hidden] { display: none; }
+.mask-toggle {
+	position: absolute;
+	top: .55rem;
+	right: .55rem;
+	z-index: 7;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.1rem;
+	height: 2.1rem;
+	padding: 0;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, .92);
+	color: #334155;
+	box-shadow: 0 1px 4px rgba(15, 23, 42, .16);
+}
+.mask-toggle:hover { background: white; color: #334155; }
+.mask-toggle.is-on, .mask-toggle.is-on:hover { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
 .sheet > .tool-links { margin: 0 0 1.1rem; }
 .tool-links-title {
 	margin: 0 0 .45rem;

@@ -108,6 +108,7 @@ return array(
 			'mode' => 'blur',
 			'preset' => 'background',
 			'subject' => TRUE,
+			'note_below' => TRUE,
 			'note' => 'Only common people, animals, and objects are recognized. The outline is coarse, so hair and fur often look cut out. Paint anything it misses. Feather softens that edge.',
 		),
 		'sections' => array(

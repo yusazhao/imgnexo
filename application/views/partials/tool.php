@@ -34,11 +34,22 @@ $preset = $tool['preset'];
 								<div class="crop-shade" id="crop-left"></div>
 								<div class="crop-shade" id="crop-right"></div>
 								<div class="crop-shade" id="crop-bottom"></div>
-								<div class="crop-frame" id="crop-frame"><span class="crop-tag" id="crop-tag">9:16</span></div>
+								<div class="crop-frame" id="crop-frame">
+									<span class="crop-tag" id="crop-tag">9:16</span>
+									<button type="button" class="crop-handle" data-corner="nw" aria-label="Resize from top left"></button>
+									<button type="button" class="crop-handle" data-corner="ne" aria-label="Resize from top right"></button>
+									<button type="button" class="crop-handle" data-corner="sw" aria-label="Resize from bottom left"></button>
+									<button type="button" class="crop-handle" data-corner="se" aria-label="Resize from bottom right"></button>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
+				<?php if ( ! empty($tool['subject'])): ?>
+				<button type="button" id="mask-toggle" class="mask-toggle" hidden aria-pressed="false" aria-label="Show mask" title="Show mask">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+				</button>
+				<?php endif; ?>
 			</div>
 			<div class="zoom-bar" id="zoom-bar" hidden>
 				<button type="button" id="zoom-out-btn" aria-label="Zoom out">−</button>
@@ -69,7 +80,7 @@ $preset = $tool['preset'];
 					<button type="button" class="choice" data-frame="1:1" aria-pressed="false">1:1</button>
 					<button type="button" class="choice" data-frame="16:9" aria-pressed="false">16:9</button>
 				</div>
-				<p class="hint">Drag the frame. Original downloads the whole photo.</p>
+				<p class="hint">Drag the frame to move it. Drag a corner to resize. Original downloads the whole photo.</p>
 			</div>
 		</div>
 		<div class="controls">
@@ -84,19 +95,56 @@ $preset = $tool['preset'];
 			?>
 			<div class="tune">
 			<?php if ( ! empty($tool['subject'])): ?>
-			<div class="control-group" id="auto-group">
-				<span class="control-label" id="protect-label">Keep sharp</span>
-				<div class="choice-row" role="radiogroup" aria-labelledby="protect-label">
+			<div class="tune-step" id="auto-group">
+				<p class="tune-step-title">Find the subject</p>
+				<div class="choice-row" role="radiogroup" aria-label="Find the subject">
 					<button type="button" class="choice is-on" id="protect-life" aria-pressed="true">People and animals</button>
 					<button type="button" class="choice" id="protect-things" aria-pressed="false">Objects</button>
 				</div>
-				<p class="hint" id="protect-hint">People and animals, or common objects such as a bottle, chair, or car.</p>
+				<p class="hint" id="protect-hint">Edges are rough. Paint anything missed.</p>
 				<button type="button" class="primary" id="blur-background" disabled>Blur background</button>
 				<div class="auto-progress" id="auto-progress" hidden>
 					<div class="auto-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Working"><div class="auto-progress-bar" id="auto-progress-bar"></div></div>
 				</div>
 			</div>
-			<?php endif; ?>
+			<div class="tune-step" id="refine-group">
+				<p class="tune-step-title">Fix the edge</p>
+				<div class="choice-row" role="radiogroup" aria-label="Fix the edge">
+					<button type="button" class="choice is-on" id="refine-keep" aria-pressed="true">Keep</button>
+					<button type="button" class="choice" id="refine-erase" aria-pressed="false">Erase</button>
+				</div>
+				<div class="choice-row refine-shapes" role="radiogroup" aria-label="Shape">
+					<button type="button" class="choice" id="scope-marquee" aria-pressed="false" title="Rectangular marquee">Marquee</button>
+					<button type="button" class="choice" id="scope-lasso" aria-pressed="false" title="Freehand lasso">Lasso</button>
+				</div>
+				<button type="button" class="choice" id="scope-whole" hidden>Whole image</button>
+				<button type="button" class="choice" id="scope-brush" hidden>Brush</button>
+				<div class="control-group" id="brush-group">
+					<label for="brush">Brush size <output id="brush-out">72 px</output></label>
+					<input id="brush" type="range" min="8" max="140" value="72">
+				</div>
+				<div class="control-group" id="feather-group">
+					<label for="feather">Feather <output id="feather-out">16 px</output></label>
+					<input id="feather" type="range" min="0" max="48" value="16">
+				</div>
+				<button type="button" class="text-btn is-on" id="subject-auto" aria-pressed="true">Invert</button>
+			</div>
+			<div class="tune-step" id="effect-group">
+				<p class="tune-step-title">Blur</p>
+				<div class="choice-row" role="radiogroup" aria-label="Blur">
+					<button type="button" class="choice is-on" id="effect-gaussian" aria-pressed="true">Gaussian</button>
+					<button type="button" class="choice" id="effect-pixel" aria-pressed="false">Pixel</button>
+					<button type="button" class="choice" id="effect-noise" aria-pressed="false">Noise</button>
+					<button type="button" class="choice" id="effect-motion" aria-pressed="false" hidden>Motion</button>
+					<button type="button" class="choice" id="effect-radial" aria-pressed="false" hidden>Radial</button>
+					<button type="button" class="choice" id="effect-color" aria-pressed="false" hidden>Color</button>
+				</div>
+				<div class="control-group">
+					<label for="intensity">Strength <output id="intensity-out">18 px</output></label>
+					<input id="intensity" type="range" min="0" max="40" value="18">
+				</div>
+			</div>
+			<?php else: ?>
 			<div class="control-group" id="effect-group" data-for="blur">
 				<span class="control-label" id="effect-label">Blur effect</span>
 				<div class="choice-row" role="radiogroup" aria-labelledby="effect-label">
@@ -124,18 +172,6 @@ $preset = $tool['preset'];
 			<div class="control-group" id="brush-group" hidden>
 				<label for="brush">Brush size <output id="brush-out">48 px</output></label>
 				<input id="brush" type="range" min="8" max="140" value="48">
-			</div>
-			<?php if ( ! empty($tool['subject'])): ?>
-			<div class="control-group" id="subject-group">
-				<span class="control-label" id="subject-label">Subject</span>
-				<div class="choice-row choice-row-one">
-					<button type="button" class="choice is-on" id="subject-auto" aria-pressed="true">Invert</button>
-				</div>
-				<p class="hint" id="subject-hint">Paint the person or product. Invert softens everything outside that paint.</p>
-			</div>
-			<div class="control-group" id="feather-group">
-				<label for="feather">Feather <output id="feather-out">16 px</output></label>
-				<input id="feather" type="range" min="0" max="48" value="16">
 			</div>
 			<?php endif; ?>
 			<div class="control-group" data-for="unblur">

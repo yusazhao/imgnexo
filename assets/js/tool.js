@@ -32,9 +32,13 @@
 	var brushGroup = document.getElementById('brush-group');
 	var subjectMode = editor.getAttribute('data-subject') === '1';
 	var subjectAutoBtn = document.getElementById('subject-auto');
-	var subjectHint = document.getElementById('subject-hint');
 	var feather = document.getElementById('feather');
 	var subjectAuto = subjectMode;
+	var maskOp = 'keep';
+	var maskShown = false;
+	var maskToggle = document.getElementById('mask-toggle');
+	var refineKeepBtn = document.getElementById('refine-keep');
+	var refineEraseBtn = document.getElementById('refine-erase');
 	var protectLifeBtn = document.getElementById('protect-life');
 	var protectThingsBtn = document.getElementById('protect-things');
 	var blurBgBtn = document.getElementById('blur-background');
@@ -80,7 +84,10 @@
 	var cropName = 'original';
 	var cropX = 0;
 	var cropY = 0;
+	var cropW = 0;
+	var cropH = 0;
 	var cropDrag = null;
+	var cropResize = null;
 	var batchEnabled = editor.getAttribute('data-batch') === '1';
 	var jobSingleBtn = document.getElementById('job-single');
 	var jobBatchBtn = document.getElementById('job-batch');
@@ -103,6 +110,8 @@
 	var result = document.createElement('canvas');
 	var mask = document.createElement('canvas');
 	var shape = document.createElement('canvas');
+	var eraseShape = document.createElement('canvas');
+	var maskTint = document.createElement('canvas');
 	var temp = document.createElement('canvas');
 	var featherPad = document.createElement('canvas');
 	var featherBlur = document.createElement('canvas');
@@ -149,6 +158,7 @@
 			brush.value = preset.brush;
 			if (subjectMode) {
 				subjectAuto = true;
+				maskOp = 'keep';
 				if (feather) feather.value = '16';
 				['motion', 'radial', 'color'].forEach(function (name) {
 					if (effectButtons[name]) effectButtons[name].hidden = true;
@@ -180,15 +190,9 @@
 		document.getElementById('radius-out').textContent = Number(radius.value).toFixed(1) + ' px';
 		document.getElementById('contrast-out').textContent = contrast.value;
 		if (feather) document.getElementById('feather-out').textContent = feather.value + ' px';
-		if (subjectAutoBtn) {
-			setChoice(subjectAutoBtn, subjectAuto);
-			if (subjectHint) {
-				subjectHint.textContent = subjectAuto
-					? 'Paint anything the finder missed. Invert softens everything outside that paint and the found subject.'
-					: 'Paint the backdrop itself. What you leave unpainted stays sharp.';
-			}
-		}
+		if (subjectAutoBtn) setChoice(subjectAutoBtn, subjectAuto);
 		syncProtectChoices();
+		syncRefine();
 		syncScope();
 	}
 
@@ -264,13 +268,14 @@
 		var scale = Math.min(1, WORK_EDGE / Math.max(img.width, img.height));
 		var w = Math.max(1, Math.round(img.width * scale));
 		var h = Math.max(1, Math.round(img.height * scale));
-		[source, effect, result, mask, shape, temp, view, ink, autoShape].forEach(function (canvas) {
+		[source, effect, result, mask, shape, eraseShape, maskTint, temp, view, ink, autoShape].forEach(function (canvas) {
 			sizeTo(canvas, w, h);
 		});
 		autoToken++;
 		autoBusy = false;
 		categoryCache = null;
 		autoHasPixels = false;
+		maskShown = false;
 		setAutoProgress(false, 0, '');
 		effectKey = '';
 		source.getContext('2d').drawImage(img, 0, 0, w, h);
@@ -284,7 +289,7 @@
 		originalBtn.disabled = false;
 		zoom = 1;
 		zoomInput.value = '100';
-		zoomBar.hidden = mode !== 'blur';
+		zoomBar.hidden = mode !== 'blur' || subjectMode;
 		strokes = [];
 		strokeDraft = null;
 		history = [];
@@ -295,6 +300,7 @@
 		requestRender();
 		syncJob();
 		syncAutoButton();
+		syncRefine();
 		if (cropName !== 'original') centerCrop();
 		placeCrop();
 	}
@@ -376,7 +382,7 @@
 	}
 
 	function setZoom(percent, focus) {
-		if (mode !== 'blur') return;
+		if (mode !== 'blur' || subjectMode) return;
 		percent = Math.round(percent);
 		if (percent < 100) percent = 100;
 		if (percent > 400) percent = 400;
@@ -558,6 +564,7 @@
 				settings.subjectAuto = subjectAuto ? 1 : 0;
 				settings.feather = feather ? feather.value : 0;
 				settings.protect = protectMode;
+				settings.maskOp = maskOp;
 				settings.autoMask = autoHasPixels ? 1 : 0;
 			}
 			return settings;
@@ -595,6 +602,7 @@
 			if (subjectMode && settings.subjectAuto != null) subjectAuto = String(settings.subjectAuto) === '1';
 			if (subjectMode && settings.feather != null && feather) feather.value = settings.feather;
 			if (subjectMode && (settings.protect === 'life' || settings.protect === 'things')) protectMode = settings.protect;
+			if (subjectMode && (settings.maskOp === 'keep' || settings.maskOp === 'erase')) maskOp = settings.maskOp;
 			if (subjectMode) {
 				if (String(settings.autoMask) === '1' && categoryCache) rasterizeCategory();
 				else clearAutoShape();
@@ -666,7 +674,7 @@
 		ctx.setLineDash([]);
 		ctx.strokeStyle = 'white';
 		ctx.stroke();
-		ctx.strokeStyle = '#2563eb';
+		ctx.strokeStyle = stroke.op === 'erase' ? '#dc2626' : '#2563eb';
 		ctx.setLineDash([5 * scale, 4 * scale]);
 		ctx.stroke();
 		ctx.setLineDash([]);
@@ -685,23 +693,37 @@
 		return stroke.points.length >= 3;
 	}
 
+	function drawStrokeList(ctx, list, eraseOnly) {
+		ctx.save();
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.globalCompositeOperation = 'source-over';
+		list.forEach(function (stroke) {
+			var erase = stroke.op === 'erase';
+			if (eraseOnly ? !erase : erase) return;
+			var kind = stroke.kind || 'brush';
+			if (kind === 'marquee') drawMarquee(ctx, stroke);
+			else if (kind === 'lasso') drawLasso(ctx, stroke);
+			else drawStroke(ctx, stroke, '#fff');
+		});
+		ctx.restore();
+	}
+
 	function redrawMask() {
 		clearMask();
 		var sctx = shape.getContext('2d');
 		sctx.clearRect(0, 0, shape.width, shape.height);
-		sctx.globalCompositeOperation = 'source-over';
 		var list = strokes.slice();
 		if (strokeDraft && strokeDraft.points.length) list.push(strokeDraft);
-		list.forEach(function (stroke) {
-			var kind = stroke.kind || 'brush';
-			if (kind === 'marquee') drawMarquee(sctx, stroke);
-			else if (kind === 'lasso') drawLasso(sctx, stroke);
-			else drawStroke(sctx, stroke, '#fff');
-		});
+		drawStrokeList(sctx, list, false);
+		if (subjectMode && eraseShape.width) {
+			var ectx = eraseShape.getContext('2d');
+			ectx.clearRect(0, 0, eraseShape.width, eraseShape.height);
+			drawStrokeList(ectx, list, true);
+		}
 		var ictx = ink.getContext('2d');
 		list.forEach(function (stroke) { traceSelection(ictx, stroke); });
 		if (painting && strokeDraft && (strokeDraft.kind || 'brush') === 'brush') {
-			drawStroke(ictx, strokeDraft, 'rgba(37, 99, 235, 0.45)');
+			drawStroke(ictx, strokeDraft, strokeDraft.op === 'erase' ? 'rgba(220, 38, 38, 0.45)' : 'rgba(37, 99, 235, 0.45)');
 		}
 	}
 
@@ -1109,6 +1131,17 @@
 		mctx.drawImage(featherBlur, pad, pad, w, h, 0, 0, w, h);
 	}
 
+	function listHas(op) {
+		var list = strokes.slice();
+		if (strokeDraft && selectionUseful(strokeDraft)) list.push(strokeDraft);
+		for (var i = 0; i < list.length; i++) {
+			if (!selectionUseful(list[i])) continue;
+			var erase = list[i].op === 'erase';
+			if (op === 'erase' ? erase : !erase) return true;
+		}
+		return false;
+	}
+
 	function applyCoverage() {
 		var w = shape.width;
 		var h = shape.height;
@@ -1117,23 +1150,35 @@
 		mctx.globalCompositeOperation = 'source-over';
 		mctx.clearRect(0, 0, w, h);
 		if (!w || !h) return;
-		var protect = subjectMode && subjectAuto && scopeName !== 'whole';
-		var hasShape = !shapeIsEmpty();
-		var hasAuto = subjectMode && autoHasPixels;
-		if (!hasShape && !hasAuto) return;
+		if (!subjectMode) {
+			if (shapeIsEmpty()) return;
+			mctx.drawImage(shape, 0, 0);
+			return;
+		}
+		var protect = subjectAuto && scopeName !== 'whole';
+		var hasKeep = listHas('keep');
+		var hasErase = listHas('erase');
+		var hasAuto = autoHasPixels;
+		if (!hasKeep && !hasAuto) return;
 		if (protect) {
 			mctx.fillStyle = '#fff';
 			mctx.fillRect(0, 0, w, h);
 			mctx.globalCompositeOperation = 'destination-out';
 			if (hasAuto) mctx.drawImage(autoShape, 0, 0);
-			if (hasShape) mctx.drawImage(shape, 0, 0);
+			if (hasKeep) mctx.drawImage(shape, 0, 0);
 			mctx.globalCompositeOperation = 'source-over';
+			if (hasErase) mctx.drawImage(eraseShape, 0, 0);
 		} else {
 			if (hasAuto) mctx.drawImage(autoShape, 0, 0);
-			if (hasShape) mctx.drawImage(shape, 0, 0);
+			if (hasKeep) mctx.drawImage(shape, 0, 0);
+			if (hasErase) {
+				mctx.globalCompositeOperation = 'destination-out';
+				mctx.drawImage(eraseShape, 0, 0);
+				mctx.globalCompositeOperation = 'source-over';
+			}
 		}
 		var amount = feather ? Math.round(Number(feather.value)) : 0;
-		if (subjectMode && amount > 0) softenMask(amount, protect);
+		if (amount > 0) softenMask(amount, protect);
 	}
 
 	function render() {
@@ -1172,8 +1217,21 @@
 
 	function paintView() {
 		var ctx = view.getContext('2d');
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.globalCompositeOperation = 'source-over';
 		ctx.clearRect(0, 0, view.width, view.height);
 		ctx.drawImage(showingOriginal ? source : result, 0, 0);
+		if (!subjectMode || !maskShown || showingOriginal || !mask.width) return;
+		var tctx = maskTint.getContext('2d');
+		tctx.setTransform(1, 0, 0, 1, 0, 0);
+		tctx.globalCompositeOperation = 'source-over';
+		tctx.clearRect(0, 0, maskTint.width, maskTint.height);
+		tctx.fillStyle = 'rgba(220, 38, 38, 0.38)';
+		tctx.fillRect(0, 0, maskTint.width, maskTint.height);
+		tctx.globalCompositeOperation = 'destination-in';
+		tctx.drawImage(mask, 0, 0);
+		tctx.globalCompositeOperation = 'source-over';
+		ctx.drawImage(maskTint, 0, 0);
 	}
 
 	function pointFromEvent(event) {
@@ -1234,6 +1292,7 @@
 		downloadBtn.disabled = true;
 		originalBtn.disabled = true;
 		syncAutoButton();
+		syncRefine();
 		placeCrop();
 		updateHistoryButtons();
 	}
@@ -1459,10 +1518,10 @@
 		syncLabels();
 		requestRender();
 		commitSettings();
-		if (subjectMode && subjectAuto && name !== 'whole') {
-			if (name === 'marquee') setStatus('Drag around the subject. Invert softens everything outside the rectangle.');
-			else if (name === 'lasso') setStatus('Draw around the subject. Invert softens everything outside that shape.');
-			else if (name === 'brush') setStatus('Paint the person or product. Invert softens the rest.');
+		if (subjectMode && name !== 'whole') {
+			if (name === 'marquee') setStatus(maskOp === 'erase' ? 'Drag a rectangle to blur that area.' : 'Drag a rectangle around anything that should stay sharp.');
+			else if (name === 'lasso') setStatus(maskOp === 'erase' ? 'Draw around an area to blur it.' : 'Draw around anything that should stay sharp.');
+			else setStatus(maskOp === 'erase' ? 'Erase where the background should blur.' : 'Paint anything that should stay sharp.');
 			return;
 		}
 		if (name === 'marquee') setStatus('Drag a rectangle. The blur stays inside it.');
@@ -1472,6 +1531,24 @@
 	function syncProtectChoices() {
 		setChoice(protectLifeBtn, protectMode === 'life');
 		setChoice(protectThingsBtn, protectMode === 'things');
+	}
+
+	function syncRefine() {
+		setChoice(refineKeepBtn, maskOp === 'keep');
+		setChoice(refineEraseBtn, maskOp === 'erase');
+		if (!maskToggle) return;
+		maskToggle.hidden = !(subjectMode && ready);
+		maskToggle.classList.toggle('is-on', maskShown);
+		maskToggle.setAttribute('aria-pressed', maskShown ? 'true' : 'false');
+	}
+
+	function chooseRefine(op) {
+		maskOp = op;
+		scopeName = 'brush';
+		syncLabels();
+		requestRender();
+		if (ready) commitSettings();
+		setStatus(op === 'erase' ? 'Erase where the background should blur.' : 'Paint anything that should stay sharp.');
 	}
 
 	function syncAutoButton() {
@@ -1728,6 +1805,15 @@
 		syncLabels();
 		requestRender();
 		commitSettings();
+		if (subjectMode) setStatus(subjectAuto ? 'Kept area stays sharp. The rest blurs.' : 'Kept area blurs. The rest stays sharp.');
+	});
+	if (refineKeepBtn) refineKeepBtn.addEventListener('click', function () { chooseRefine('keep'); });
+	if (refineEraseBtn) refineEraseBtn.addEventListener('click', function () { chooseRefine('erase'); });
+	if (maskToggle) maskToggle.addEventListener('click', function (event) {
+		event.stopPropagation();
+		maskShown = !maskShown;
+		syncRefine();
+		requestRender();
 	});
 	if (protectLifeBtn) protectLifeBtn.addEventListener('click', function () { chooseProtect('life'); });
 	if (protectThingsBtn) protectThingsBtn.addEventListener('click', function () { chooseProtect('things'); });
@@ -1801,6 +1887,7 @@
 		strokeDraft = {
 			kind: scopeName === 'marquee' || scopeName === 'lasso' ? scopeName : 'brush',
 			size: Number(brush.value),
+			op: subjectMode && maskOp === 'erase' ? 'erase' : 'keep',
 			points: []
 		};
 		if (effectIdle()) {
@@ -1825,7 +1912,7 @@
 	stageViewport.addEventListener('pointerup', stopPaint);
 	stageViewport.addEventListener('pointercancel', stopPaint);
 	stageViewport.addEventListener('wheel', function (event) {
-		if (mode !== 'blur' || !ready) return;
+		if (mode !== 'blur' || !ready || subjectMode) return;
 		event.preventDefault();
 		var delta = event.deltaY;
 		if (event.deltaMode === 1) delta *= 16;
@@ -2077,19 +2164,54 @@
 		};
 	}
 
+	function minCrop() {
+		var max = fittedCrop();
+		var long = Math.max(max.w, max.h);
+		var target = Math.min(long, Math.max(48, Math.round(long * 0.2)));
+		var w;
+		var h;
+		if (max.w >= max.h) {
+			w = target;
+			h = Math.max(1, Math.round(w * max.h / max.w));
+		} else {
+			h = target;
+			w = Math.max(1, Math.round(h * max.w / max.h));
+		}
+		if (w > max.w || h > max.h) return { w: max.w, h: max.h };
+		return { w: w, h: h };
+	}
+
 	function clampCrop() {
-		var size = fittedCrop();
+		var max = fittedCrop();
+		var ratio = max.h ? max.w / max.h : 1;
+		if (!cropW || !cropH) {
+			cropW = max.w;
+			cropH = max.h;
+		}
+		var min = minCrop();
+		cropW = Math.max(min.w, Math.min(max.w, cropW));
+		cropH = Math.max(1, Math.round(cropW / ratio));
+		if (cropH > max.h) {
+			cropH = max.h;
+			cropW = Math.max(1, Math.round(cropH * ratio));
+		}
+		if (cropH < min.h && min.h <= max.h) {
+			cropH = min.h;
+			cropW = Math.max(1, Math.round(cropH * ratio));
+		}
 		if (cropX < 0) cropX = 0;
 		if (cropY < 0) cropY = 0;
-		if (cropX + size.w > view.width) cropX = view.width - size.w;
-		if (cropY + size.h > view.height) cropY = view.height - size.h;
-		return size;
+		if (cropX + cropW > view.width) cropX = view.width - cropW;
+		if (cropY + cropH > view.height) cropY = view.height - cropH;
+		return { w: cropW, h: cropH };
 	}
 
 	function centerCrop() {
 		var size = fittedCrop();
-		cropX = Math.round((view.width - size.w) / 2);
-		cropY = Math.round((view.height - size.h) / 2);
+		cropW = size.w;
+		cropH = size.h;
+		cropX = Math.round((view.width - cropW) / 2);
+		cropY = Math.round((view.height - cropH) / 2);
 		return clampCrop();
 	}
 
@@ -2102,8 +2224,8 @@
 
 	function placeCrop() {
 		var batch = jobName === 'batch';
-		frameSwitch.hidden = !ready || batch || subjectMode;
-		var active = ready && !batch && !subjectMode && cropName !== 'original';
+		frameSwitch.hidden = !ready || batch;
+		var active = ready && !batch && cropName !== 'original';
 		cropLayer.hidden = !active;
 		frameButtons.forEach(function (button) {
 			setChoice(button, button.getAttribute('data-frame') === cropName);
@@ -2119,13 +2241,68 @@
 	}
 
 	function setFrame(name) {
-		if (subjectMode) return;
 		if (!cropRatios[name] && name !== 'original') return;
 		cropName = name;
 		if (name !== 'original' && ready) centerCrop();
 		placeCrop();
 		if (name === 'original') setStatus('Download keeps the whole photo.');
-		else setStatus('Drag the frame. Download keeps that area.');
+		else setStatus('Drag the frame to move it, or a corner to resize. Download keeps that area.');
+	}
+
+	function imagePoint(event) {
+		var rect = view.getBoundingClientRect();
+		return {
+			x: (event.clientX - rect.left) * (view.width / rect.width),
+			y: (event.clientY - rect.top) * (view.height / rect.height)
+		};
+	}
+
+	function resizeFromPointer(event) {
+		if (!cropResize) return;
+		var point = imagePoint(event);
+		var max = fittedCrop();
+		var ratio = max.h ? max.w / max.h : 1;
+		var corner = cropResize.corner;
+		var dw = Math.abs(cropResize.ax - point.x);
+		var dh = Math.abs(cropResize.ay - point.y);
+		var w = dw;
+		var h = w / ratio;
+		if (h > dh) {
+			h = dh;
+			w = h * ratio;
+		}
+		var roomW = (corner === 'nw' || corner === 'sw') ? cropResize.ax : (view.width - cropResize.ax);
+		var roomH = (corner === 'nw' || corner === 'ne') ? cropResize.ay : (view.height - cropResize.ay);
+		roomW = Math.max(1, Math.min(roomW, max.w));
+		roomH = Math.max(1, Math.min(roomH, max.h));
+		if (w > roomW) {
+			w = roomW;
+			h = w / ratio;
+		}
+		if (h > roomH) {
+			h = roomH;
+			w = h * ratio;
+		}
+		var min = minCrop();
+		if (w < min.w || h < min.h) {
+			w = min.w;
+			h = min.h;
+			if (w > roomW || h > roomH) {
+				w = Math.min(w, roomW);
+				h = w / ratio;
+				if (h > roomH) {
+					h = roomH;
+					w = h * ratio;
+				}
+			}
+		}
+		cropW = Math.max(1, Math.round(w));
+		cropH = Math.max(1, Math.round(h));
+		if (corner === 'nw' || corner === 'sw') cropX = cropResize.ax - cropW;
+		else cropX = cropResize.ax;
+		if (corner === 'nw' || corner === 'ne') cropY = cropResize.ay - cropH;
+		else cropY = cropResize.ay;
+		placeCrop();
 	}
 
 	frameButtons.forEach(function (button) {
@@ -2134,7 +2311,8 @@
 		});
 	});
 	cropFrame.addEventListener('pointerdown', function (event) {
-		if (cropName === 'original' || !ready) return;
+		if (cropName === 'original' || !ready || cropResize) return;
+		if (event.target.closest && event.target.closest('.crop-handle')) return;
 		event.preventDefault();
 		event.stopPropagation();
 		cropDrag = { px: event.clientX, py: event.clientY, x: cropX, y: cropY };
@@ -2158,6 +2336,34 @@
 	}
 	cropFrame.addEventListener('pointerup', endCropDrag);
 	cropFrame.addEventListener('pointercancel', endCropDrag);
+	Array.prototype.forEach.call(cropFrame.querySelectorAll('.crop-handle'), function (handle) {
+		handle.addEventListener('pointerdown', function (event) {
+			if (cropName === 'original' || !ready) return;
+			event.preventDefault();
+			event.stopPropagation();
+			var corner = handle.getAttribute('data-corner');
+			var size = clampCrop();
+			cropResize = {
+				corner: corner,
+				ax: (corner === 'nw' || corner === 'sw') ? cropX + size.w : cropX,
+				ay: (corner === 'nw' || corner === 'ne') ? cropY + size.h : cropY
+			};
+			handle.setPointerCapture(event.pointerId);
+		});
+		handle.addEventListener('pointermove', function (event) {
+			if (!cropResize || event.currentTarget !== handle) return;
+			event.preventDefault();
+			event.stopPropagation();
+			resizeFromPointer(event);
+		});
+		function endResize(event) {
+			if (!cropResize) return;
+			cropResize = null;
+			if (event) event.stopPropagation();
+		}
+		handle.addEventListener('pointerup', endResize);
+		handle.addEventListener('pointercancel', endResize);
+	});
 
 	function downloadCanvas() {
 		if (cropName === 'original') return result;
