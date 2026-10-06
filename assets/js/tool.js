@@ -140,7 +140,7 @@
 	var faceLayer = document.getElementById('face-layer');
 	var blurFacesBtn = document.getElementById('blur-faces');
 	var strengthGroup = document.getElementById('strength-group');
-	var FACE_PAD = 0.18;
+	var FACE_MIN_SCORE = 0.34;
 	var textBoxes = [];
 	var textBusy = false;
 	var textWorker = null;
@@ -2272,19 +2272,122 @@
 		});
 	}
 
-	function expandFaceBox(box, width, height) {
-		var padW = box.width * FACE_PAD;
-		var padH = box.height * FACE_PAD;
-		var x = box.originX - padW / 2;
-		var y = box.originY - padH / 2;
-		var w = box.width + padW;
-		var h = box.height + padH;
+	function clampFaceBox(x, y, w, h, width, height) {
 		if (x < 0) { w += x; x = 0; }
 		if (y < 0) { h += y; y = 0; }
 		if (x + w > width) w = width - x;
 		if (y + h > height) h = height - y;
+		if (w < 8 || h < 8) return null;
+		return { x: x, y: y, w: w, h: h };
+	}
+
+	function mapDetectorMeasure(value, span) {
+		if (value >= 0 && value <= 1.2) return value * span;
+		return value;
+	}
+
+	function mapDetectorRect(raw, cropW, cropH, ox, oy) {
+		if (!raw) return null;
+		var x = mapDetectorMeasure(raw.originX, cropW) + ox;
+		var y = mapDetectorMeasure(raw.originY, cropH) + oy;
+		var w = mapDetectorMeasure(raw.width, cropW);
+		var h = mapDetectorMeasure(raw.height, cropH);
 		if (w < 2 || h < 2) return null;
 		return { x: x, y: y, w: w, h: h };
+	}
+
+	function mapDetectorPoints(points, cropW, cropH, ox, oy) {
+		var pts = [];
+		(points || []).forEach(function (point) {
+			if (!point || point.x == null || point.y == null) return;
+			pts.push({
+				x: mapDetectorMeasure(point.x, cropW) + ox,
+				y: mapDetectorMeasure(point.y, cropH) + oy
+			});
+		});
+		return pts;
+	}
+
+	function faceCover(points, fallback, width, height) {
+		if (!fallback) return null;
+		var cx = fallback.x + fallback.w / 2;
+		var cy = fallback.y + fallback.h / 2;
+		if (points.length >= 6) {
+			cx = (points[0].x + points[1].x) / 2;
+			cy = (points[0].y + points[1].y) / 2;
+		}
+		var side = Math.max(fallback.w, fallback.h);
+		var w = side * 1.02;
+		var h = side * 1.34;
+		return clampFaceBox(cx - w / 2, cy - h * 0.4, w, h, width, height);
+	}
+
+	function faceIou(a, b) {
+		var x1 = Math.max(a.x, b.x);
+		var y1 = Math.max(a.y, b.y);
+		var x2 = Math.min(a.x + a.w, b.x + b.w);
+		var y2 = Math.min(a.y + a.h, b.y + b.h);
+		var iw = x2 - x1;
+		var ih = y2 - y1;
+		if (iw <= 0 || ih <= 0) return 0;
+		var inter = iw * ih;
+		return inter / (a.w * a.h + b.w * b.h - inter);
+	}
+
+	function mergeFaceHits(items) {
+		items.sort(function (a, b) { return b.score - a.score; });
+		var kept = [];
+		items.forEach(function (item) {
+			var same = false;
+			for (var i = 0; i < kept.length; i++) {
+				if (faceIou(kept[i], item) > 0.4) {
+					same = true;
+					break;
+				}
+			}
+			if (!same) kept.push(item);
+		});
+		return kept;
+	}
+
+	function collectFaceHits(target, ox, oy, imgW, imgH) {
+		var found = faceDetector.detect(target);
+		var list = found && found.detections ? found.detections : [];
+		var hits = [];
+		list.forEach(function (hit) {
+			var raw = mapDetectorRect(hit.boundingBox, target.width, target.height, ox, oy);
+			var pts = mapDetectorPoints(hit.keypoints, target.width, target.height, ox, oy);
+			var box = faceCover(pts, raw, imgW, imgH);
+			if (!box) return;
+			var score = 0.5;
+			if (hit.categories && hit.categories.length && hit.categories[0].score != null) score = Number(hit.categories[0].score);
+			hits.push({ x: box.x, y: box.y, w: box.w, h: box.h, score: score });
+		});
+		return hits;
+	}
+
+	function scanFaceTiles(canvas) {
+		var hits = collectFaceHits(canvas, 0, 0, canvas.width, canvas.height);
+		var tw = Math.max(8, Math.round(canvas.width * 0.56));
+		var th = Math.max(8, Math.round(canvas.height * 0.56));
+		var xs = [0, Math.max(0, canvas.width - tw)];
+		var ys = [0, Math.max(0, canvas.height - th)];
+		var crop = document.createElement('canvas');
+		crop.width = tw;
+		crop.height = th;
+		var ctx = crop.getContext('2d');
+		var yi, xi, ox, oy;
+		for (yi = 0; yi < ys.length; yi++) {
+			for (xi = 0; xi < xs.length; xi++) {
+				ox = xs[xi];
+				oy = ys[yi];
+				if (ox === 0 && oy === 0 && tw === canvas.width && th === canvas.height) continue;
+				ctx.clearRect(0, 0, tw, th);
+				ctx.drawImage(canvas, ox, oy, tw, th, 0, 0, tw, th);
+				hits = hits.concat(collectFaceHits(crop, ox, oy, canvas.width, canvas.height));
+			}
+		}
+		return mergeFaceHits(hits);
 	}
 
 	function loadFaceDetector() {
@@ -2321,7 +2424,8 @@
 					return pack.vision.FaceDetector.createFromOptions(fileset, {
 						baseOptions: { modelAssetBuffer: pack.model, delegate: delegate },
 						runningMode: 'IMAGE',
-						minDetectionConfidence: 0.5
+						minDetectionConfidence: FACE_MIN_SCORE,
+						minSuppressionThreshold: 0.65
 					});
 				}
 				return create('GPU').catch(function () { return create('CPU'); });
@@ -2355,27 +2459,11 @@
 			reportAuto(0.94, '');
 			return waitFrame().then(function () {
 				if (token !== autoToken || !faceDetector) return null;
-				var found = faceDetector.detect(source);
-				var boxes = [];
-				var list = found && found.detections ? found.detections : [];
-				list.forEach(function (hit) {
-					var raw = hit.boundingBox;
-					if (!raw) return;
-					var rw = raw.width;
-					var rh = raw.height;
-					var rx = raw.originX;
-					var ry = raw.originY;
-					if (rw > 0 && rw <= 1 && rh > 0 && rh <= 1 && source.width > 2) {
-						rx *= source.width;
-						ry *= source.height;
-						rw *= source.width;
-						rh *= source.height;
-					}
-					if (rw < 2 || rh < 2) return;
-					var box = expandFaceBox({ originX: rx, originY: ry, width: rw, height: rh }, source.width, source.height);
-					if (box) boxes.push(box);
+				reportAuto(0.97, '');
+				var hits = scanFaceTiles(source);
+				return hits.map(function (hit) {
+					return { x: hit.x, y: hit.y, w: hit.w, h: hit.h };
 				});
-				return boxes;
 			});
 		}).then(function (boxes) {
 			if (token !== autoToken || !boxes) return;
@@ -2385,7 +2473,9 @@
 			requestRender();
 			commitSettings();
 			setStatus(boxes.length
-				? 'Faces covered. Click a box to remove it, or paint any face that was missed.'
+				? (boxes.length === 1
+					? '1 face covered. Click the box to remove it, or paint any face that was missed.'
+					: boxes.length + ' faces covered. Click a box to remove it, or paint any face that was missed.')
 				: 'No face was found. Paint any face that should be covered.');
 		}).catch(function () {
 			if (token !== autoToken) return;
