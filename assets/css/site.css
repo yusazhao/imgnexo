@@ -242,11 +242,15 @@ h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 	padding: .7rem;
 	background: #e2e8f0;
 	border-radius: 16px;
+	min-width: 0;
+	max-width: 100%;
 }
 .batch-item {
 	background: white;
 	border-radius: 14px;
 	padding: .7rem .75rem .6rem;
+	min-width: 0;
+	max-width: 100%;
 }
 .batch-meta {
 	display: flex;
@@ -286,13 +290,16 @@ button.batch-remove:hover { background: transparent; color: #b91c1c; }
 .batch-add:hover { background: white; border-color: var(--accent); color: var(--accent-dark); }
 .batch-pair {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 	gap: .55rem;
+	min-width: 0;
+	max-width: 100%;
 }
-.batch-pair figure { margin: 0; min-width: 0; }
+.batch-pair figure { margin: 0; min-width: 0; overflow: hidden; }
 .batch-pair canvas {
 	display: block;
 	width: 100%;
+	max-width: 100%;
 	height: auto;
 	border-radius: 10px;
 	background: #e2e8f0;
@@ -737,7 +744,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 }
 @media (max-width: 900px) {
 	.hero, .editor-layout, .steps, .step-cards, .feature-grid, .feature-grid.pair, .quick-links, .related, .footer-grid { grid-template-columns: 1fr; }
-	.editor-layout { gap: 0; }
+	.editor-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
 	.editor-stage { display: contents; }
 	.editor-layout > .controls { margin-top: .85rem; }
 	.editor.is-editing .stage {
