@@ -367,7 +367,7 @@
 
 	function maxViewportHeight() {
 		if (window.matchMedia('(max-width: 900px)').matches) return Math.round(window.innerHeight * 0.42);
-		return Math.round(Math.min(window.innerHeight * 0.7, 720));
+		return 0;
 	}
 
 	function updateZoomControls() {
@@ -390,10 +390,14 @@
 		var maxH = maxViewportHeight();
 		var narrow = window.matchMedia('(max-width: 900px)').matches;
 		var outerW = editorStage.clientWidth || editor.querySelector('.editor-layout').clientWidth;
-		if (outerW < 2 || maxH < 2 || !view.width || !view.height) return;
-		var fit = Math.min(outerW / view.width, maxH / view.height);
-		var frameW = Math.max(1, Math.min(outerW, Math.floor(view.width * fit)));
-		var frameH = Math.max(1, Math.min(maxH, Math.floor(view.height * fit)));
+		if (outerW < 2 || !view.width || !view.height) return;
+		var frameW = outerW;
+		var frameH = Math.max(1, Math.round(outerW * view.height / view.width));
+		if (maxH > 1 && frameH > maxH) {
+			frameH = maxH;
+			frameW = Math.max(1, Math.min(outerW, Math.round(maxH * view.width / view.height)));
+		}
+		var fills = frameW >= outerW - 1;
 		var dispW = Math.max(1, Math.floor(frameW * zoom));
 		var dispH = Math.max(1, Math.floor(frameH * zoom));
 		var hugged = zoom <= 1.001;
@@ -408,7 +412,7 @@
 			ratioX = (anchorX - canvasRect.left) / canvasRect.width;
 			ratioY = (anchorY - canvasRect.top) / canvasRect.height;
 		}
-		stage.style.width = narrow ? '100%' : (frameW + 'px');
+		stage.style.width = fills ? '100%' : (frameW + 'px');
 		stage.style.maxWidth = '100%';
 		stageViewport.style.width = '100%';
 		stageViewport.style.overflowX = hugged ? 'hidden' : 'auto';
@@ -416,8 +420,8 @@
 		stageViewport.style.height = dispH + 'px';
 		stageSizer.style.width = dispW + 'px';
 		stageSizer.style.height = dispH + 'px';
-		stageSizer.style.marginLeft = narrow ? 'auto' : '';
-		stageSizer.style.marginRight = narrow ? 'auto' : '';
+		stageSizer.style.marginLeft = fills ? '' : 'auto';
+		stageSizer.style.marginRight = fills ? '' : 'auto';
 		stageCanvas.style.width = dispW + 'px';
 		stageCanvas.style.height = dispH + 'px';
 		paintCanvasBox(view, dispW, dispH);
@@ -460,6 +464,39 @@
 		if (image && typeof image.close === 'function') image.close();
 	}
 
+	function exifOrientation(bytes, at, end) {
+		if (at + 14 > end || at + 14 > bytes.length) return 0;
+		if (bytes[at] !== 69 || bytes[at + 1] !== 120 || bytes[at + 2] !== 105 || bytes[at + 3] !== 102 || bytes[at + 4] !== 0 || bytes[at + 5] !== 0) return 0;
+		var tiff = at + 6;
+		var le = bytes[tiff] === 73;
+		if (!le && bytes[tiff] !== 77) return 0;
+		function u16(o) {
+			if (o + 1 >= end || o + 1 >= bytes.length) return 0;
+			return le ? (bytes[o] | (bytes[o + 1] << 8)) : ((bytes[o] << 8) | bytes[o + 1]);
+		}
+		function u32(o) {
+			if (o + 3 >= end || o + 3 >= bytes.length) return 0;
+			return le
+				? (bytes[o] | (bytes[o + 1] << 8) | (bytes[o + 2] << 16) | (bytes[o + 3] << 24)) >>> 0
+				: (((bytes[o] << 24) | (bytes[o + 1] << 16) | (bytes[o + 2] << 8) | bytes[o + 3]) >>> 0);
+		}
+		if (u16(tiff + 2) !== 42) return 0;
+		var ifd = tiff + u32(tiff + 4);
+		if (ifd + 2 > end) return 0;
+		var count = u16(ifd);
+		var p = ifd + 2;
+		var n;
+		for (n = 0; n < count && n < 64; n++) {
+			if (p + 12 > end) break;
+			if (u16(p) === 274) {
+				var value = u16(p + 8);
+				return value >= 1 && value <= 8 ? value : 0;
+			}
+			p += 12;
+		}
+		return 0;
+	}
+
 	function imageSizeFromHeader(bytes) {
 		if (bytes.length >= 24 && bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
 			return {
@@ -478,6 +515,7 @@
 		}
 		if (bytes.length < 4 || bytes[0] !== 255 || bytes[1] !== 216) return null;
 		var i = 2;
+		var orient = 1;
 		while (i < bytes.length - 8) {
 			if (bytes[i] !== 255) break;
 			while (i < bytes.length && bytes[i] === 255) i++;
@@ -488,8 +526,15 @@
 			if (i + 1 >= bytes.length) break;
 			var seg = (bytes[i] << 8) | bytes[i + 1];
 			if (seg < 2) break;
+			if (marker === 225 && seg > 8) {
+				var found = exifOrientation(bytes, i + 2, Math.min(bytes.length, i + seg));
+				if (found) orient = found;
+			}
 			if ((marker === 192 || marker === 193 || marker === 194) && i + 7 < bytes.length) {
-				return { width: (bytes[i + 5] << 8) | bytes[i + 6], height: (bytes[i + 3] << 8) | bytes[i + 4] };
+				var jpegW = (bytes[i + 5] << 8) | bytes[i + 6];
+				var jpegH = (bytes[i + 3] << 8) | bytes[i + 4];
+				if (orient >= 5) return { width: jpegH, height: jpegW };
+				return { width: jpegW, height: jpegH };
 			}
 			i += seg;
 		}
@@ -524,12 +569,9 @@
 			if (!bitmap) return decodeWithImage(file);
 			var opts;
 			if (dim && dim.width > 0 && dim.height > 0 && Math.max(dim.width, dim.height) > WORK_EDGE) {
-				var scale = WORK_EDGE / Math.max(dim.width, dim.height);
-				opts = {
-					resizeWidth: Math.max(1, Math.round(dim.width * scale)),
-					resizeHeight: Math.max(1, Math.round(dim.height * scale)),
-					resizeQuality: 'high'
-				};
+				opts = { resizeQuality: 'high', imageOrientation: 'from-image' };
+				if (dim.width >= dim.height) opts.resizeWidth = WORK_EDGE;
+				else opts.resizeHeight = WORK_EDGE;
 			}
 			var attempt = opts ? createImageBitmap(file, opts) : createImageBitmap(file);
 			return attempt.catch(function () { return decodeWithImage(file); });
