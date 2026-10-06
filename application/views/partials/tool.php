@@ -19,6 +19,16 @@ if ( ! function_exists('blur_effect_svg')) {
 		return isset($icons[$name]) ? $icons[$name] : '';
 	}
 }
+if ( ! function_exists('tune_icon')) {
+	function tune_icon($name) {
+		$icons = array(
+			'strength' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2" fill="currentColor"/><circle cx="8" cy="8" r="4.3" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".5"/><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".25"/></svg>',
+			'brush' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="4.2" cy="11.2" r="2.3" fill="currentColor" opacity=".35"/><circle cx="8.2" cy="8" r="1.8" fill="currentColor" opacity=".65"/><circle cx="11.6" cy="5" r="1.25" fill="currentColor"/></svg>',
+			'feather' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="3.5" width="6" height="9" rx="1" fill="currentColor"/><rect x="7.5" y="3.5" width="2.4" height="9" fill="currentColor" opacity=".45"/><rect x="9.9" y="3.5" width="2.2" height="9" fill="currentColor" opacity=".18"/></svg>',
+		);
+		return isset($icons[$name]) ? $icons[$name] : '';
+	}
+}
 ?>
 <section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?><?php if ( ! empty($tool['subject'])): ?> data-subject="1" data-object-model="<?= html_escape(asset_url('models/u2netp.onnx')) ?>"<?php endif; ?><?php if ( ! empty($tool['face'])): ?> data-face="1"<?php endif; ?><?php if ( ! empty($tool['text'])): ?> data-text="1"<?php endif; ?><?php if ( ! empty($tool['effects'])): ?> data-effects="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
 	<?php if ( ! empty($tool['batch'])): ?>
@@ -162,11 +172,11 @@ if ( ! function_exists('blur_effect_svg')) {
 				</div>
 				<button type="button" class="choice" id="scope-whole" hidden>Whole image</button>
 				<div class="control-group" id="brush-group">
-					<label for="brush">Brush size <output id="brush-out">72 px</output></label>
+					<label for="brush"><?= tune_icon('brush') ?>Brush size <output id="brush-out">72 px</output></label>
 					<input id="brush" type="range" min="8" max="140" value="72">
 				</div>
 				<div class="control-group" id="feather-group">
-					<label for="feather">Feather <output id="feather-out">16 px</output></label>
+					<label for="feather"><?= tune_icon('feather') ?>Feather <output id="feather-out">16 px</output></label>
 					<input id="feather" type="range" min="0" max="48" value="16">
 				</div>
 			</div>
@@ -181,7 +191,7 @@ if ( ! function_exists('blur_effect_svg')) {
 					<button type="button" class="choice effect-card" id="effect-color" aria-pressed="false" hidden><?= blur_effect_svg('color') ?><span>Color</span></button>
 				</div>
 				<div class="control-group">
-					<label for="intensity">Strength <output id="intensity-out">18 px</output></label>
+					<label for="intensity"><?= tune_icon('strength') ?>Strength <output id="intensity-out">18 px</output></label>
 					<input id="intensity" type="range" min="0" max="40" value="18">
 				</div>
 			</div>
@@ -202,11 +212,11 @@ if ( ! function_exists('blur_effect_svg')) {
 					<button type="button" class="choice effect-card" id="effect-bar" aria-pressed="false"><?= blur_effect_svg('bar') ?><span>Black bar</span></button>
 				</div>
 				<div class="control-group" id="strength-group">
-					<label for="intensity">Strength <output id="intensity-out">16 px</output></label>
+					<label for="intensity"><?= tune_icon('strength') ?>Strength <output id="intensity-out">16 px</output></label>
 					<input id="intensity" type="range" min="1" max="40" value="16">
 				</div>
 				<div class="control-group" id="brush-group">
-					<label for="brush">Brush size <output id="brush-out">46 px</output></label>
+					<label for="brush"><?= tune_icon('brush') ?>Brush size <output id="brush-out">46 px</output></label>
 					<input id="brush" type="range" min="8" max="140" value="46">
 				</div>
 				<p class="hint">Paint any face the finder missed.</p>
@@ -233,7 +243,7 @@ if ( ! function_exists('blur_effect_svg')) {
 					<button type="button" class="choice" id="redact-gray" aria-pressed="false">Gray</button>
 				</div>
 				<div class="control-group" id="strength-group">
-					<label for="intensity">Strength <output id="intensity-out">16 px</output></label>
+					<label for="intensity"><?= tune_icon('strength') ?>Strength <output id="intensity-out">16 px</output></label>
 					<input id="intensity" type="range" min="1" max="40" value="16">
 				</div>
 				<p class="hint">Redact is a solid block for passwords, card numbers, and IDs. Pixel and Blur can still show the shape of large type.</p>
@@ -245,7 +255,7 @@ if ( ! function_exists('blur_effect_svg')) {
 					<button type="button" class="choice effect-card" id="scope-brush" aria-pressed="false"><?= blur_effect_svg('brush') ?><span>Brush</span></button>
 				</div>
 				<div class="control-group" id="brush-group" hidden>
-					<label for="brush">Brush size <output id="brush-out">26 px</output></label>
+					<label for="brush"><?= tune_icon('brush') ?>Brush size <output id="brush-out">26 px</output></label>
 					<input id="brush" type="range" min="8" max="140" value="26">
 				</div>
 				<p class="hint">Drag a rectangle or paint handwriting and any writing the finder missed.</p>
@@ -272,7 +282,7 @@ if ( ! function_exists('blur_effect_svg')) {
 				</div>
 			</div>
 			<div class="control-group" id="strength-group" data-for="blur">
-				<label for="intensity"><span id="intensity-name">Strength</span> <output id="intensity-out">8 px</output></label>
+				<label for="intensity"><?= tune_icon('strength') ?><span id="intensity-name">Strength</span> <output id="intensity-out">8 px</output></label>
 				<input id="intensity" type="range" min="0" max="40" value="8">
 			</div>
 			<div class="control-group" id="motion-group" hidden>
@@ -281,11 +291,11 @@ if ( ! function_exists('blur_effect_svg')) {
 			</div>
 			<p class="hint" id="radial-hint" hidden>Drag the point on the photo to move the center.</p>
 			<div class="control-group" id="brush-group" hidden>
-				<label for="brush">Brush size <output id="brush-out">48 px</output></label>
+				<label for="brush"><?= tune_icon('brush') ?>Brush size <output id="brush-out">48 px</output></label>
 				<input id="brush" type="range" min="8" max="140" value="48">
 			</div>
 			<div class="control-group" id="feather-group" hidden>
-				<label for="feather">Feather <output id="feather-out">0 px</output></label>
+				<label for="feather"><?= tune_icon('feather') ?>Feather <output id="feather-out">0 px</output></label>
 				<input id="feather" type="range" min="0" max="48" value="0">
 			</div>
 			<details class="frame-switch frame-disclosure" id="frame-switch" hidden>
@@ -324,15 +334,15 @@ if ( ! function_exists('blur_effect_svg')) {
 				</div>
 			</div>
 			<div class="control-group" data-for="blur">
-				<label for="intensity">Strength <output id="intensity-out">0 px</output></label>
+				<label for="intensity"><?= tune_icon('strength') ?>Strength <output id="intensity-out">0 px</output></label>
 				<input id="intensity" type="range" min="0" max="40" value="0">
 			</div>
 			<div class="control-group" id="brush-group"<?php if (empty($tool['basic'])): ?> hidden<?php endif; ?>>
-				<label for="brush">Brush size <output id="brush-out">48 px</output></label>
+				<label for="brush"><?= tune_icon('brush') ?>Brush size <output id="brush-out">48 px</output></label>
 				<input id="brush" type="range" min="8" max="140" value="48">
 			</div>
 			<div class="control-group" id="feather-group"<?php if (empty($tool['basic'])): ?> hidden<?php endif; ?>>
-				<label for="feather">Feather <output id="feather-out">0 px</output></label>
+				<label for="feather"><?= tune_icon('feather') ?>Feather <output id="feather-out">0 px</output></label>
 				<input id="feather" type="range" min="0" max="48" value="0">
 			</div>
 			<?php endif; ?>
