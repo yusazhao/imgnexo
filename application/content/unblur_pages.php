@@ -128,20 +128,20 @@ return array(
 		'title' => 'Fix Motion Blur Photo Online | Recover Motion-Blurred Shots',
 		'description' => 'Try to restore motion blur photo. Repair photos ruined by moving subject or camera shake.',
 		'h1' => 'Fix Motion Blur Photo Online | Recover Motion-Blurred Shots',
-		'lead' => '<p>A motion blur photo smears detail along the direction of movement. The editor can add edge contrast, which sometimes makes a short streak easier to read. It cannot pull a running subject back into a still pose.</p>',
+		'lead' => '<p>A motion blur photo smears detail along one direction. Set Motion angle to that streak, then raise length until it matches the smear. A short streak can tighten. A running subject cannot be pulled back into a still pose.</p>',
 		'tool' => array(
 			'mode' => 'unblur',
 			'preset' => 'motion',
-			'note' => 'Motion blur needs a higher clarity setting to show any change, and it also creates halos sooner. Compare with the original before you keep the file.',
+			'note' => 'Horizontal (0°) fits traffic and a sideways dash. Vertical (90°) fits up-and-down shake. Diagonal (45°) fits a tilted shake. Length is how far the streak runs.',
 		),
 		'sections' => array(
 			array(
 				'h2' => 'What creates motion blur photo',
-				'html' => '<p>What creates motion blur photo streaks is time. The shutter stayed open while the camera or the subject moved. Camera shake smears the whole frame in one direction. A moving subject smears only that subject and leaves the background sharper. Those are different problems, and sharpening treats them as the same pixels.</p>',
+				'html' => '<p>What creates motion blur photo streaks is time. The shutter stayed open while the camera or the subject moved. Camera shake smears the whole frame in one direction. A moving subject smears only that subject and leaves the background sharper. Set Motion angle to the streak you want to tighten. The pass still uses one direction for the whole photo.</p>',
 			),
 			array(
 				'h2' => 'Limitations for repairing motion blur photo',
-				'html' => '<p>Repairing a motion blur photo with an unsharp mask does not know which way the motion went. Strong settings outline the streak instead of removing it. If the subject is unrecognizable, stop. The <a href="{{path:blog/unblur-motion-blur-photo}}">motion blur article</a> lists what to change on the next shot. General sharpening lives on <a href="{{path:unblur-image}}">unblur image</a>.</p>',
+				'html' => '<p>The repair follows the angle and length you set. It does not find the streak by itself. Strong settings outline the smear instead of removing it. A long streak still cannot become a sharp still, because that position was never stored. The <a href="{{path:blog/unblur-motion-blur-photo}}">motion blur article</a> lists what to change on the next shot. Soft focus that is not a streak belongs on <a href="{{path:unblur-image}}">unblur image</a>.</p>',
 			),
 		),
 		'faqs' => array(

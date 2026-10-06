@@ -23,6 +23,8 @@ if ( ! function_exists('tune_icon')) {
 	function tune_icon($name) {
 		$icons = array(
 			'strength' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2" fill="currentColor"/><circle cx="8" cy="8" r="4.3" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".5"/><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".25"/></svg>',
+			'angle' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".35"/><path d="M8 8 L12.2 5.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M10.6 4.6 L12.5 5.1 L11.5 6.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+			'length' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5.2h12M3.2 8h9.6M4.6 10.8h6.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
 			'brush' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="4.2" cy="11.2" r="2.3" fill="currentColor" opacity=".35"/><circle cx="8.2" cy="8" r="1.8" fill="currentColor" opacity=".65"/><circle cx="11.6" cy="5" r="1.25" fill="currentColor"/></svg>',
 			'feather' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="3.5" width="6" height="9" rx="1" fill="currentColor"/><rect x="7.5" y="3.5" width="2.4" height="9" fill="currentColor" opacity=".45"/><rect x="9.9" y="3.5" width="2.2" height="9" fill="currentColor" opacity=".18"/></svg>',
 			'single' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="3" width="10" height="10" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
@@ -62,6 +64,19 @@ if ( ! function_exists('tune_icon')) {
 						<div class="stage-canvas" id="stage-canvas">
 							<canvas id="view" class="view"></canvas>
 							<canvas id="ink" class="ink" aria-hidden="true"></canvas>
+							<?php if ($mode === 'unblur' && $preset === 'motion'): ?>
+							<div class="dir-overlay" id="dir-overlay" hidden>
+								<svg viewBox="0 0 120 120" aria-hidden="true">
+									<circle cx="60" cy="60" r="46" fill="rgba(255,255,255,.82)" stroke="#2563eb" stroke-width="2"/>
+									<circle cx="60" cy="60" r="34" fill="none" stroke="#93c5fd" stroke-width="1.5"/>
+									<path d="M60 18v8M60 94v8M18 60h8M94 60h8" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+									<g id="dir-needle">
+										<path d="M28 60h58" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+										<path d="M74 50l16 10-16 10z" fill="#2563eb"/>
+									</g>
+								</svg>
+							</div>
+							<?php endif; ?>
 							<div class="crop-layer" id="crop-layer" hidden>
 								<div class="crop-shade" id="crop-top"></div>
 								<div class="crop-shade" id="crop-left"></div>
@@ -334,18 +349,41 @@ if ( ! function_exists('tune_icon')) {
 				<input id="feather" type="range" min="0" max="48" value="0">
 			</div>
 			<?php endif; ?>
-			<div class="control-group" data-for="unblur">
+			<?php if ($mode === 'unblur' && $preset === 'motion'): ?>
+			<div class="control-group">
+				<span class="control-label" id="angle-preset-label">Quick angle presets</span>
+				<div class="choice-row angle-presets" role="group" aria-labelledby="angle-preset-label">
+					<button type="button" class="choice is-on" data-angle="0" aria-pressed="true">Horizontal (0°)</button>
+					<button type="button" class="choice" data-angle="90" aria-pressed="false">Vertical (90°)</button>
+					<button type="button" class="choice" data-angle="45" aria-pressed="false">Diagonal (45°)</button>
+				</div>
+			</div>
+			<div class="control-group">
+				<label for="deblur-angle"><?= tune_icon('angle') ?>Motion angle <output id="deblur-angle-out">0°</output></label>
+				<input id="deblur-angle" type="range" min="0" max="360" step="1" value="0">
+			</div>
+			<div class="control-group">
+				<label for="deblur-length"><?= tune_icon('length') ?>Motion length <output id="deblur-length-out">24 px</output></label>
+				<input id="deblur-length" type="range" min="0" max="50" step="1" value="24">
+			</div>
+			<div class="control-group">
+				<label for="deblur-strength"><?= tune_icon('strength') ?>Sharpening strength <output id="deblur-strength-out">70</output></label>
+				<input id="deblur-strength" type="range" min="0" max="100" step="1" value="70">
+			</div>
+			<?php elseif ($mode === 'unblur'): ?>
+			<div class="control-group">
 				<label for="sharpen">Clarity <output id="sharpen-out"></output></label>
 				<input id="sharpen" type="range" min="0" max="250" value="110">
 			</div>
-			<div class="control-group" data-for="unblur">
+			<div class="control-group">
 				<label for="radius">Sharpen radius <output id="radius-out"></output></label>
 				<input id="radius" type="range" min="1" max="8" step="0.1" value="1.4">
 			</div>
-			<div class="control-group" data-for="unblur">
+			<div class="control-group">
 				<label for="contrast">Contrast <output id="contrast-out"></output></label>
 				<input id="contrast" type="range" min="0" max="40" value="8">
 			</div>
+			<?php endif; ?>
 			</div>
 			<div class="button-row">
 				<?php if ($mode === 'unblur'): ?>

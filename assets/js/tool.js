@@ -13,7 +13,7 @@
 		effect: { effect: 'gaussian', gaussian: 8, pixel: 10, scope: 'whole', brush: 48 },
 		sharpen: { sharpen: 110, radius: 1.4, contrast: 8 },
 		iphone: { sharpen: 120, radius: 1.3, contrast: 8 },
-		motion: { sharpen: 180, radius: 2.4, contrast: 6 }
+		motion: { angle: 0, length: 24, strength: 70 }
 	};
 
 	var fileInput = document.getElementById('file');
@@ -60,6 +60,16 @@
 	var sharpen = document.getElementById('sharpen');
 	var radius = document.getElementById('radius');
 	var contrast = document.getElementById('contrast');
+	var motionDeblur = presetName === 'motion';
+	var deblurAngleInput = document.getElementById('deblur-angle');
+	var deblurLengthInput = document.getElementById('deblur-length');
+	var deblurStrengthInput = document.getElementById('deblur-strength');
+	var dirOverlay = document.getElementById('dir-overlay');
+	var dirNeedle = document.getElementById('dir-needle');
+	var deblurAngle = 0;
+	var deblurLength = 24;
+	var deblurStrength = 70;
+	var dirTimer = 0;
 	var downloadBtn = document.getElementById('download');
 	var originalBtn = document.getElementById('original');
 	var replaceBtn = document.getElementById('replace');
@@ -203,7 +213,11 @@
 				});
 				if (scopeWholeBtn) scopeWholeBtn.hidden = true;
 			}
-		} else {
+		} else if (motionDeblur) {
+			deblurAngle = preset.angle;
+			deblurLength = preset.length;
+			deblurStrength = preset.strength;
+		} else if (sharpen) {
 			sharpen.value = preset.sharpen;
 			radius.value = preset.radius;
 			contrast.value = preset.contrast;
@@ -215,6 +229,24 @@
 		if (effectName === 'bar' || effectName === 'gray') return false;
 		var amount = Number(strengths[effectName] || 0);
 		return effectName === 'pixel' ? amount <= 1 : amount <= 0;
+	}
+
+	function showDirection() {
+		if (!dirOverlay || !dirNeedle) return;
+		dirNeedle.setAttribute('transform', 'rotate(' + deblurAngle + ' 60 60)');
+		dirOverlay.hidden = false;
+		clearTimeout(dirTimer);
+		dirTimer = setTimeout(function () {
+			dirOverlay.hidden = true;
+		}, 1200);
+	}
+
+	function syncAnglePresets() {
+		Array.prototype.forEach.call(editor.querySelectorAll('[data-angle]'), function (button) {
+			var on = Number(button.getAttribute('data-angle')) === deblurAngle;
+			button.classList.toggle('is-on', on);
+			button.setAttribute('aria-pressed', on ? 'true' : 'false');
+		});
 	}
 
 	function syncLabels() {
@@ -233,9 +265,20 @@
 		}
 		document.getElementById('brush-out').textContent = brush.value + ' px';
 		document.getElementById('zoom-out').textContent = Math.round(zoom * 100) + '%';
-		document.getElementById('sharpen-out').textContent = (Number(sharpen.value) / 100).toFixed(2);
-		document.getElementById('radius-out').textContent = Number(radius.value).toFixed(1) + ' px';
-		document.getElementById('contrast-out').textContent = contrast.value;
+		if (sharpen) {
+			document.getElementById('sharpen-out').textContent = (Number(sharpen.value) / 100).toFixed(2);
+			document.getElementById('radius-out').textContent = Number(radius.value).toFixed(1) + ' px';
+			document.getElementById('contrast-out').textContent = contrast.value;
+		}
+		if (deblurAngleInput) {
+			deblurAngleInput.value = String(deblurAngle);
+			deblurLengthInput.value = String(deblurLength);
+			deblurStrengthInput.value = String(deblurStrength);
+			document.getElementById('deblur-angle-out').textContent = deblurAngle + '°';
+			document.getElementById('deblur-length-out').textContent = deblurLength + ' px';
+			document.getElementById('deblur-strength-out').textContent = String(deblurStrength);
+			syncAnglePresets();
+		}
 		if (feather) document.getElementById('feather-out').textContent = feather.value + ' px';
 		if (subjectAutoBtn) setChoice(subjectAutoBtn, subjectAuto);
 		syncProtectChoices();
@@ -623,6 +666,98 @@
 		});
 	}
 
+	function drawFocusSample(ctx, w, h) {
+		var sky = ctx.createLinearGradient(0, 0, 0, h);
+		sky.addColorStop(0, '#9ec9e8');
+		sky.addColorStop(1, '#d7ecf8');
+		ctx.fillStyle = sky;
+		ctx.fillRect(0, 0, w, h);
+		ctx.fillStyle = '#8a9bb0';
+		ctx.fillRect(0, h * 0.58, w, h * 0.42);
+		ctx.fillStyle = '#d8dee6';
+		ctx.fillRect(w * 0.06, h * 0.18, w * 0.22, h * 0.42);
+		ctx.fillStyle = '#b7c3d1';
+		ctx.fillRect(w * 0.72, h * 0.26, w * 0.2, h * 0.34);
+		ctx.fillStyle = '#f8fafc';
+		var col, row;
+		for (col = 0; col < 4; col++) {
+			for (row = 0; row < 6; row++) {
+				ctx.fillRect(w * 0.09 + col * w * 0.045, h * 0.22 + row * h * 0.055, w * 0.028, h * 0.032);
+			}
+		}
+		ctx.fillStyle = '#1d4ed8';
+		ctx.fillRect(w * 0.28, h * 0.46, w * 0.4, h * 0.2);
+		ctx.fillStyle = '#dbeafe';
+		ctx.fillRect(w * 0.32, h * 0.5, w * 0.1, h * 0.08);
+		ctx.fillRect(w * 0.44, h * 0.5, w * 0.1, h * 0.08);
+		ctx.fillRect(w * 0.56, h * 0.5, w * 0.08, h * 0.08);
+		ctx.fillStyle = '#0f172a';
+		ctx.beginPath();
+		ctx.arc(w * 0.34, h * 0.68, h * 0.055, 0, Math.PI * 2);
+		ctx.arc(w * 0.6, h * 0.68, h * 0.055, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.fillStyle = '#e2e8f0';
+		ctx.font = 'bold ' + Math.round(h * 0.045) + 'px Georgia, serif';
+		ctx.fillText('CITY 42', w * 0.4, h * 0.44);
+	}
+
+	function drawStreakSample(ctx, w, h) {
+		var sky = ctx.createLinearGradient(0, 0, 0, h);
+		sky.addColorStop(0, '#070b16');
+		sky.addColorStop(1, '#1e293b');
+		ctx.fillStyle = sky;
+		ctx.fillRect(0, 0, w, h);
+		ctx.fillStyle = '#111827';
+		ctx.fillRect(0, h * 0.62, w, h * 0.38);
+		ctx.fillStyle = '#334155';
+		ctx.fillRect(w * 0.08, h * 0.22, w * 0.16, h * 0.4);
+		ctx.fillRect(w * 0.78, h * 0.28, w * 0.14, h * 0.34);
+		ctx.fillStyle = '#fbbf24';
+		ctx.fillRect(w * 0.1, h * 0.2, w * 0.02, h * 0.04);
+		ctx.fillRect(w * 0.8, h * 0.26, w * 0.02, h * 0.04);
+		ctx.strokeStyle = '#f8fafc';
+		ctx.lineWidth = Math.max(2, h * 0.008);
+		ctx.beginPath();
+		ctx.moveTo(0, h * 0.72);
+		ctx.lineTo(w, h * 0.72);
+		ctx.stroke();
+		ctx.fillStyle = '#dc2626';
+		ctx.fillRect(w * 0.4, h * 0.48, w * 0.22, h * 0.12);
+		ctx.fillStyle = '#0f172a';
+		ctx.fillRect(w * 0.44, h * 0.42, w * 0.1, h * 0.08);
+		ctx.fillStyle = '#f8fafc';
+		ctx.beginPath();
+		ctx.arc(w * 0.43, h * 0.52, h * 0.018, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.fillStyle = '#facc15';
+		ctx.beginPath();
+		ctx.arc(w * 0.6, h * 0.52, h * 0.018, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.fillStyle = '#ef4444';
+		ctx.fillRect(w * 0.41, h * 0.56, w * 0.02, h * 0.025);
+		ctx.fillRect(w * 0.59, h * 0.56, w * 0.02, h * 0.025);
+	}
+
+	function smearCanvas(scene, angleDeg, lengthPx) {
+		var w = scene.width;
+		var h = scene.height;
+		var out = document.createElement('canvas');
+		sizeTo(out, w, h);
+		var ctx = out.getContext('2d');
+		var steps = 9;
+		var rad = angleDeg * Math.PI / 180;
+		var dx = Math.cos(rad);
+		var dy = Math.sin(rad);
+		var i;
+		ctx.globalAlpha = 1 / steps;
+		for (i = 0; i < steps; i++) {
+			var t = (i / (steps - 1) - 0.5) * lengthPx;
+			ctx.drawImage(scene, dx * t, dy * t);
+		}
+		ctx.globalAlpha = 1;
+		return out;
+	}
+
 	function drawSampleScene(ctx, w, h) {
 		var sky = ctx.createLinearGradient(0, 0, 0, h);
 		sky.addColorStop(0, '#8ec6d8');
@@ -647,8 +782,13 @@
 		var h = 640;
 		var scene = document.createElement('canvas');
 		sizeTo(scene, w, h);
-		drawSampleScene(scene.getContext('2d'), w, h);
-		if (mode === 'unblur') {
+		var ctx = scene.getContext('2d');
+		if (motionDeblur) drawStreakSample(ctx, w, h);
+		else if (presetName === 'sharpen') drawFocusSample(ctx, w, h);
+		else drawSampleScene(ctx, w, h);
+		if (motionDeblur) {
+			scene = smearCanvas(scene, 0, 26);
+		} else if (mode === 'unblur') {
 			var soft = document.createElement('canvas');
 			sizeTo(soft, w, h);
 			var sctx = soft.getContext('2d');
@@ -658,9 +798,12 @@
 			scene = soft;
 		}
 		setSourceFromImage(scene);
-		setStatus(mode === 'unblur'
-			? 'Sample loaded. Raise clarity and compare it with the original.'
-			: 'Sample loaded. Blur the whole image, or paint over the face and text.');
+		if (motionDeblur) showDirection();
+		setStatus(motionDeblur
+			? 'Sample loaded. Match Motion angle to the light streaks, then compare with the original.'
+			: mode === 'unblur'
+				? 'Sample loaded. Raise clarity and compare it with the original.'
+				: 'Sample loaded. Blur the whole image, or paint over the face and text.');
 	}
 
 	function clearMask() {
@@ -696,6 +839,13 @@
 				settings.autoMask = autoHasPixels ? 1 : 0;
 			}
 			return settings;
+		}
+		if (motionDeblur) {
+			return {
+				deblurAngle: deblurAngle,
+				deblurLength: deblurLength,
+				deblurStrength: deblurStrength
+			};
 		}
 		return {
 			sharpen: sharpen.value,
@@ -757,7 +907,11 @@
 				}
 				placeTextBoxes();
 			}
-		} else {
+		} else if (motionDeblur) {
+			if (settings.deblurAngle != null) deblurAngle = Number(settings.deblurAngle);
+			if (settings.deblurLength != null) deblurLength = Number(settings.deblurLength);
+			if (settings.deblurStrength != null) deblurStrength = Number(settings.deblurStrength);
+		} else if (sharpen) {
 			sharpen.value = settings.sharpen;
 			radius.value = settings.radius;
 			contrast.value = settings.contrast;
@@ -968,6 +1122,7 @@
 
 	function effectCacheKey() {
 		if (mode === 'unblur') {
+			if (motionDeblur) return ['motion-deblur', deblurAngle, deblurLength, deblurStrength, source.width, source.height].join('|');
 			return ['unblur', sharpen.value, radius.value, contrast.value, source.width, source.height].join('|');
 		}
 		return ['blur', effectName, strengths.gaussian, strengths.pixel, strengths.noise, strengths.motion, strengths.radial, strengths.color, motionAngle, radialX, radialY, source.width, source.height].join('|');
@@ -1276,6 +1431,51 @@
 		});
 	}
 
+	function sampleIndex(w, h, x, y) {
+		var ix = x < 0 ? 0 : (x >= w ? w - 1 : x | 0);
+		var iy = y < 0 ? 0 : (y >= h ? h - 1 : y | 0);
+		return (iy * w + ix) * 4;
+	}
+
+	function paintMotionDeblur(ctx, w, h) {
+		var srcData = source.getContext('2d').getImageData(0, 0, w, h);
+		var s = srcData.data;
+		var out = ctx.createImageData(w, h);
+		var o = out.data;
+		var amount = deblurStrength / 50;
+		var len = deblurLength;
+		if (amount <= 0 || len < 1) {
+			o.set(s);
+			ctx.putImageData(out, 0, 0);
+			return;
+		}
+		var rad = deblurAngle * Math.PI / 180;
+		var dx = Math.cos(rad);
+		var dy = Math.sin(rad);
+		var steps = 3;
+		var y, x, k, t, acc, n, dist, plus, minus, idx, v;
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				idx = (y * w + x) * 4;
+				for (k = 0; k < 3; k++) {
+					acc = 0;
+					n = 0;
+					for (t = 1; t <= steps; t++) {
+						dist = (len * t) / steps / 2;
+						plus = sampleIndex(w, h, x + dx * dist, y + dy * dist);
+						minus = sampleIndex(w, h, x - dx * dist, y - dy * dist);
+						acc += s[plus + k] + s[minus + k];
+						n += 2;
+					}
+					v = s[idx + k] + amount * (s[idx + k] - acc / n);
+					o[idx + k] = v < 0 ? 0 : (v > 255 ? 255 : v);
+				}
+				o[idx + 3] = s[idx + 3];
+			}
+		}
+		ctx.putImageData(out, 0, 0);
+	}
+
 	function buildEffect() {
 		var key = effectCacheKey();
 		if (key === effectKey) return;
@@ -1287,6 +1487,10 @@
 		ctx.filter = 'none';
 
 		if (mode === 'unblur') {
+			if (motionDeblur) {
+				paintMotionDeblur(ctx, w, h);
+				return;
+			}
 			var amount = Number(sharpen.value) / 100;
 			var rad = Number(radius.value);
 			var c = Number(contrast.value);
@@ -1749,15 +1953,30 @@
 	resetBtn.addEventListener('click', restoreImage);
 	if (removeBtn) removeBtn.addEventListener('click', removeImage);
 
-	[intensity, brush, sharpen, radius, contrast, feather, motionAngleInput].forEach(function (input) {
+	[intensity, brush, sharpen, radius, contrast, feather, motionAngleInput, deblurAngleInput, deblurLengthInput, deblurStrengthInput].forEach(function (input) {
 		if (!input) return;
 		input.addEventListener('input', function () {
 			if (input === intensity) strengths[effectName] = Number(intensity.value);
 			if (input === motionAngleInput) motionAngle = Number(motionAngleInput.value);
+			if (input === deblurAngleInput) {
+				deblurAngle = Number(deblurAngleInput.value);
+				showDirection();
+			}
+			if (input === deblurLengthInput) deblurLength = Number(deblurLengthInput.value);
+			if (input === deblurStrengthInput) deblurStrength = Number(deblurStrengthInput.value);
 			syncLabels();
 			requestRender();
 		});
 		input.addEventListener('change', commitSettings);
+	});
+	Array.prototype.forEach.call(editor.querySelectorAll('[data-angle]'), function (button) {
+		button.addEventListener('click', function () {
+			deblurAngle = Number(button.getAttribute('data-angle'));
+			showDirection();
+			syncLabels();
+			requestRender();
+			commitSettings();
+		});
 	});
 
 	function chooseEffect(name) {
