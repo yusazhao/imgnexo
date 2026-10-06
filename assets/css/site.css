@@ -351,6 +351,7 @@ button.choice:disabled { opacity: .45; cursor: default; }
 .stage.is-panning .view,
 .stage.is-panning .ink { cursor: grabbing; }
 .hint { margin: .15rem 0 0; color: var(--muted); font-size: .82rem; }
+.batch-scope-note { margin: 0; color: #334155; font-size: .92rem; font-weight: 600; }
 
 .frame-switch { margin-top: .75rem; }
 .frame-row { display: flex; flex-wrap: wrap; gap: .4rem; }
@@ -760,7 +761,6 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 		background: var(--card);
 		border-bottom: 1px solid var(--line);
 	}
-	.choice-row.scope-cards.batch-whole-only { grid-template-columns: 1fr; max-width: 11rem; }
 	.steps, .step-cards { gap: .35rem; margin-top: .4rem; }
 	.steps li, .step-cards li {
 		display: block;

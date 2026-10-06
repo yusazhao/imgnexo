@@ -336,6 +336,7 @@ if ( ! function_exists('tune_icon')) {
 					<button type="button" class="choice effect-card" id="scope-lasso" aria-pressed="false" title="Freehand lasso"><?= blur_effect_svg('lasso') ?><span>Lasso</span></button>
 				</div>
 			</div>
+			<p class="batch-scope-note" id="batch-scope-note" hidden>Batch blurs each whole image.</p>
 			<div class="control-group" data-for="blur">
 				<label for="intensity"><?= tune_icon('strength') ?>Strength <output id="intensity-out">0 px</output></label>
 				<input id="intensity" type="range" min="0" max="40" value="0">
