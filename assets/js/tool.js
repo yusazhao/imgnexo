@@ -136,6 +136,7 @@
 	var faceBoxes = [];
 	var faceBusy = false;
 	var faceDetector = null;
+	var faceDetectorNear = null;
 	var faceDetectorPromise = null;
 	var faceLayer = document.getElementById('face-layer');
 	var blurFacesBtn = document.getElementById('blur-faces');
@@ -2317,9 +2318,9 @@
 			cy = (points[0].y + points[1].y) / 2;
 		}
 		var side = Math.max(fallback.w, fallback.h);
-		var w = side * 1.02;
-		var h = side * 1.34;
-		return clampFaceBox(cx - w / 2, cy - h * 0.4, w, h, width, height);
+		var w = side;
+		var h = side * 1.46;
+		return clampFaceBox(cx - w / 2, cy - h * 0.38, w, h, width, height);
 	}
 
 	function faceIou(a, b) {
@@ -2334,13 +2335,24 @@
 		return inter / (a.w * a.h + b.w * b.h - inter);
 	}
 
+	function faceSame(a, b) {
+		if (faceIou(a, b) > 0.32) return true;
+		var ax = a.x + a.w / 2;
+		var ay = a.y + a.h / 2;
+		var bx = b.x + b.w / 2;
+		var by = b.y + b.h / 2;
+		var dist = Math.sqrt((ax - bx) * (ax - bx) + (ay - by) * (ay - by));
+		var scale = (Math.max(a.w, a.h) + Math.max(b.w, b.h)) / 2;
+		return dist < scale * 0.42;
+	}
+
 	function mergeFaceHits(items) {
 		items.sort(function (a, b) { return b.score - a.score; });
 		var kept = [];
 		items.forEach(function (item) {
 			var same = false;
 			for (var i = 0; i < kept.length; i++) {
-				if (faceIou(kept[i], item) > 0.4) {
+				if (faceSame(kept[i], item)) {
 					same = true;
 					break;
 				}
@@ -2350,8 +2362,8 @@
 		return kept;
 	}
 
-	function collectFaceHits(target, ox, oy, imgW, imgH) {
-		var found = faceDetector.detect(target);
+	function collectFaceHits(detector, target, ox, oy, imgW, imgH) {
+		var found = detector.detect(target);
 		var list = found && found.detections ? found.detections : [];
 		var hits = [];
 		list.forEach(function (hit) {
@@ -2367,7 +2379,8 @@
 	}
 
 	function scanFaceTiles(canvas) {
-		var hits = collectFaceHits(canvas, 0, 0, canvas.width, canvas.height);
+		var hits = collectFaceHits(faceDetector, canvas, 0, 0, canvas.width, canvas.height);
+		if (faceDetectorNear) hits = hits.concat(collectFaceHits(faceDetectorNear, canvas, 0, 0, canvas.width, canvas.height));
 		var tw = Math.max(8, Math.round(canvas.width * 0.56));
 		var th = Math.max(8, Math.round(canvas.height * 0.56));
 		var xs = [0, Math.max(0, canvas.width - tw)];
@@ -2384,7 +2397,7 @@
 				if (ox === 0 && oy === 0 && tw === canvas.width && th === canvas.height) continue;
 				ctx.clearRect(0, 0, tw, th);
 				ctx.drawImage(canvas, ox, oy, tw, th, 0, 0, tw, th);
-				hits = hits.concat(collectFaceHits(crop, ox, oy, canvas.width, canvas.height));
+				hits = hits.concat(collectFaceHits(faceDetector, crop, ox, oy, canvas.width, canvas.height));
 			}
 		}
 		return mergeFaceHits(hits);
@@ -2394,6 +2407,7 @@
 		var visionUrl = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/+esm';
 		var wasmBase = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm';
 		var modelUrl = 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_full_range/float16/latest/blaze_face_full_range.tflite';
+		var nearUrl = 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite';
 		reportAuto(0.02, '');
 		return trackFetch(visionUrl, function (ratio) {
 			reportAuto(0.02 + ratio * 0.08, '');
@@ -2411,24 +2425,37 @@
 				}).then(function () {
 					reportAuto(0.62, '');
 					return trackFetch(modelUrl, function (ratio) {
-						reportAuto(0.62 + ratio * 0.26, '');
+						reportAuto(0.62 + ratio * 0.18, '');
 					}).then(function (modelBuffer) {
-						return { vision: vision, model: new Uint8Array(modelBuffer) };
+						return trackFetch(nearUrl, function (ratio) {
+							reportAuto(0.80 + ratio * 0.08, '');
+						}).then(function (nearBuffer) {
+							return { vision: vision, model: new Uint8Array(modelBuffer), near: new Uint8Array(nearBuffer) };
+						});
 					});
 				});
 			});
 		}).then(function (pack) {
 			reportAuto(0.90, '');
 			return pack.vision.FilesetResolver.forVisionTasks(wasmBase).then(function (fileset) {
-				function create(delegate) {
+				function create(buffer, delegate) {
 					return pack.vision.FaceDetector.createFromOptions(fileset, {
-						baseOptions: { modelAssetBuffer: pack.model, delegate: delegate },
+						baseOptions: { modelAssetBuffer: buffer, delegate: delegate },
 						runningMode: 'IMAGE',
 						minDetectionConfidence: FACE_MIN_SCORE,
 						minSuppressionThreshold: 0.65
 					});
 				}
-				return create('GPU').catch(function () { return create('CPU'); });
+				function open(buffer) {
+					return create(buffer, 'GPU').catch(function () { return create(buffer, 'CPU'); });
+				}
+				return open(pack.model).then(function (full) {
+					return open(pack.near).then(function (near) {
+						return { full: full, near: near };
+					}, function () {
+						return { full: full, near: null };
+					});
+				});
 			});
 		});
 	}
@@ -2437,8 +2464,9 @@
 		if (faceDetector) return Promise.resolve(faceDetector);
 		if (!faceDetectorPromise) {
 			faceDetectorPromise = loadFaceDetector().then(function (created) {
-				faceDetector = created;
-				return created;
+				faceDetector = created.full;
+				faceDetectorNear = created.near;
+				return created.full;
 			}, function (err) {
 				faceDetectorPromise = null;
 				throw err;
