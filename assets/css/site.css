@@ -273,6 +273,16 @@ button.batch-remove {
 	font-weight: 700;
 }
 button.batch-remove:hover { background: transparent; color: #b91c1c; }
+.batch-add {
+	display: block;
+	width: 100%;
+	margin-top: .75rem;
+	border: 1.5px dashed #93c5fd;
+	background: #f8fbff;
+	color: var(--accent);
+	font-weight: 700;
+}
+.batch-add:hover { background: white; border-color: var(--accent); color: var(--accent-dark); }
 .batch-pair {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

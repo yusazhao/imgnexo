@@ -37,6 +37,9 @@ if ( ! function_exists('blur_effect_svg')) {
 				<span class="select-btn">Select Image</span>
 			</label>
 			<div class="batch" id="batch" hidden></div>
+			<?php if ( ! empty($tool['batch'])): ?>
+			<button type="button" class="batch-add" id="batch-add" hidden>Add images</button>
+			<?php endif; ?>
 			<div class="stage" id="stage" hidden>
 				<div class="stage-viewport" id="stage-viewport">
 					<div class="stage-sizer">
@@ -90,8 +93,15 @@ if ( ! function_exists('blur_effect_svg')) {
 				<button type="button" id="redo" class="icon-btn" disabled title="Redo (Ctrl+Y)" aria-label="Redo">
 					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H12"/></svg>
 				</button>
-				<button type="button" id="reset-image" disabled>Reset</button>
-				<button type="button" id="replace">Replace</button>
+				<button type="button" id="reset-image" class="icon-btn" disabled title="Reset" aria-label="Reset">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+				</button>
+				<button type="button" id="replace" class="icon-btn" title="Replace" aria-label="Replace">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+				</button>
+				<button type="button" id="remove-image" class="icon-btn" title="Delete" aria-label="Delete">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+				</button>
 			</div>
 			<?php if (empty($tool['effects'])): ?>
 			<div class="frame-switch" id="frame-switch" hidden>
@@ -340,7 +350,6 @@ if ( ! function_exists('blur_effect_svg')) {
 				<button type="button" id="sample">Load sample</button>
 				<?php endif; ?>
 				<?php if ( ! empty($tool['batch'])): ?>
-				<button type="button" id="batch-add" hidden>Add images</button>
 				<button type="button" id="batch-clear" hidden>Clear</button>
 				<?php endif; ?>
 				<button type="button" id="original" disabled>Hold for original</button>

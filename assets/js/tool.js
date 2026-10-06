@@ -64,6 +64,7 @@
 	var downloadBtn = document.getElementById('download');
 	var originalBtn = document.getElementById('original');
 	var replaceBtn = document.getElementById('replace');
+	var removeBtn = document.getElementById('remove-image');
 	var sampleBtn = document.getElementById('sample');
 	var undoBtn = document.getElementById('undo');
 	var redoBtn = document.getElementById('redo');
@@ -289,11 +290,14 @@
 		}
 		if (dropTitle) dropTitle.textContent = batch ? 'Click or drag images here' : 'Click or drag an image here';
 		if (selectBtn) selectBtn.textContent = batch ? 'Select images' : 'Select image';
-		replaceBtn.textContent = 'Replace';
 		downloadBtn.textContent = batch ? 'Download all' : 'Download';
 		placeCrop();
 		syncAutoButton();
-		if (batchAddBtn) batchAddBtn.hidden = !(batch && batchItems.length);
+		if (batchAddBtn) {
+			var roomLeft = batchLimit() - batchItems.length;
+			batchAddBtn.hidden = !(batch && batchItems.length && roomLeft > 0);
+			batchAddBtn.disabled = roomLeft <= 0;
+		}
 		if (batchClearBtn) batchClearBtn.hidden = !(batch && batchItems.length);
 		if (batch) {
 			replaceBtn.hidden = true;
@@ -307,6 +311,18 @@
 
 	function setStatus(message) {
 		status.textContent = message;
+	}
+
+	function idleStatus() {
+		setStatus(subjectMode
+			? 'Click or drag an image here. Then choose what to keep sharp and blur the background.'
+			: faceMode
+				? 'Click or drag an image here. Then blur the faces.'
+				: textMode
+					? 'Click or drag an image here. Then blur the text.'
+					: presetName === 'soft'
+						? 'Click or drag an image here. Brush is ready. Raise Strength, then paint what should be harder to read.'
+						: 'Click or drag an image here. Editing stays in this browser.');
 	}
 
 	function sizeTo(canvas, w, h) {
@@ -1518,6 +1534,16 @@
 		updateHistoryButtons();
 	}
 
+	function removeImage() {
+		if (!ready || painting) return;
+		loadToken++;
+		clearSingleWork();
+		dropzone.hidden = false;
+		if (batchBox) batchBox.hidden = true;
+		fileInput.value = '';
+		idleStatus();
+	}
+
 	function batchStatus() {
 		var count = batchItems.length;
 		setStatus(count + (count === 1 ? ' image' : ' images') + '. Before and After use one strength, matched to the largest photo.');
@@ -1536,6 +1562,7 @@
 			return;
 		}
 		batchStatus();
+		syncJob();
 	}
 
 	function batchPane(canvas, label) {
@@ -1721,6 +1748,7 @@
 	undoBtn.addEventListener('click', undo);
 	redoBtn.addEventListener('click', redo);
 	resetBtn.addEventListener('click', restoreImage);
+	if (removeBtn) removeBtn.addEventListener('click', removeImage);
 
 	[intensity, brush, sharpen, radius, contrast, feather, motionAngleInput].forEach(function (input) {
 		if (!input) return;
@@ -3127,6 +3155,7 @@
 	window.addEventListener('resize', function () {
 		syncHeaderOffset();
 		if (ready) layoutStage();
+		if (batchEnabled && jobName === 'batch') syncJob();
 	});
 
 	function showOriginal(on) {
@@ -3567,13 +3596,5 @@
 	syncLabels();
 	updateZoomControls();
 	syncJob();
-	setStatus(subjectMode
-		? 'Click or drag an image here. Then choose what to keep sharp and blur the background.'
-		: faceMode
-			? 'Click or drag an image here. Then blur the faces.'
-			: textMode
-				? 'Click or drag an image here. Then blur the text.'
-				: presetName === 'soft'
-					? 'Click or drag an image here. Brush is ready. Raise Strength, then paint what should be harder to read.'
-					: 'Click or drag an image here. Editing stays in this browser.');
+	idleStatus();
 })();
