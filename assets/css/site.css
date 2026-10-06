@@ -385,6 +385,8 @@ button.crop-handle[data-corner="se"] { right: 5px; bottom: 5px; cursor: nwse-res
 .tune-step { display: grid; gap: .5rem; padding-top: .85rem; border-top: 1px solid var(--line); }
 .tune-step:first-child { padding-top: 0; border-top: 0; }
 .tune-step-title { margin: 0; color: var(--muted); font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.tune-step-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.tune-step-head .text-btn { flex: 0 0 auto; text-align: right; }
 .refine-shapes { margin-top: .05rem; }
 button.text-btn, button.text-btn:hover {
 	justify-self: start;
@@ -449,6 +451,7 @@ button.text-btn.is-on, button.text-btn.is-on:hover { color: var(--accent); }
 .control-group { display: grid; gap: .25rem; }
 .control-group label, .control-label { font-size: .92rem; font-weight: 600; color: #334155; }
 .choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
+.choice-row.refine-shapes { grid-template-columns: 1fr 1fr 1fr; }
 #blur-background { width: 100%; }
 #blur-background:disabled, #blur-background:disabled:hover { opacity: .45; cursor: default; background: var(--accent); }
 .auto-progress { display: block; }

@@ -108,17 +108,20 @@ $preset = $tool['preset'];
 				</div>
 			</div>
 			<div class="tune-step" id="refine-group">
-				<p class="tune-step-title">Fix the edge</p>
+				<div class="tune-step-head">
+					<p class="tune-step-title">Fix the edge</p>
+					<button type="button" class="text-btn is-on" id="subject-auto" aria-pressed="true">Invert selection</button>
+				</div>
 				<div class="choice-row" role="radiogroup" aria-label="Fix the edge">
 					<button type="button" class="choice is-on" id="refine-keep" aria-pressed="true">Keep</button>
 					<button type="button" class="choice" id="refine-erase" aria-pressed="false">Erase</button>
 				</div>
 				<div class="choice-row refine-shapes" role="radiogroup" aria-label="Shape">
+					<button type="button" class="choice is-on" id="scope-brush" aria-pressed="true">Brush</button>
 					<button type="button" class="choice" id="scope-marquee" aria-pressed="false" title="Rectangular marquee">Marquee</button>
 					<button type="button" class="choice" id="scope-lasso" aria-pressed="false" title="Freehand lasso">Lasso</button>
 				</div>
 				<button type="button" class="choice" id="scope-whole" hidden>Whole image</button>
-				<button type="button" class="choice" id="scope-brush" hidden>Brush</button>
 				<div class="control-group" id="brush-group">
 					<label for="brush">Brush size <output id="brush-out">72 px</output></label>
 					<input id="brush" type="range" min="8" max="140" value="72">
@@ -127,7 +130,6 @@ $preset = $tool['preset'];
 					<label for="feather">Feather <output id="feather-out">16 px</output></label>
 					<input id="feather" type="range" min="0" max="48" value="16">
 				</div>
-				<button type="button" class="text-btn is-on" id="subject-auto" aria-pressed="true">Invert</button>
 			</div>
 			<div class="tune-step" id="effect-group">
 				<p class="tune-step-title">Blur</p>

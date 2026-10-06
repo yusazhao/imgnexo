@@ -1532,9 +1532,7 @@
 		requestRender();
 		commitSettings();
 		if (subjectMode && name !== 'whole') {
-			if (name === 'marquee') setStatus(maskOp === 'erase' ? 'Drag a rectangle to blur that area.' : 'Drag a rectangle around anything that should stay sharp.');
-			else if (name === 'lasso') setStatus(maskOp === 'erase' ? 'Draw around an area to blur it.' : 'Draw around anything that should stay sharp.');
-			else setStatus(maskOp === 'erase' ? 'Erase where the background should blur.' : 'Paint anything that should stay sharp.');
+			setStatus(refineStatus());
 			return;
 		}
 		if (name === 'marquee') setStatus('Drag a rectangle. The blur stays inside it.');
@@ -1555,13 +1553,18 @@
 		maskToggle.setAttribute('aria-pressed', maskShown ? 'true' : 'false');
 	}
 
+	function refineStatus() {
+		if (scopeName === 'marquee') return maskOp === 'erase' ? 'Drag a rectangle to blur that area.' : 'Drag a rectangle around anything that should stay sharp.';
+		if (scopeName === 'lasso') return maskOp === 'erase' ? 'Draw around an area to blur it.' : 'Draw around anything that should stay sharp.';
+		return maskOp === 'erase' ? 'Erase where the background should blur.' : 'Paint anything that should stay sharp.';
+	}
+
 	function chooseRefine(op) {
 		maskOp = op;
-		scopeName = 'brush';
 		syncLabels();
 		requestRender();
 		if (ready) commitSettings();
-		setStatus(op === 'erase' ? 'Erase where the background should blur.' : 'Paint anything that should stay sharp.');
+		setStatus(refineStatus());
 	}
 
 	function syncAutoButton() {
