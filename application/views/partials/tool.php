@@ -117,7 +117,6 @@ if ( ! function_exists('tune_icon')) {
 					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
 				</button>
 			</div>
-			<?php if (empty($tool['effects'])): ?>
 			<div class="frame-switch" id="frame-switch" hidden>
 				<span class="control-label" id="frame-label">Download frame</span>
 				<div class="frame-row" role="radiogroup" aria-labelledby="frame-label">
@@ -130,7 +129,6 @@ if ( ! function_exists('tune_icon')) {
 				</div>
 				<p class="hint">Drag the frame to move it. Drag a corner to resize. Original downloads the whole photo.</p>
 			</div>
-			<?php endif; ?>
 		</div>
 		<div class="controls">
 			<?php
@@ -298,18 +296,6 @@ if ( ! function_exists('tune_icon')) {
 				<label for="feather"><?= tune_icon('feather') ?>Feather <output id="feather-out">0 px</output></label>
 				<input id="feather" type="range" min="0" max="48" value="0">
 			</div>
-			<details class="frame-switch frame-disclosure" id="frame-switch" hidden>
-				<summary id="frame-label">Download frame</summary>
-				<div class="frame-row" role="radiogroup" aria-labelledby="frame-label">
-					<button type="button" class="choice is-on" data-frame="original" aria-pressed="true">Original</button>
-					<button type="button" class="choice" data-frame="9:16" aria-pressed="false">9:16</button>
-					<button type="button" class="choice" data-frame="3:4" aria-pressed="false">3:4</button>
-					<button type="button" class="choice" data-frame="4:5" aria-pressed="false">4:5</button>
-					<button type="button" class="choice" data-frame="1:1" aria-pressed="false">1:1</button>
-					<button type="button" class="choice" data-frame="16:9" aria-pressed="false">16:9</button>
-				</div>
-				<p class="hint">Drag the frame to move it. Drag a corner to resize. Original downloads the whole photo.</p>
-			</details>
 			<?php else: ?>
 			<div class="control-group" id="effect-group" data-for="blur">
 				<span class="control-label" id="effect-label">Blur effect</span>

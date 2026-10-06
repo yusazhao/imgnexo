@@ -546,15 +546,6 @@ button.effect-card {
 button.effect-card svg { width: 52px; height: 30px; display: block; }
 button.effect-card.is-on svg { color: var(--accent); }
 #motion-group { display: grid; gap: .55rem; }
-.frame-disclosure { padding: 0; background: transparent; }
-.frame-disclosure summary {
-	cursor: pointer;
-	font-size: .92rem;
-	font-weight: 600;
-	color: #334155;
-}
-.frame-disclosure summary::marker { color: #64748b; }
-.frame-disclosure .frame-row { margin-top: .5rem; }
 .focus-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 button.focus-point, button.focus-point:hover {
 	position: absolute;
