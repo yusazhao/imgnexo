@@ -73,7 +73,7 @@ if (isset($nav) && $nav === 'home')
 	<link rel="icon" href="<?= html_escape(asset_url('favicon.svg')) ?>" type="image/svg+xml">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional">
 	<link rel="stylesheet" href="<?= html_escape(asset_url('css/site.css')) ?>">
 	<?php if ($graph): ?>
 	<script type="application/ld+json"><?= json_encode(array('@context' => 'https://schema.org', '@graph' => $graph), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>

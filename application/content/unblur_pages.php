@@ -90,6 +90,12 @@ return array(
 			'mode' => 'unblur',
 			'preset' => 'iphone',
 			'note' => 'On a phone, use the original button to check you are not just adding crunch. Download, then save the PNG to Photos if you want to keep it.',
+			'heading' => 'How to unblur a photo on iPhone',
+			'steps' => array(
+				'Open this page in Safari or Chrome and choose the photo from your library.',
+				'Raise clarity a little. If edges grow a white outline, lower the radius.',
+				'Hold the original. Download the PNG and save it to Photos. The original stays in your library.',
+			),
 		),
 		'sections' => array(
 			array(
@@ -133,6 +139,12 @@ return array(
 			'mode' => 'unblur',
 			'preset' => 'motion',
 			'note' => 'Horizontal (0°) fits traffic and a sideways dash. Vertical (90°) fits up-and-down shake. Diagonal (45°) fits a tilted shake. Length is how far the streak runs.',
+			'heading' => 'How to fix a motion blur photo',
+			'steps' => array(
+				'Upload the streaked photo, or load the sample.',
+				'Set Motion angle to the streak. Horizontal is 0°, vertical is 90°, diagonal is 45°.',
+				'Raise Motion length until it matches the smear. Compare with the original, then download.',
+			),
 		),
 		'sections' => array(
 			array(

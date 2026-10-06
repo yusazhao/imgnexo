@@ -640,9 +640,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 }
 .steps li, .step-cards li {
 	display: flex;
+	flex-direction: column;
 	align-items: flex-start;
-	gap: .55rem;
-	padding: .6rem .7rem;
+	gap: .4rem;
+	padding: .7rem .75rem;
 	text-align: left;
 }
 .steps li:before, .step-cards li:before {
@@ -653,7 +654,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	place-items: center;
 	width: 1.4rem;
 	height: 1.4rem;
-	margin: .05rem 0 0;
+	margin: 0;
 	border-radius: 999px;
 	background: var(--soft);
 	color: var(--accent);
@@ -720,6 +721,16 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .legal { margin: 1.4rem 0 0; padding-top: 1rem; border-top: 1px solid var(--line); color: #94a3b8; font-size: .88rem; text-align: center; }
 
 @media (min-width: 901px) {
+	body { font-size: 1.375rem; }
+	.site-nav a, .menu summary { font-size: 1.3125rem; }
+	.logo-text strong { font-size: 1.5rem; }
+	.logo-text small { font-size: .95rem; }
+	.dek { font-size: 1.5rem; }
+	.crumbs ol { font-size: 1.25rem; }
+	h3 { font-size: 1.55rem; }
+	.faq-item summary h3 { font-size: 1.4rem; }
+	.site-footer p, .site-footer li { font-size: 1.3125rem; }
+	.legal { font-size: 1.25rem; }
 	.sheet > .tool-links { display: flex; align-items: center; flex-wrap: nowrap; gap: .75rem; }
 	.sheet > .tool-links .tool-links-title { margin: 0; }
 	.sheet > .tool-links .tool-links-row { flex-wrap: nowrap; }
@@ -737,7 +748,17 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 		border-bottom: 1px solid var(--line);
 	}
 	.steps, .step-cards { gap: .35rem; margin-top: .4rem; }
-	.steps li, .step-cards li { padding: .4rem .55rem; font-size: .88rem; line-height: 1.35; }
+	.steps li, .step-cards li {
+		display: block;
+		padding: .4rem .55rem;
+		font-size: .88rem;
+		line-height: 1.35;
+	}
+	.steps li:before, .step-cards li:before {
+		display: inline-grid;
+		margin: 0 .4rem 0 0;
+		vertical-align: -0.2rem;
+	}
 	.header-bar { flex-wrap: wrap; padding: .7rem 0; }
 	.menu-panel { position: static; margin-top: .4rem; }
 	h1 { font-size: 1.9rem; }

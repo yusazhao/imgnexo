@@ -111,6 +111,12 @@ return array(
 			'subject' => TRUE,
 			'note_below' => TRUE,
 			'note' => 'Objects keeps the main subject, such as a product, and blurs the backdrop. People and animals means a person or a common animal. Writing, logos, and edges that blend in are often missed. Paint those. Feather softens the edge.',
+			'heading' => 'How to blur a photo background',
+			'steps' => array(
+				'Upload the portrait or product shot.',
+				'Choose People and animals, or Objects, then click Blur background.',
+				'Paint anything the finder missed. Raise Feather if the edge looks cut, then download.',
+			),
 		),
 		'sections' => array(
 			array(
@@ -165,6 +171,12 @@ return array(
 			'face' => TRUE,
 			'note_below' => TRUE,
 			'note' => 'Each found face is widened past the eyes and chin. Click a box to remove a wrong one. Paint any face the finder missed. Pixel blocks the features. Gaussian softens them. Black bar covers the box in solid black.',
+			'heading' => 'How to blur a face in a photo',
+			'steps' => array(
+				'Upload the photo, then click Blur faces.',
+				'Click a box to remove a wrong face. Paint any face the finder missed.',
+				'Pixel blocks the features. Gaussian softens them. Black bar fills the box. Then download.',
+			),
 		),
 		'sections' => array(
 			array(
@@ -214,6 +226,12 @@ return array(
 			'text' => TRUE,
 			'note_below' => TRUE,
 			'note' => 'Auto Blur All Text covers every line it can read, including Chinese and English. Blur Sensitive Only covers emails, phone numbers, and long numbers such as a card or an ID. Click a red box to remove it. Handwriting and very faint, widely spaced letters are often missed. Drag a rectangle or paint those.',
+			'heading' => 'How to blur writing in a photo',
+			'steps' => array(
+				'Upload the photo.',
+				'Click Auto Blur All Text, or Blur Sensitive Only for emails and long numbers.',
+				'Click a red box to remove it. Drag a rectangle or paint anything missed, then download.',
+			),
 		),
 		'sections' => array(
 			array(
@@ -257,6 +275,12 @@ return array(
 			'mode' => 'blur',
 			'preset' => 'online',
 			'note' => 'Works in the browser you already have. Close the tab when you are done and the picture leaves memory.',
+			'heading' => 'How to blur a picture online',
+			'steps' => array(
+				'Upload a JPG, PNG, or WEBP. The file stays in this browser.',
+				'Choose Gaussian or Pixel and raise Strength. Brush keeps the change in one area.',
+				'Hold the original, then download the PNG.',
+			),
 		),
 		'sections' => array(
 			array(
@@ -305,6 +329,12 @@ return array(
 			'preset' => 'effect',
 			'effects' => TRUE,
 			'note' => 'Whole image is selected. Motion adds Speed and Angle. Radial uses Blur Radius and a center you can drag. Pixel uses block size.',
+			'heading' => 'How to apply a blur effect',
+			'steps' => array(
+				'Upload the photo. Whole image is already selected.',
+				'Choose one effect. Motion adds Speed and Angle. Radial uses a center you can drag.',
+				'Raise Strength, then download. Switch effects instead of stacking them.',
+			),
 		),
 		'sections' => array(
 			array(
