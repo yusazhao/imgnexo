@@ -33,6 +33,7 @@
 	var subjectMode = editor.getAttribute('data-subject') === '1';
 	var subjectAutoBtn = document.getElementById('subject-auto');
 	var feather = document.getElementById('feather');
+	var featherGroup = document.getElementById('feather-group');
 	var subjectAuto = subjectMode;
 	var maskOp = 'keep';
 	var maskShown = false;
@@ -156,6 +157,7 @@
 			strengths.pixel = preset.pixel;
 			scopeName = preset.scope === 'brush' ? 'brush' : 'whole';
 			brush.value = preset.brush;
+			if (feather && !subjectMode) feather.value = '0';
 			if (subjectMode) {
 				subjectAuto = true;
 				maskOp = 'keep';
@@ -221,6 +223,7 @@
 			if (button) button.disabled = jobName === 'batch';
 		});
 		brushGroup.hidden = !brushing;
+		if (featherGroup && !subjectMode) featherGroup.hidden = !regional;
 		stage.classList.toggle('is-region', regional);
 		ink.style.visibility = regional ? 'visible' : 'hidden';
 	}
@@ -289,7 +292,7 @@
 		originalBtn.disabled = false;
 		zoom = 1;
 		zoomInput.value = '100';
-		zoomBar.hidden = mode !== 'blur' || subjectMode;
+		zoomBar.hidden = mode !== 'blur';
 		strokes = [];
 		strokeDraft = null;
 		history = [];
@@ -382,7 +385,7 @@
 	}
 
 	function setZoom(percent, focus) {
-		if (mode !== 'blur' || subjectMode) return;
+		if (mode !== 'blur') return;
 		percent = Math.round(percent);
 		if (percent < 100) percent = 100;
 		if (percent > 400) percent = 400;
@@ -560,9 +563,9 @@
 				scope: scopeName,
 				brush: brush.value
 			};
+			if (feather) settings.feather = feather.value;
 			if (subjectMode) {
 				settings.subjectAuto = subjectAuto ? 1 : 0;
-				settings.feather = feather ? feather.value : 0;
 				settings.protect = protectMode;
 				settings.maskOp = maskOp;
 				settings.autoMask = autoHasPixels ? 1 : 0;
@@ -599,8 +602,8 @@
 			scopeName = settings.scope === 'brush' || settings.scope === 'marquee' || settings.scope === 'lasso' ? settings.scope : 'whole';
 			if (subjectMode && scopeName === 'whole') scopeName = 'brush';
 			brush.value = settings.brush;
+			if (feather && settings.feather != null) feather.value = settings.feather;
 			if (subjectMode && settings.subjectAuto != null) subjectAuto = String(settings.subjectAuto) === '1';
-			if (subjectMode && settings.feather != null && feather) feather.value = settings.feather;
 			if (subjectMode && (settings.protect === 'life' || settings.protect === 'things')) protectMode = settings.protect;
 			if (subjectMode && (settings.maskOp === 'keep' || settings.maskOp === 'erase')) maskOp = settings.maskOp;
 			if (subjectMode) {
@@ -1153,6 +1156,8 @@
 		if (!subjectMode) {
 			if (shapeIsEmpty()) return;
 			mctx.drawImage(shape, 0, 0);
+			var plain = feather ? Math.round(Number(feather.value)) : 0;
+			if (plain > 0) softenMask(plain, false);
 			return;
 		}
 		var protect = subjectAuto && scopeName !== 'whole';
@@ -1912,7 +1917,7 @@
 	stageViewport.addEventListener('pointerup', stopPaint);
 	stageViewport.addEventListener('pointercancel', stopPaint);
 	stageViewport.addEventListener('wheel', function (event) {
-		if (mode !== 'blur' || !ready || subjectMode) return;
+		if (mode !== 'blur' || !ready) return;
 		event.preventDefault();
 		var delta = event.deltaY;
 		if (event.deltaMode === 1) delta *= 16;

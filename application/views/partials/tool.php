@@ -173,6 +173,10 @@ $preset = $tool['preset'];
 				<label for="brush">Brush size <output id="brush-out">48 px</output></label>
 				<input id="brush" type="range" min="8" max="140" value="48">
 			</div>
+			<div class="control-group" id="feather-group" hidden>
+				<label for="feather">Feather <output id="feather-out">0 px</output></label>
+				<input id="feather" type="range" min="0" max="48" value="0">
+			</div>
 			<?php endif; ?>
 			<div class="control-group" data-for="unblur">
 				<label for="sharpen">Clarity <output id="sharpen-out"></output></label>
