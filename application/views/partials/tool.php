@@ -1,6 +1,20 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 $mode = $tool['mode'];
 $preset = $tool['preset'];
+if ( ! function_exists('blur_effect_svg')) {
+	function blur_effect_svg($name) {
+		$icons = array(
+			'gaussian' => '<svg viewBox="0 0 64 36" aria-hidden="true"><defs><radialGradient id="fx-gauss" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#64748b"/><stop offset="55%" stop-color="#94a3b8" stop-opacity=".55"/><stop offset="100%" stop-color="#94a3b8" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="18" r="16" fill="url(#fx-gauss)"/></svg>',
+			'pixel' => '<svg viewBox="0 0 64 36" aria-hidden="true"><rect x="16" y="6" width="8" height="8" fill="#64748b"/><rect x="26" y="6" width="8" height="8" fill="#94a3b8"/><rect x="36" y="6" width="8" height="8" fill="#64748b"/><rect x="16" y="16" width="8" height="8" fill="#94a3b8"/><rect x="26" y="16" width="8" height="8" fill="#475569"/><rect x="36" y="16" width="8" height="8" fill="#94a3b8"/><rect x="16" y="26" width="8" height="6" fill="#64748b"/><rect x="26" y="26" width="8" height="6" fill="#94a3b8"/><rect x="36" y="26" width="8" height="6" fill="#64748b"/></svg>',
+			'noise' => '<svg viewBox="0 0 64 36" aria-hidden="true"><circle cx="14" cy="10" r="1.4" fill="#64748b"/><circle cx="22" cy="8" r="1" fill="#94a3b8"/><circle cx="30" cy="12" r="1.6" fill="#475569"/><circle cx="40" cy="7" r="1.1" fill="#64748b"/><circle cx="48" cy="11" r="1.3" fill="#94a3b8"/><circle cx="18" cy="18" r="1.2" fill="#475569"/><circle cx="27" cy="20" r="1" fill="#64748b"/><circle cx="36" cy="17" r="1.5" fill="#94a3b8"/><circle cx="46" cy="21" r="1.1" fill="#475569"/><circle cx="54" cy="16" r="1.2" fill="#64748b"/><circle cx="16" cy="28" r="1" fill="#94a3b8"/><circle cx="25" cy="27" r="1.4" fill="#64748b"/><circle cx="34" cy="30" r="1" fill="#475569"/><circle cx="44" cy="28" r="1.3" fill="#64748b"/><circle cx="52" cy="26" r="1" fill="#94a3b8"/></svg>',
+			'motion' => '<svg viewBox="0 0 64 36" aria-hidden="true"><line x1="8" y1="10" x2="56" y2="10" stroke="#64748b" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="18" x2="50" y2="18" stroke="#64748b" stroke-width="2" stroke-linecap="round" opacity=".65"/><line x1="22" y1="26" x2="42" y2="26" stroke="#64748b" stroke-width="2" stroke-linecap="round" opacity=".35"/></svg>',
+			'radial' => '<svg viewBox="0 0 64 36" aria-hidden="true"><circle cx="32" cy="18" r="3" fill="#475569"/><circle cx="32" cy="18" r="8" fill="none" stroke="#64748b" stroke-width="1.6"/><circle cx="32" cy="18" r="13" fill="none" stroke="#94a3b8" stroke-width="1.4"/></svg>',
+			'color' => '<svg viewBox="0 0 64 36" aria-hidden="true"><rect x="14" y="8" width="28" height="8" rx="2" fill="#ef4444" opacity=".8"/><rect x="20" y="14" width="28" height="8" rx="2" fill="#22c55e" opacity=".75"/><rect x="26" y="20" width="28" height="8" rx="2" fill="#3b82f6" opacity=".75"/></svg>',
+			'bar' => '<svg viewBox="0 0 64 36" aria-hidden="true"><rect x="12" y="13" width="40" height="10" rx="2" fill="#111827"/></svg>',
+		);
+		return isset($icons[$name]) ? $icons[$name] : '';
+	}
+}
 ?>
 <section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?><?php if ( ! empty($tool['subject'])): ?> data-subject="1" data-object-model="<?= html_escape(asset_url('models/u2netp.onnx')) ?>"<?php endif; ?><?php if ( ! empty($tool['face'])): ?> data-face="1"<?php endif; ?><?php if ( ! empty($tool['text'])): ?> data-text="1"<?php endif; ?><?php if ( ! empty($tool['effects'])): ?> data-effects="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
 	<?php if ( ! empty($tool['batch'])): ?>
@@ -144,13 +158,13 @@ $preset = $tool['preset'];
 			</div>
 			<div class="tune-step" id="effect-group">
 				<p class="tune-step-title">Blur</p>
-				<div class="choice-row" role="radiogroup" aria-label="Blur">
-					<button type="button" class="choice is-on" id="effect-gaussian" aria-pressed="true">Gaussian</button>
-					<button type="button" class="choice" id="effect-pixel" aria-pressed="false">Pixel</button>
-					<button type="button" class="choice" id="effect-noise" aria-pressed="false">Noise</button>
-					<button type="button" class="choice" id="effect-motion" aria-pressed="false" hidden>Motion</button>
-					<button type="button" class="choice" id="effect-radial" aria-pressed="false" hidden>Radial</button>
-					<button type="button" class="choice" id="effect-color" aria-pressed="false" hidden>Color</button>
+				<div class="choice-row effect-cards" role="radiogroup" aria-label="Blur">
+					<button type="button" class="choice effect-card is-on" id="effect-gaussian" aria-pressed="true"><?= blur_effect_svg('gaussian') ?><span>Gaussian</span></button>
+					<button type="button" class="choice effect-card" id="effect-pixel" aria-pressed="false"><?= blur_effect_svg('pixel') ?><span>Pixel</span></button>
+					<button type="button" class="choice effect-card" id="effect-noise" aria-pressed="false"><?= blur_effect_svg('noise') ?><span>Noise</span></button>
+					<button type="button" class="choice effect-card" id="effect-motion" aria-pressed="false" hidden><?= blur_effect_svg('motion') ?><span>Motion</span></button>
+					<button type="button" class="choice effect-card" id="effect-radial" aria-pressed="false" hidden><?= blur_effect_svg('radial') ?><span>Radial</span></button>
+					<button type="button" class="choice effect-card" id="effect-color" aria-pressed="false" hidden><?= blur_effect_svg('color') ?><span>Color</span></button>
 				</div>
 				<div class="control-group">
 					<label for="intensity">Strength <output id="intensity-out">18 px</output></label>
@@ -168,10 +182,10 @@ $preset = $tool['preset'];
 			</div>
 			<div class="tune-step" id="effect-group">
 				<p class="tune-step-title">Cover</p>
-				<div class="choice-row face-effects" role="radiogroup" aria-label="Cover">
-					<button type="button" class="choice is-on" id="effect-pixel" aria-pressed="true">Pixel</button>
-					<button type="button" class="choice" id="effect-gaussian" aria-pressed="false">Gaussian</button>
-					<button type="button" class="choice" id="effect-bar" aria-pressed="false">Black bar</button>
+				<div class="choice-row face-effects effect-cards" role="radiogroup" aria-label="Cover">
+					<button type="button" class="choice effect-card is-on" id="effect-pixel" aria-pressed="true"><?= blur_effect_svg('pixel') ?><span>Pixel</span></button>
+					<button type="button" class="choice effect-card" id="effect-gaussian" aria-pressed="false"><?= blur_effect_svg('gaussian') ?><span>Gaussian</span></button>
+					<button type="button" class="choice effect-card" id="effect-bar" aria-pressed="false"><?= blur_effect_svg('bar') ?><span>Black bar</span></button>
 				</div>
 				<div class="control-group" id="strength-group">
 					<label for="intensity">Strength <output id="intensity-out">16 px</output></label>
@@ -195,10 +209,10 @@ $preset = $tool['preset'];
 			</div>
 			<div class="tune-step" id="effect-group">
 				<p class="tune-step-title">Cover</p>
-				<div class="choice-row text-effects" role="radiogroup" aria-label="Cover">
-					<button type="button" class="choice" id="effect-bar" aria-pressed="false">Redact</button>
-					<button type="button" class="choice is-on" id="effect-pixel" aria-pressed="true">Pixel</button>
-					<button type="button" class="choice" id="effect-gaussian" aria-pressed="false">Blur</button>
+				<div class="choice-row text-effects effect-cards" role="radiogroup" aria-label="Cover">
+					<button type="button" class="choice effect-card" id="effect-bar" aria-pressed="false"><?= blur_effect_svg('bar') ?><span>Redact</span></button>
+					<button type="button" class="choice effect-card is-on" id="effect-pixel" aria-pressed="true"><?= blur_effect_svg('pixel') ?><span>Pixel</span></button>
+					<button type="button" class="choice effect-card" id="effect-gaussian" aria-pressed="false"><?= blur_effect_svg('gaussian') ?><span>Blur</span></button>
 				</div>
 				<div class="choice-row" id="redact-tones" hidden role="radiogroup" aria-label="Redact color">
 					<button type="button" class="choice is-on" id="redact-black" aria-pressed="true">Black</button>
@@ -226,12 +240,12 @@ $preset = $tool['preset'];
 			<div class="control-group" id="effect-group" data-for="blur">
 				<span class="control-label" id="effect-label">Blur effect</span>
 				<div class="choice-row effect-cards" role="radiogroup" aria-labelledby="effect-label">
-					<button type="button" class="choice effect-card is-on" id="effect-gaussian" aria-pressed="true"><svg viewBox="0 0 64 36" aria-hidden="true"><defs><radialGradient id="fx-gauss" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#64748b"/><stop offset="55%" stop-color="#94a3b8" stop-opacity=".55"/><stop offset="100%" stop-color="#94a3b8" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="18" r="16" fill="url(#fx-gauss)"/></svg><span>Gaussian</span></button>
-					<button type="button" class="choice effect-card" id="effect-pixel" aria-pressed="false"><svg viewBox="0 0 64 36" aria-hidden="true"><rect x="16" y="6" width="8" height="8" fill="#64748b"/><rect x="26" y="6" width="8" height="8" fill="#94a3b8"/><rect x="36" y="6" width="8" height="8" fill="#64748b"/><rect x="16" y="16" width="8" height="8" fill="#94a3b8"/><rect x="26" y="16" width="8" height="8" fill="#475569"/><rect x="36" y="16" width="8" height="8" fill="#94a3b8"/><rect x="16" y="26" width="8" height="6" fill="#64748b"/><rect x="26" y="26" width="8" height="6" fill="#94a3b8"/><rect x="36" y="26" width="8" height="6" fill="#64748b"/></svg><span>Pixel</span></button>
-					<button type="button" class="choice effect-card" id="effect-noise" aria-pressed="false"><svg viewBox="0 0 64 36" aria-hidden="true"><circle cx="14" cy="10" r="1.4" fill="#64748b"/><circle cx="22" cy="8" r="1" fill="#94a3b8"/><circle cx="30" cy="12" r="1.6" fill="#475569"/><circle cx="40" cy="7" r="1.1" fill="#64748b"/><circle cx="48" cy="11" r="1.3" fill="#94a3b8"/><circle cx="18" cy="18" r="1.2" fill="#475569"/><circle cx="27" cy="20" r="1" fill="#64748b"/><circle cx="36" cy="17" r="1.5" fill="#94a3b8"/><circle cx="46" cy="21" r="1.1" fill="#475569"/><circle cx="54" cy="16" r="1.2" fill="#64748b"/><circle cx="16" cy="28" r="1" fill="#94a3b8"/><circle cx="25" cy="27" r="1.4" fill="#64748b"/><circle cx="34" cy="30" r="1" fill="#475569"/><circle cx="44" cy="28" r="1.3" fill="#64748b"/><circle cx="52" cy="26" r="1" fill="#94a3b8"/></svg><span>Noise</span></button>
-					<button type="button" class="choice effect-card" id="effect-motion" aria-pressed="false"><svg viewBox="0 0 64 36" aria-hidden="true"><line x1="8" y1="10" x2="56" y2="10" stroke="#64748b" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="18" x2="50" y2="18" stroke="#64748b" stroke-width="2" stroke-linecap="round" opacity=".65"/><line x1="22" y1="26" x2="42" y2="26" stroke="#64748b" stroke-width="2" stroke-linecap="round" opacity=".35"/></svg><span>Motion</span></button>
-					<button type="button" class="choice effect-card" id="effect-radial" aria-pressed="false"><svg viewBox="0 0 64 36" aria-hidden="true"><circle cx="32" cy="18" r="3" fill="#475569"/><circle cx="32" cy="18" r="8" fill="none" stroke="#64748b" stroke-width="1.6"/><circle cx="32" cy="18" r="13" fill="none" stroke="#94a3b8" stroke-width="1.4"/></svg><span>Radial</span></button>
-					<button type="button" class="choice effect-card" id="effect-color" aria-pressed="false"><svg viewBox="0 0 64 36" aria-hidden="true"><rect x="14" y="8" width="28" height="8" rx="2" fill="#ef4444" opacity=".8"/><rect x="20" y="14" width="28" height="8" rx="2" fill="#22c55e" opacity=".75"/><rect x="26" y="20" width="28" height="8" rx="2" fill="#3b82f6" opacity=".75"/></svg><span>Color</span></button>
+					<button type="button" class="choice effect-card is-on" id="effect-gaussian" aria-pressed="true"><?= blur_effect_svg('gaussian') ?><span>Gaussian</span></button>
+					<button type="button" class="choice effect-card" id="effect-pixel" aria-pressed="false"><?= blur_effect_svg('pixel') ?><span>Pixel</span></button>
+					<button type="button" class="choice effect-card" id="effect-noise" aria-pressed="false"><?= blur_effect_svg('noise') ?><span>Noise</span></button>
+					<button type="button" class="choice effect-card" id="effect-motion" aria-pressed="false"><?= blur_effect_svg('motion') ?><span>Motion</span></button>
+					<button type="button" class="choice effect-card" id="effect-radial" aria-pressed="false"><?= blur_effect_svg('radial') ?><span>Radial</span></button>
+					<button type="button" class="choice effect-card" id="effect-color" aria-pressed="false"><?= blur_effect_svg('color') ?><span>Color</span></button>
 				</div>
 			</div>
 			<div class="control-group" data-for="blur">
@@ -275,14 +289,14 @@ $preset = $tool['preset'];
 			<?php else: ?>
 			<div class="control-group" id="effect-group" data-for="blur">
 				<span class="control-label" id="effect-label">Blur effect</span>
-				<div class="choice-row" role="radiogroup" aria-labelledby="effect-label">
-					<button type="button" class="choice is-on" id="effect-gaussian" aria-pressed="true">Gaussian</button>
-					<button type="button" class="choice" id="effect-pixel" aria-pressed="false">Pixel</button>
-					<button type="button" class="choice" id="effect-noise" aria-pressed="false">Noise</button>
+				<div class="choice-row effect-cards" role="radiogroup" aria-labelledby="effect-label">
+					<button type="button" class="choice effect-card is-on" id="effect-gaussian" aria-pressed="true"><?= blur_effect_svg('gaussian') ?><span>Gaussian</span></button>
+					<button type="button" class="choice effect-card" id="effect-pixel" aria-pressed="false"><?= blur_effect_svg('pixel') ?><span>Pixel</span></button>
+					<button type="button" class="choice effect-card" id="effect-noise" aria-pressed="false"><?= blur_effect_svg('noise') ?><span>Noise</span></button>
 					<?php if (empty($tool['basic'])): ?>
-					<button type="button" class="choice" id="effect-motion" aria-pressed="false">Motion</button>
-					<button type="button" class="choice" id="effect-radial" aria-pressed="false">Radial</button>
-					<button type="button" class="choice" id="effect-color" aria-pressed="false">Color</button>
+					<button type="button" class="choice effect-card" id="effect-motion" aria-pressed="false"><?= blur_effect_svg('motion') ?><span>Motion</span></button>
+					<button type="button" class="choice effect-card" id="effect-radial" aria-pressed="false"><?= blur_effect_svg('radial') ?><span>Radial</span></button>
+					<button type="button" class="choice effect-card" id="effect-color" aria-pressed="false"><?= blur_effect_svg('color') ?><span>Color</span></button>
 					<?php endif; ?>
 				</div>
 			</div>
