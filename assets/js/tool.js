@@ -2362,7 +2362,7 @@
 		return kept;
 	}
 
-	function collectFaceHits(detector, target, ox, oy, imgW, imgH) {
+	function collectFaceHits(detector, target, ox, oy, imgW, imgH, source) {
 		var found = detector.detect(target);
 		var list = found && found.detections ? found.detections : [];
 		var hits = [];
@@ -2373,14 +2373,14 @@
 			if (!box) return;
 			var score = 0.5;
 			if (hit.categories && hit.categories.length && hit.categories[0].score != null) score = Number(hit.categories[0].score);
-			hits.push({ x: box.x, y: box.y, w: box.w, h: box.h, score: score });
+			hits.push({ x: box.x, y: box.y, w: box.w, h: box.h, score: score, source: source || 'full' });
 		});
 		return hits;
 	}
 
 	function scanFaceTiles(canvas) {
 		var hits = collectFaceHits(faceDetector, canvas, 0, 0, canvas.width, canvas.height);
-		if (faceDetectorNear) hits = hits.concat(collectFaceHits(faceDetectorNear, canvas, 0, 0, canvas.width, canvas.height));
+		if (faceDetectorNear) hits = hits.concat(collectFaceHits(faceDetectorNear, canvas, 0, 0, canvas.width, canvas.height, 'near'));
 		var tw = Math.max(8, Math.round(canvas.width * 0.56));
 		var th = Math.max(8, Math.round(canvas.height * 0.56));
 		var xs = [0, Math.max(0, canvas.width - tw)];
@@ -2400,7 +2400,28 @@
 				hits = hits.concat(collectFaceHits(faceDetector, crop, ox, oy, canvas.width, canvas.height));
 			}
 		}
-		return mergeFaceHits(hits);
+		return acceptFaceHits(hits);
+	}
+
+	function acceptFaceHits(items) {
+		var fulls = [];
+		var i;
+		for (i = 0; i < items.length; i++) {
+			if (items[i].source !== 'near') fulls.push(items[i]);
+		}
+		var kept = fulls.slice();
+		items.forEach(function (item) {
+			if (item.source !== 'near') return;
+			var backed = false;
+			for (i = 0; i < fulls.length; i++) {
+				if (faceSame(fulls[i], item)) {
+					backed = true;
+					break;
+				}
+			}
+			if (backed || !fulls.length || item.score >= 0.58) kept.push(item);
+		});
+		return mergeFaceHits(kept);
 	}
 
 	function loadFaceDetector() {
@@ -2670,12 +2691,13 @@
 			var chosen = sensitive ? sensitiveWords(words) : words;
 			chosen.forEach(function (word) {
 				var text = String(word.text || '').trim();
-				if (!text || !/[0-9A-Za-z]/.test(text)) return;
+				if (!text || !/[0-9A-Za-z\u3400-\u9FFF]/.test(text)) return;
 				var floor = sensitive ? 15 : 40;
-				if (word.confidence && word.confidence < floor) return;
+				if (!(word.confidence >= floor)) return;
 				var w = word.x1 - word.x0;
 				var h = word.y1 - word.y0;
 				if (w < 2 || h < 2) return;
+				if (/^[\u3400-\u9FFF]$/.test(text) && h > w * 2.4) return;
 				var box = expandTextBox({ x: word.x0, y: word.y0, w: w, h: h, text: text }, width, height);
 				if (box) boxes.push(box);
 			});
@@ -2701,7 +2723,7 @@
 		return import(esm).then(function (mod) {
 			reportAuto(0.08, '');
 			var api = mod.default || mod;
-			return api.createWorker('eng', 1, { logger: textLogger });
+			return api.createWorker('eng+chi_sim', 1, { logger: textLogger });
 		});
 	}
 
@@ -2719,6 +2741,123 @@
 		return textWorkerPromise;
 	}
 
+	function textOverlap(a, b) {
+		var x1 = Math.max(a.x, b.x);
+		var y1 = Math.max(a.y, b.y);
+		var x2 = Math.min(a.x + a.w, b.x + b.w);
+		var y2 = Math.min(a.y + a.h, b.y + b.h);
+		var iw = x2 - x1;
+		var ih = y2 - y1;
+		if (iw <= 0 || ih <= 0) return 0;
+		return (iw * ih) / Math.min(a.w * a.h, b.w * b.h);
+	}
+
+	function joinTextLines(boxes) {
+		var lines = [];
+		boxes.slice().sort(function (a, b) { return a.y - b.y || a.x - b.x; }).forEach(function (box) {
+			var placed = false;
+			var i, line, mid, lm, gap, back, limit, x2, y2;
+			for (i = 0; i < lines.length; i++) {
+				line = lines[i];
+				mid = box.y + box.h / 2;
+				lm = line.y + line.h / 2;
+				if (Math.abs(mid - lm) > Math.max(box.h, line.h) * 0.55) continue;
+				gap = box.x - (line.x + line.w);
+				back = line.x - (box.x + box.w);
+				limit = Math.min(line.h, box.h) * 1.15;
+				if (gap > limit || back > limit) continue;
+				x2 = Math.max(line.x + line.w, box.x + box.w);
+				y2 = Math.max(line.y + line.h, box.y + box.h);
+				line.x = Math.min(line.x, box.x);
+				line.y = Math.min(line.y, box.y);
+				line.w = x2 - line.x;
+				line.h = y2 - line.y;
+				line.text = (line.text || '') + (box.text || '');
+				placed = true;
+				break;
+			}
+			if (!placed) lines.push({ x: box.x, y: box.y, w: box.w, h: box.h, text: box.text || '' });
+		});
+		return lines;
+	}
+
+	function mergeTextBoxes(boxes) {
+		var kept = [];
+		boxes.forEach(function (box) {
+			var same = false;
+			var i;
+			for (i = 0; i < kept.length; i++) {
+				if (textOverlap(kept[i], box) > 0.45) {
+					same = true;
+					break;
+				}
+			}
+			if (!same) kept.push(box);
+		});
+		return joinTextLines(kept);
+	}
+
+	function cropCanvas(canvas, x, y, w, h, scale) {
+		var out = document.createElement('canvas');
+		out.width = Math.max(8, Math.round(w * scale));
+		out.height = Math.max(8, Math.round(h * scale));
+		var ctx = out.getContext('2d');
+		ctx.imageSmoothingEnabled = true;
+		ctx.drawImage(canvas, x, y, w, h, 0, 0, out.width, out.height);
+		return out;
+	}
+
+	function readOcrBoxes(data, width, height, sensitive, scale, ox, oy) {
+		return boxesFromOcr(data, width, height, sensitive).map(function (box) {
+			return {
+				x: box.x / scale + ox,
+				y: box.y / scale + oy,
+				w: box.w / scale,
+				h: box.h / scale,
+				text: box.text
+			};
+		});
+	}
+
+	function busyPicture(box) {
+		var x = Math.max(0, Math.floor(box.x));
+		var y = Math.max(0, Math.floor(box.y));
+		var w = Math.max(1, Math.floor(box.w));
+		var h = Math.max(1, Math.floor(box.h));
+		if (x >= source.width || y >= source.height) return true;
+		if (x + w > source.width) w = source.width - x;
+		if (y + h > source.height) h = source.height - y;
+		var text = String(box.text || '').replace(/[^\u3400-\u9FFFa-zA-Z0-9]/g, '');
+		if (text.length <= 1 && box.w > source.width * 0.12) return true;
+		var data = source.getContext('2d').getImageData(x, y, w, h).data;
+		var mid = 0;
+		var n = 0;
+		var step = Math.max(1, Math.floor(Math.sqrt((w * h) / 350)));
+		var yy, xx, i, tone;
+		for (yy = 0; yy < h; yy += step) {
+			for (xx = 0; xx < w; xx += step) {
+				i = (yy * w + xx) * 4;
+				tone = Math.max(data[i], data[i + 1], data[i + 2]);
+				if (tone >= 70 && tone <= 175) mid++;
+				n++;
+			}
+		}
+		return n > 0 && (mid / n) > 0.42;
+	}
+
+	function strayMark(box) {
+		var text = String(box.text || '');
+		if (/[0-9A-Za-z]/.test(text)) return false;
+		var chars = text.replace(/[^\u3400-\u9FFF]/g, '');
+		return chars.length === 1 && box.w < source.width * 0.08;
+	}
+
+	function recognizeAt(worker, canvas, psm) {
+		return worker.setParameters({ tessedit_pageseg_mode: String(psm) }).then(function () {
+			return worker.recognize(canvas, {}, { text: true, blocks: true });
+		});
+	}
+
 	function blurText(sensitive) {
 		if (!textMode || !ready || textBusy) return;
 		var token = ++autoToken;
@@ -2727,14 +2866,23 @@
 		setAutoProgress(true, textWorker ? 0.72 : 0.04, '');
 		ensureTextWorker().then(function (worker) {
 			if (token !== autoToken || !worker) return null;
-			var snap = document.createElement('canvas');
-			snap.width = source.width;
-			snap.height = source.height;
-			snap.getContext('2d').drawImage(source, 0, 0);
+			var full = document.createElement('canvas');
+			full.width = source.width;
+			full.height = source.height;
+			full.getContext('2d').drawImage(source, 0, 0);
+			var lowerY = Math.round(source.height * 0.45);
+			var lower = cropCanvas(source, 0, lowerY, source.width, source.height - lowerY, 2);
 			reportAuto(0.74, '');
-			return worker.recognize(snap, {}, { text: true, blocks: true }).then(function (ret) {
+			return recognizeAt(worker, full, 3).then(function (ret) {
 				if (token !== autoToken) return null;
-				return boxesFromOcr(ret && ret.data, snap.width, snap.height, sensitive);
+				var boxes = readOcrBoxes(ret && ret.data, full.width, full.height, sensitive, 1, 0, 0);
+				return recognizeAt(worker, lower, 11).then(function (retLower) {
+					if (token !== autoToken) return null;
+					boxes = boxes.concat(readOcrBoxes(retLower && retLower.data, lower.width, lower.height, sensitive, 2, 0, lowerY));
+					return mergeTextBoxes(boxes.filter(function (box) { return !busyPicture(box); })).filter(function (box) {
+						return !strayMark(box);
+					});
+				});
 			});
 		}).then(function (boxes) {
 			if (token !== autoToken || !boxes) return;

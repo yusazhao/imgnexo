@@ -213,7 +213,7 @@ return array(
 			'preset' => 'text',
 			'text' => TRUE,
 			'note_below' => TRUE,
-			'note' => 'Auto Blur All Text covers every line it can read. Blur Sensitive Only covers emails, phone numbers, and long numbers such as a card or an ID. Click a red box to remove it. Handwriting and other scripts are often missed. Drag a rectangle or paint those.',
+			'note' => 'Auto Blur All Text covers every line it can read, including Chinese and English. Blur Sensitive Only covers emails, phone numbers, and long numbers such as a card or an ID. Click a red box to remove it. Handwriting and very faint, widely spaced letters are often missed. Drag a rectangle or paint those.',
 		),
 		'sections' => array(
 			array(
