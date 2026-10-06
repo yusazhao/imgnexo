@@ -462,6 +462,7 @@ button.text-btn.is-on, button.text-btn.is-on:hover { color: var(--accent); }
 .control-group label, .control-label { font-size: .92rem; font-weight: 600; color: #334155; }
 .choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
 .choice-row.refine-shapes, .choice-row.face-effects, .choice-row.text-effects, .choice-row.effect-cards { grid-template-columns: 1fr 1fr 1fr; }
+.choice-row.scope-cards { grid-template-columns: 1fr 1fr; }
 .face-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 button.face-box, button.face-box:hover {
 	position: absolute;

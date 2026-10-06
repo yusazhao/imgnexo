@@ -11,6 +11,10 @@ if ( ! function_exists('blur_effect_svg')) {
 			'radial' => '<svg viewBox="0 0 64 36" aria-hidden="true"><circle cx="32" cy="18" r="3" fill="#475569"/><circle cx="32" cy="18" r="8" fill="none" stroke="#64748b" stroke-width="1.6"/><circle cx="32" cy="18" r="13" fill="none" stroke="#94a3b8" stroke-width="1.4"/></svg>',
 			'color' => '<svg viewBox="0 0 64 36" aria-hidden="true"><rect x="14" y="8" width="28" height="8" rx="2" fill="#ef4444" opacity=".8"/><rect x="20" y="14" width="28" height="8" rx="2" fill="#22c55e" opacity=".75"/><rect x="26" y="20" width="28" height="8" rx="2" fill="#3b82f6" opacity=".75"/></svg>',
 			'bar' => '<svg viewBox="0 0 64 36" aria-hidden="true"><rect x="12" y="13" width="40" height="10" rx="2" fill="#111827"/></svg>',
+			'whole' => '<svg viewBox="0 0 64 36" aria-hidden="true"><rect x="10" y="6" width="44" height="24" rx="2" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/></svg>',
+			'brush' => '<svg viewBox="0 0 64 36" aria-hidden="true"><circle cx="22" cy="22" r="7" fill="#cbd5e1"/><circle cx="34" cy="16" r="5" fill="#94a3b8"/><circle cx="44" cy="11" r="3.2" fill="#64748b"/></svg>',
+			'marquee' => '<svg viewBox="0 0 64 36" aria-hidden="true"><rect x="14" y="7" width="36" height="22" rx="1.5" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="5 3.5"/></svg>',
+			'lasso' => '<svg viewBox="0 0 64 36" aria-hidden="true"><path d="M18 24c1-9 10-13 18-10 9 3 16 1 14 8-2 7-9 11-17 9-9-2-16-1-15-7z" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round"/></svg>',
 		);
 		return isset($icons[$name]) ? $icons[$name] : '';
 	}
@@ -152,9 +156,9 @@ if ( ! function_exists('blur_effect_svg')) {
 					<button type="button" class="choice" id="refine-erase" aria-pressed="false">Erase</button>
 				</div>
 				<div class="choice-row refine-shapes" role="radiogroup" aria-label="Shape">
-					<button type="button" class="choice is-on" id="scope-brush" aria-pressed="true">Brush</button>
-					<button type="button" class="choice" id="scope-marquee" aria-pressed="false" title="Rectangular marquee">Marquee</button>
-					<button type="button" class="choice" id="scope-lasso" aria-pressed="false" title="Freehand lasso">Lasso</button>
+					<button type="button" class="choice effect-card is-on" id="scope-brush" aria-pressed="true"><?= blur_effect_svg('brush') ?><span>Brush</span></button>
+					<button type="button" class="choice effect-card" id="scope-marquee" aria-pressed="false" title="Rectangular marquee"><?= blur_effect_svg('marquee') ?><span>Marquee</span></button>
+					<button type="button" class="choice effect-card" id="scope-lasso" aria-pressed="false" title="Freehand lasso"><?= blur_effect_svg('lasso') ?><span>Lasso</span></button>
 				</div>
 				<button type="button" class="choice" id="scope-whole" hidden>Whole image</button>
 				<div class="control-group" id="brush-group">
@@ -237,8 +241,8 @@ if ( ! function_exists('blur_effect_svg')) {
 			<div class="tune-step">
 				<p class="tune-step-title">Add missed text</p>
 				<div class="choice-row" role="radiogroup" aria-label="Add missed text">
-					<button type="button" class="choice is-on" id="scope-marquee" aria-pressed="true">Marquee</button>
-					<button type="button" class="choice" id="scope-brush" aria-pressed="false">Brush</button>
+					<button type="button" class="choice effect-card is-on" id="scope-marquee" aria-pressed="true" title="Rectangular marquee"><?= blur_effect_svg('marquee') ?><span>Marquee</span></button>
+					<button type="button" class="choice effect-card" id="scope-brush" aria-pressed="false"><?= blur_effect_svg('brush') ?><span>Brush</span></button>
 				</div>
 				<div class="control-group" id="brush-group" hidden>
 					<label for="brush">Brush size <output id="brush-out">26 px</output></label>
@@ -260,11 +264,11 @@ if ( ! function_exists('blur_effect_svg')) {
 			</div>
 			<div class="control-group" data-for="blur">
 				<span class="control-label" id="scope-label">Apply to</span>
-				<div class="choice-row" role="radiogroup" aria-labelledby="scope-label">
-					<button type="button" class="choice is-on" id="scope-whole" aria-pressed="true">Whole image</button>
-					<button type="button" class="choice" id="scope-brush" aria-pressed="false">Brush</button>
-					<button type="button" class="choice" id="scope-marquee" aria-pressed="false" title="Rectangular marquee">Marquee</button>
-					<button type="button" class="choice" id="scope-lasso" aria-pressed="false" title="Freehand lasso">Lasso</button>
+				<div class="choice-row scope-cards" role="radiogroup" aria-labelledby="scope-label">
+					<button type="button" class="choice effect-card is-on" id="scope-whole" aria-pressed="true"><?= blur_effect_svg('whole') ?><span>Whole image</span></button>
+					<button type="button" class="choice effect-card" id="scope-brush" aria-pressed="false"><?= blur_effect_svg('brush') ?><span>Brush</span></button>
+					<button type="button" class="choice effect-card" id="scope-marquee" aria-pressed="false" title="Rectangular marquee"><?= blur_effect_svg('marquee') ?><span>Marquee</span></button>
+					<button type="button" class="choice effect-card" id="scope-lasso" aria-pressed="false" title="Freehand lasso"><?= blur_effect_svg('lasso') ?><span>Lasso</span></button>
 				</div>
 			</div>
 			<div class="control-group" id="strength-group" data-for="blur">
@@ -312,11 +316,11 @@ if ( ! function_exists('blur_effect_svg')) {
 			</div>
 			<div class="control-group" data-for="blur">
 				<span class="control-label" id="scope-label">Apply to</span>
-				<div class="choice-row" role="radiogroup" aria-labelledby="scope-label">
-					<button type="button" class="choice<?php if (empty($tool['basic'])): ?> is-on<?php endif; ?>" id="scope-whole" aria-pressed="<?= empty($tool['basic']) ? 'true' : 'false' ?>">Whole image</button>
-					<button type="button" class="choice<?php if ( ! empty($tool['basic'])): ?> is-on<?php endif; ?>" id="scope-brush" aria-pressed="<?= ! empty($tool['basic']) ? 'true' : 'false' ?>">Brush</button>
-					<button type="button" class="choice" id="scope-marquee" aria-pressed="false" title="Rectangular marquee">Marquee</button>
-					<button type="button" class="choice" id="scope-lasso" aria-pressed="false" title="Freehand lasso">Lasso</button>
+				<div class="choice-row scope-cards" role="radiogroup" aria-labelledby="scope-label">
+					<button type="button" class="choice effect-card<?php if (empty($tool['basic'])): ?> is-on<?php endif; ?>" id="scope-whole" aria-pressed="<?= empty($tool['basic']) ? 'true' : 'false' ?>"><?= blur_effect_svg('whole') ?><span>Whole image</span></button>
+					<button type="button" class="choice effect-card<?php if ( ! empty($tool['basic'])): ?> is-on<?php endif; ?>" id="scope-brush" aria-pressed="<?= ! empty($tool['basic']) ? 'true' : 'false' ?>"><?= blur_effect_svg('brush') ?><span>Brush</span></button>
+					<button type="button" class="choice effect-card" id="scope-marquee" aria-pressed="false" title="Rectangular marquee"><?= blur_effect_svg('marquee') ?><span>Marquee</span></button>
+					<button type="button" class="choice effect-card" id="scope-lasso" aria-pressed="false" title="Freehand lasso"><?= blur_effect_svg('lasso') ?><span>Lasso</span></button>
 				</div>
 			</div>
 			<div class="control-group" data-for="blur">
