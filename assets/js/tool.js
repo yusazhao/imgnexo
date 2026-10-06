@@ -33,6 +33,7 @@
 	var subjectMode = editor.getAttribute('data-subject') === '1';
 	var faceMode = editor.getAttribute('data-face') === '1';
 	var textMode = editor.getAttribute('data-text') === '1';
+	var effectPage = editor.getAttribute('data-effects') === '1';
 	var subjectAutoBtn = document.getElementById('subject-auto');
 	var feather = document.getElementById('feather');
 	var featherGroup = document.getElementById('feather-group');
@@ -150,6 +151,17 @@
 	var redactTones = document.getElementById('redact-tones');
 	var redactBlackBtn = document.getElementById('redact-black');
 	var redactGrayBtn = document.getElementById('redact-gray');
+	var motionGroup = document.getElementById('motion-group');
+	var motionAngleInput = document.getElementById('motion-angle');
+	var motionDistance = document.getElementById('motion-distance');
+	var radialHint = document.getElementById('radial-hint');
+	var intensityName = document.getElementById('intensity-name');
+	var focusLayer = document.getElementById('focus-layer');
+	var focusPoint = document.getElementById('focus-point');
+	var motionAngle = 0;
+	var radialX = 0.5;
+	var radialY = 0.5;
+	var focusDrag = false;
 	var ready = false;
 	var showingOriginal = false;
 	var painting = false;
@@ -209,9 +221,18 @@
 		var strength = Number(strengths[effectName] || 0);
 		intensity.min = effectName === 'pixel' ? '1' : '0';
 		intensity.max = '40';
-		intensity.value = String(strength);
+		if (!(effectPage && effectName === 'motion')) intensity.value = String(strength);
 		document.getElementById('intensity-out').textContent = (effectName === 'pixel' && strength <= 1) ? 'off' : strength + ' px';
-		if (strengthGroup) strengthGroup.hidden = effectName === 'bar' || effectName === 'gray';
+		if (strengthGroup && !effectPage) strengthGroup.hidden = effectName === 'bar' || effectName === 'gray';
+		if (intensityName) intensityName.textContent = effectName === 'pixel' ? 'Block Size' : 'Strength';
+		if (motionDistance) {
+			motionDistance.value = String(strengths.motion);
+			document.getElementById('motion-distance-out').textContent = strengths.motion + ' px';
+		}
+		if (motionAngleInput) {
+			motionAngleInput.value = String(motionAngle);
+			document.getElementById('motion-angle-out').textContent = motionAngle + '°';
+		}
 		document.getElementById('brush-out').textContent = brush.value + ' px';
 		document.getElementById('zoom-out').textContent = Math.round(zoom * 100) + '%';
 		document.getElementById('sharpen-out').textContent = (Number(sharpen.value) / 100).toFixed(2);
@@ -223,6 +244,7 @@
 		syncRefine();
 		syncScope();
 		syncTextStyle();
+		syncEffectControls();
 	}
 
 	function setChoice(button, on) {
@@ -342,6 +364,7 @@
 		syncRefine();
 		if (cropName !== 'original') centerCrop();
 		placeCrop();
+		placeFocus();
 	}
 
 	function maxViewportHeight() {
@@ -606,6 +629,11 @@
 			if (feather) settings.feather = feather.value;
 			if (faceMode) settings.faces = JSON.stringify(faceBoxes);
 			if (textMode) settings.texts = JSON.stringify(textBoxes);
+			if (effectPage) {
+				settings.motionAngle = motionAngle;
+				settings.radialX = radialX;
+				settings.radialY = radialY;
+			}
 			if (subjectMode) {
 				settings.subjectAuto = subjectAuto ? 1 : 0;
 				settings.protect = protectMode;
@@ -645,6 +673,9 @@
 			if (subjectMode && scopeName === 'whole') scopeName = 'brush';
 			if (faceMode) scopeName = 'brush';
 			if (textMode && scopeName !== 'brush' && scopeName !== 'marquee') scopeName = 'marquee';
+			if (effectPage && settings.motionAngle != null) motionAngle = Number(settings.motionAngle);
+			if (effectPage && settings.radialX != null) radialX = Number(settings.radialX);
+			if (effectPage && settings.radialY != null) radialY = Number(settings.radialY);
 			brush.value = settings.brush;
 			if (feather && settings.feather != null) feather.value = settings.feather;
 			if (subjectMode && settings.subjectAuto != null) subjectAuto = String(settings.subjectAuto) === '1';
@@ -861,6 +892,13 @@
 		placeTextBoxes();
 		redrawMask();
 		applyingHistory = false;
+		if (effectPage) {
+			motionAngle = 0;
+			radialX = 0.5;
+			radialY = 0.5;
+			syncLabels();
+			syncEffectUrl();
+		}
 		layoutStage();
 		pushHistory();
 		requestRender();
@@ -877,7 +915,7 @@
 		if (mode === 'unblur') {
 			return ['unblur', sharpen.value, radius.value, contrast.value, source.width, source.height].join('|');
 		}
-		return ['blur', effectName, strengths.gaussian, strengths.pixel, strengths.noise, strengths.motion, strengths.radial, strengths.color, source.width, source.height].join('|');
+		return ['blur', effectName, strengths.gaussian, strengths.pixel, strengths.noise, strengths.motion, strengths.radial, strengths.color, motionAngle, radialX, radialY, source.width, source.height].join('|');
 	}
 
 	function batchReferenceEdge() {
@@ -1033,8 +1071,8 @@
 		var out = ctx.createImageData(w, h);
 		var s = img.data;
 		var o = out.data;
-		var cx = (w - 1) / 2;
-		var cy = (h - 1) / 2;
+		var cx = radialX * (w - 1);
+		var cy = radialY * (h - 1);
 		var steps = 5;
 		var y, x, dx, dy, len, ux, uy, i, dist, sx, sy, si, di, r, g, b, a;
 		for (y = 0; y < h; y++) {
@@ -1109,6 +1147,50 @@
 		ctx.putImageData(out, 0, 0);
 	}
 
+	function paintMotionAngle(src, dest, amount, angleDeg) {
+		var w = src.width;
+		var h = src.height;
+		var ctx = dest.getContext('2d');
+		var distance = Math.round(amount);
+		if (distance < 1) {
+			ctx.drawImage(src, 0, 0);
+			return;
+		}
+		var img = src.getContext('2d').getImageData(0, 0, w, h);
+		var out = ctx.createImageData(w, h);
+		var s = img.data;
+		var o = out.data;
+		var rad = angleDeg * Math.PI / 180;
+		var dx = Math.cos(rad);
+		var dy = Math.sin(rad);
+		var steps = distance < 8 ? Math.max(2, distance) : 8;
+		var y, x, i, t, sx, sy, si, di, r, g, b, a;
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				r = 0;
+				g = 0;
+				b = 0;
+				a = 0;
+				for (i = 0; i < steps; i++) {
+					t = (i / (steps - 1) - 0.5) * distance;
+					sx = clampInt(Math.round(x + dx * t), w - 1);
+					sy = clampInt(Math.round(y + dy * t), h - 1);
+					si = (sy * w + sx) * 4;
+					r += s[si];
+					g += s[si + 1];
+					b += s[si + 2];
+					a += s[si + 3];
+				}
+				di = (y * w + x) * 4;
+				o[di] = r / steps;
+				o[di + 1] = g / steps;
+				o[di + 2] = b / steps;
+				o[di + 3] = a / steps;
+			}
+		}
+		ctx.putImageData(out, 0, 0);
+	}
+
 	function paintEffect(src, dest, scale) {
 		var amount = Number(strengths[effectName] || 0) * (scale || 1);
 		sizeTo(dest, src.width, src.height);
@@ -1118,7 +1200,10 @@
 			barCtx.fillRect(0, 0, dest.width, dest.height);
 		} else if (effectName === 'pixel') paintPixel(src, dest, amount);
 		else if (effectName === 'noise') paintNoise(src, dest, amount);
-		else if (effectName === 'motion') paintMotion(src, dest, amount);
+		else if (effectName === 'motion') {
+			if (effectPage && motionAngle % 180 !== 0) paintMotionAngle(src, dest, amount, motionAngle);
+			else paintMotion(src, dest, amount);
+		}
 		else if (effectName === 'radial') paintRadial(src, dest, amount);
 		else if (effectName === 'color') paintColor(src, dest, amount);
 		else paintGaussian(src, dest, amount);
@@ -1591,10 +1676,12 @@
 	redoBtn.addEventListener('click', redo);
 	resetBtn.addEventListener('click', restoreImage);
 
-	[intensity, brush, sharpen, radius, contrast, feather].forEach(function (input) {
+	[intensity, brush, sharpen, radius, contrast, feather, motionAngleInput, motionDistance].forEach(function (input) {
 		if (!input) return;
 		input.addEventListener('input', function () {
 			if (input === intensity) strengths[effectName] = Number(intensity.value);
+			if (input === motionDistance) strengths.motion = Number(motionDistance.value);
+			if (input === motionAngleInput) motionAngle = Number(motionAngleInput.value);
 			syncLabels();
 			requestRender();
 		});
@@ -1607,6 +1694,62 @@
 		syncLabels();
 		requestRender();
 		commitSettings();
+		syncEffectUrl();
+	}
+
+	function syncEffectControls() {
+		if (!effectPage) return;
+		if (motionGroup) motionGroup.hidden = effectName !== 'motion';
+		if (strengthGroup) strengthGroup.hidden = effectName === 'motion';
+		if (radialHint) radialHint.hidden = effectName !== 'radial';
+		placeFocus();
+	}
+
+	function placeFocus() {
+		if (!focusLayer || !focusPoint) return;
+		var show = effectPage && ready && effectName === 'radial' && jobName !== 'batch';
+		focusLayer.hidden = !show;
+		if (!show) return;
+		focusPoint.style.left = (radialX * 100) + '%';
+		focusPoint.style.top = (radialY * 100) + '%';
+	}
+
+	function moveFocus(event) {
+		var rect = stageCanvas.getBoundingClientRect();
+		if (!rect.width || !rect.height) return;
+		var x = (event.clientX - rect.left) / rect.width;
+		var y = (event.clientY - rect.top) / rect.height;
+		if (x < 0) x = 0;
+		if (x > 1) x = 1;
+		if (y < 0) y = 0;
+		if (y > 1) y = 1;
+		radialX = x;
+		radialY = y;
+		placeFocus();
+		requestRender();
+	}
+
+	function syncEffectUrl() {
+		if (!effectPage || !window.history || !window.history.replaceState) return;
+		var url = new URL(window.location.href);
+		if (url.searchParams.get('type') === effectName) return;
+		url.searchParams.set('type', effectName);
+		window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+	}
+
+	function effectFromUrl() {
+		if (!effectPage) return;
+		var type = '';
+		try { type = new URLSearchParams(window.location.search).get('type') || ''; } catch (err) { return; }
+		var map = { gaussian: 'gaussian', pixel: 'pixel', pixelate: 'pixel', noise: 'noise', motion: 'motion', radial: 'radial', color: 'color' };
+		type = map[type.toLowerCase()];
+		if (!type) return;
+		effectName = type;
+		if (effectName === 'motion' && strengths.motion < 1) strengths.motion = 24;
+		if (effectName === 'radial' && strengths.radial < 1) strengths.radial = 18;
+		if (effectName === 'noise' && strengths.noise < 1) strengths.noise = 12;
+		if (effectName === 'color' && strengths.color < 1) strengths.color = 12;
+		if (effectName === 'pixel' && strengths.pixel <= 1) strengths.pixel = 12;
 	}
 	function chooseScope(name) {
 		if (jobName === 'batch' || scopeName === name) return;
@@ -3086,7 +3229,30 @@
 	if (jobSingleBtn) jobSingleBtn.addEventListener('click', function () { chooseJob('single'); });
 	if (jobBatchBtn) jobBatchBtn.addEventListener('click', function () { chooseJob('batch'); });
 
+	if (focusPoint) {
+		focusPoint.addEventListener('pointerdown', function (event) {
+			event.preventDefault();
+			event.stopPropagation();
+			focusDrag = true;
+			try { focusPoint.setPointerCapture(event.pointerId); } catch (err) {}
+			moveFocus(event);
+		});
+		focusPoint.addEventListener('pointermove', function (event) {
+			if (!focusDrag) return;
+			moveFocus(event);
+		});
+		function stopFocus() {
+			if (!focusDrag) return;
+			focusDrag = false;
+			commitSettings();
+		}
+		focusPoint.addEventListener('pointerup', stopFocus);
+		focusPoint.addEventListener('pointercancel', stopFocus);
+	}
+
 	applyPreset();
+	effectFromUrl();
+	syncLabels();
 	updateZoomControls();
 	syncJob();
 	setStatus(subjectMode

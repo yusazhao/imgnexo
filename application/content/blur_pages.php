@@ -51,7 +51,7 @@ return array(
 			),
 			array(
 				'h2' => 'Blur Effect on Photos & Pictures',
-				'html' => '<p>A blur effect on pictures can be a light soft-focus look or a heavy blur effect on photos. Blur effect image settings are on the <a href="{{path:blur-image/effect}}">blur effect</a> page. The editor offers gaussian blur or pixelate blur, one at a time.</p>',
+				'html' => '<p>A blur effect on pictures can be a light soft-focus look or a heavy blur effect on photos. Blur effect image settings are on the <a href="{{path:blur-image/effect}}">blur effect</a> page. Gaussian, pixelate, motion, radial, noise, and color are there, one at a time.</p>',
 			),
 			array(
 				'h2' => 'Make Picture Blurry',
@@ -295,14 +295,15 @@ return array(
 		'slug' => 'effect',
 		'path' => 'blur-image/effect',
 		'faq_heading' => 'FAQ',
-		'title' => 'Blur Effect Image Online – Gaussian and Pixelate',
-		'description' => 'Apply a blur effect image with gaussian blur or pixelate blur. One strength at a time, on the whole photo or a brush stroke.',
-		'h1' => 'Blur Effect Image Online – Gaussian and Pixelate',
-		'lead' => '<p>Apply a blur effect image with the two effects this editor actually has. Gaussian blur softens. Pixelate blur builds blocks. They are not stacked, and there is no fade wash.</p>',
+		'title' => 'Blur Effect Image Online – Gaussian, Pixelate & Motion Effects',
+		'description' => 'Apply photo-style blur effects instantly. Choose from Gaussian, Pixelate, Motion, and Radial blurs. Adjust strength and apply to the whole image or specific areas.',
+		'h1' => 'Blur Effect Image Online – Gaussian, Pixelate & Motion Effects',
+		'lead' => '<p>Apply photo-style blur effects instantly. Choose from Gaussian, Pixelate, Motion, and Radial blurs. Adjust strength and apply to the whole image or specific areas.</p>',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'effect',
-			'note' => 'One Strength control runs the selected effect on the whole image, or only where you brush.',
+			'effects' => TRUE,
+			'note' => 'One effect runs at a time. Pixel uses block size. Motion uses angle and distance. Drag the point to place a radial center.',
 		),
 		'sections' => array(
 			array(
@@ -315,16 +316,16 @@ return array(
 			),
 			array(
 				'h2' => 'Fade images are not offered here',
-				'html' => '<p>Fade images wash a photo toward a pale color so contrast falls. That is a color treatment, not a blur, and this editor does not do it. It also does not add motion streaks or a separate soft-background filter. Gaussian softens the pixels you choose. Pixel replaces them with blocks.</p>',
+				'html' => '<p>Fade images wash a photo toward a pale color so contrast falls. That is a color treatment, not a blur, and this editor does not do it. For a streak, choose Motion and set the angle. For a burst from one spot, choose Radial and drag the center. Gaussian softens. Pixel replaces detail with blocks.</p>',
 			),
 			array(
 				'h2' => 'Apply blurry effects on pictures & photos',
-				'html' => '<p>Pick one blurry effect. Gaussian is enough for a blur effect on photos that should still hint at the scene. Pixel is the blur effect on pictures when a face or a line of type must stay unreadable. Switch effects instead of stacking them. Region edits live on the <a href="{{path:blur-image}}">blur image</a> page.</p>',
+				'html' => '<p>Pick one blurry effect. Gaussian is enough when the photo should still hint at the scene. Pixel is the one when a face or a line of type must stay unreadable. Motion, Radial, Noise, and Color are the other looks. Switch effects instead of stacking them. Whole image covers the frame. Brush, Marquee, and Lasso keep the change inside a region.</p>',
 			),
 		),
 		'faqs' => array(
 			array('q' => 'What is difference between gaussian blur and pixelate blur?', 'a' => '<p>Gaussian blur melts edges into neighboring colors. Pixelate blur builds visible squares. Use gaussian blur for a soft portrait look and pixelate blur when someone must not be identified.</p>'),
-			array('q' => 'Can I combine multiple blurry effects in one picture?', 'a' => '<p>No. Gaussian and Pixel are alternatives. Choose one, set Strength, and apply it to the whole image or with Brush. Switching effects replaces the previous look.</p>'),
+			array('q' => 'Can I combine multiple blurry effects in one picture?', 'a' => '<p>No. Gaussian, Pixel, Noise, Motion, Radial, and Color are alternatives. Choose one and apply it to the whole image or to a region. Switching effects replaces the previous look.</p>'),
 			array('q' => 'How to create fade images for social media?', 'a' => '<p>This editor does not create fade images. For a teaser, choose Gaussian, leave Apply to on Whole image, and raise Strength until the subject is hard to recognize. Download the PNG.</p>'),
 		),
 		'opposite' => array(

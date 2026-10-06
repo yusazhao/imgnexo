@@ -2,7 +2,7 @@
 $mode = $tool['mode'];
 $preset = $tool['preset'];
 ?>
-<section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?><?php if ( ! empty($tool['subject'])): ?> data-subject="1" data-object-model="<?= html_escape(asset_url('models/u2netp.onnx')) ?>"<?php endif; ?><?php if ( ! empty($tool['face'])): ?> data-face="1"<?php endif; ?><?php if ( ! empty($tool['text'])): ?> data-text="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
+<section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?><?php if ( ! empty($tool['subject'])): ?> data-subject="1" data-object-model="<?= html_escape(asset_url('models/u2netp.onnx')) ?>"<?php endif; ?><?php if ( ! empty($tool['face'])): ?> data-face="1"<?php endif; ?><?php if ( ! empty($tool['text'])): ?> data-text="1"<?php endif; ?><?php if ( ! empty($tool['effects'])): ?> data-effects="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
 	<?php if ( ! empty($tool['batch'])): ?>
 	<div class="job-switch">
 		<div class="choice-row" role="radiogroup" aria-label="Single or batch">
@@ -48,6 +48,9 @@ $preset = $tool['preset'];
 							<?php if ( ! empty($tool['text'])): ?>
 							<div class="text-layer" id="text-layer" hidden></div>
 							<?php endif; ?>
+							<?php if ( ! empty($tool['effects'])): ?>
+							<div class="focus-layer" id="focus-layer" hidden><button type="button" class="focus-point" id="focus-point" aria-label="Drag the blur center"></button></div>
+							<?php endif; ?>
 						</div>
 					</div>
 				</div>
@@ -76,6 +79,7 @@ $preset = $tool['preset'];
 				<button type="button" id="reset-image" disabled>Reset</button>
 				<button type="button" id="replace">Replace</button>
 			</div>
+			<?php if (empty($tool['effects'])): ?>
 			<div class="frame-switch" id="frame-switch" hidden>
 				<span class="control-label" id="frame-label">Download frame</span>
 				<div class="frame-row" role="radiogroup" aria-labelledby="frame-label">
@@ -88,6 +92,7 @@ $preset = $tool['preset'];
 				</div>
 				<p class="hint">Drag the frame to move it. Drag a corner to resize. Original downloads the whole photo.</p>
 			</div>
+			<?php endif; ?>
 		</div>
 		<div class="controls">
 			<?php
@@ -217,6 +222,62 @@ $preset = $tool['preset'];
 				</div>
 				<p class="hint">Drag a rectangle or paint handwriting and any writing the finder missed.</p>
 			</div>
+			<?php elseif ( ! empty($tool['effects'])): ?>
+			<div class="control-group" id="effect-group" data-for="blur">
+				<span class="control-label" id="effect-label">Blur effect</span>
+				<div class="choice-row effect-cards" role="radiogroup" aria-labelledby="effect-label">
+					<button type="button" class="choice effect-card is-on" id="effect-gaussian" aria-pressed="true"><svg viewBox="0 0 64 36" aria-hidden="true"><defs><radialGradient id="fx-gauss" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#64748b"/><stop offset="55%" stop-color="#94a3b8" stop-opacity=".55"/><stop offset="100%" stop-color="#94a3b8" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="18" r="16" fill="url(#fx-gauss)"/></svg><span>Gaussian</span></button>
+					<button type="button" class="choice effect-card" id="effect-pixel" aria-pressed="false"><svg viewBox="0 0 64 36" aria-hidden="true"><rect x="16" y="6" width="8" height="8" fill="#64748b"/><rect x="26" y="6" width="8" height="8" fill="#94a3b8"/><rect x="36" y="6" width="8" height="8" fill="#64748b"/><rect x="16" y="16" width="8" height="8" fill="#94a3b8"/><rect x="26" y="16" width="8" height="8" fill="#475569"/><rect x="36" y="16" width="8" height="8" fill="#94a3b8"/><rect x="16" y="26" width="8" height="6" fill="#64748b"/><rect x="26" y="26" width="8" height="6" fill="#94a3b8"/><rect x="36" y="26" width="8" height="6" fill="#64748b"/></svg><span>Pixel</span></button>
+					<button type="button" class="choice effect-card" id="effect-noise" aria-pressed="false"><svg viewBox="0 0 64 36" aria-hidden="true"><circle cx="14" cy="10" r="1.4" fill="#64748b"/><circle cx="22" cy="8" r="1" fill="#94a3b8"/><circle cx="30" cy="12" r="1.6" fill="#475569"/><circle cx="40" cy="7" r="1.1" fill="#64748b"/><circle cx="48" cy="11" r="1.3" fill="#94a3b8"/><circle cx="18" cy="18" r="1.2" fill="#475569"/><circle cx="27" cy="20" r="1" fill="#64748b"/><circle cx="36" cy="17" r="1.5" fill="#94a3b8"/><circle cx="46" cy="21" r="1.1" fill="#475569"/><circle cx="54" cy="16" r="1.2" fill="#64748b"/><circle cx="16" cy="28" r="1" fill="#94a3b8"/><circle cx="25" cy="27" r="1.4" fill="#64748b"/><circle cx="34" cy="30" r="1" fill="#475569"/><circle cx="44" cy="28" r="1.3" fill="#64748b"/><circle cx="52" cy="26" r="1" fill="#94a3b8"/></svg><span>Noise</span></button>
+					<button type="button" class="choice effect-card" id="effect-motion" aria-pressed="false"><svg viewBox="0 0 64 36" aria-hidden="true"><line x1="8" y1="10" x2="56" y2="10" stroke="#64748b" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="18" x2="50" y2="18" stroke="#64748b" stroke-width="2" stroke-linecap="round" opacity=".65"/><line x1="22" y1="26" x2="42" y2="26" stroke="#64748b" stroke-width="2" stroke-linecap="round" opacity=".35"/></svg><span>Motion</span></button>
+					<button type="button" class="choice effect-card" id="effect-radial" aria-pressed="false"><svg viewBox="0 0 64 36" aria-hidden="true"><circle cx="32" cy="18" r="3" fill="#475569"/><circle cx="32" cy="18" r="8" fill="none" stroke="#64748b" stroke-width="1.6"/><circle cx="32" cy="18" r="13" fill="none" stroke="#94a3b8" stroke-width="1.4"/></svg><span>Radial</span></button>
+					<button type="button" class="choice effect-card" id="effect-color" aria-pressed="false"><svg viewBox="0 0 64 36" aria-hidden="true"><rect x="14" y="8" width="28" height="8" rx="2" fill="#ef4444" opacity=".8"/><rect x="20" y="14" width="28" height="8" rx="2" fill="#22c55e" opacity=".75"/><rect x="26" y="20" width="28" height="8" rx="2" fill="#3b82f6" opacity=".75"/></svg><span>Color</span></button>
+				</div>
+			</div>
+			<div class="control-group" data-for="blur">
+				<span class="control-label" id="scope-label">Apply to</span>
+				<div class="choice-row" role="radiogroup" aria-labelledby="scope-label">
+					<button type="button" class="choice is-on" id="scope-whole" aria-pressed="true">Whole image</button>
+					<button type="button" class="choice" id="scope-brush" aria-pressed="false">Brush</button>
+					<button type="button" class="choice" id="scope-marquee" aria-pressed="false" title="Rectangular marquee">Marquee</button>
+					<button type="button" class="choice" id="scope-lasso" aria-pressed="false" title="Freehand lasso">Lasso</button>
+				</div>
+			</div>
+			<div class="control-group" id="strength-group" data-for="blur">
+				<label for="intensity"><span id="intensity-name">Strength</span> <output id="intensity-out">8 px</output></label>
+				<input id="intensity" type="range" min="0" max="40" value="8">
+			</div>
+			<div id="motion-group" hidden>
+				<div class="control-group">
+					<label for="motion-angle">Angle <output id="motion-angle-out">0°</output></label>
+					<input id="motion-angle" type="range" min="0" max="360" step="1" value="0">
+				</div>
+				<div class="control-group">
+					<label for="motion-distance">Distance <output id="motion-distance-out">0 px</output></label>
+					<input id="motion-distance" type="range" min="0" max="80" step="1" value="0">
+				</div>
+			</div>
+			<p class="hint" id="radial-hint" hidden>Drag the point on the photo to move the center.</p>
+			<div class="control-group" id="brush-group" hidden>
+				<label for="brush">Brush size <output id="brush-out">48 px</output></label>
+				<input id="brush" type="range" min="8" max="140" value="48">
+			</div>
+			<div class="control-group" id="feather-group" hidden>
+				<label for="feather">Feather <output id="feather-out">0 px</output></label>
+				<input id="feather" type="range" min="0" max="48" value="0">
+			</div>
+			<details class="frame-switch frame-disclosure" id="frame-switch" hidden>
+				<summary id="frame-label">Download frame</summary>
+				<div class="frame-row" role="radiogroup" aria-labelledby="frame-label">
+					<button type="button" class="choice is-on" data-frame="original" aria-pressed="true">Original</button>
+					<button type="button" class="choice" data-frame="9:16" aria-pressed="false">9:16</button>
+					<button type="button" class="choice" data-frame="3:4" aria-pressed="false">3:4</button>
+					<button type="button" class="choice" data-frame="4:5" aria-pressed="false">4:5</button>
+					<button type="button" class="choice" data-frame="1:1" aria-pressed="false">1:1</button>
+					<button type="button" class="choice" data-frame="16:9" aria-pressed="false">16:9</button>
+				</div>
+				<p class="hint">Drag the frame to move it. Drag a corner to resize. Original downloads the whole photo.</p>
+			</details>
 			<?php else: ?>
 			<div class="control-group" id="effect-group" data-for="blur">
 				<span class="control-label" id="effect-label">Blur effect</span>
