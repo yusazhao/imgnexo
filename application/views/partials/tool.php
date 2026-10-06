@@ -2,7 +2,7 @@
 $mode = $tool['mode'];
 $preset = $tool['preset'];
 ?>
-<section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?><?php if ( ! empty($tool['subject'])): ?> data-subject="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
+<section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?><?php if ( ! empty($tool['subject'])): ?> data-subject="1" data-object-model="<?= html_escape(asset_url('models/u2netp.onnx')) ?>"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
 	<?php if ( ! empty($tool['batch'])): ?>
 	<div class="job-switch">
 		<div class="choice-row" role="radiogroup" aria-label="Single or batch">

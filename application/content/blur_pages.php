@@ -33,7 +33,7 @@ return array(
 		'sections' => array(
 			array(
 				'h2' => 'Blur Picture Background',
-				'html' => '<p>A soft backdrop keeps a person or product easier to see. People look for blur background of photo, blur picture background, and blur image background when a busy street or room is stealing attention.</p><p>The dedicated walkthrough is on the <a href="{{path:blur-image/background}}">blur background of photo</a> page. Choose people and animals, or an object, then blur the background. Paint anything the finder misses.</p>',
+				'html' => '<p>A soft backdrop keeps a person or product easier to see. People look for blur background of photo, blur picture background, and blur image background when a busy street or room is stealing attention.</p><p>The dedicated walkthrough is on the <a href="{{path:blur-image/background}}">blur background of photo</a> page. Choose people and animals, or the main object, then blur the background. Paint anything the finder misses.</p>',
 				'children' => array(
 					array(
 						'h3' => 'Different Ways to Blur Photo Background',
@@ -103,13 +103,13 @@ return array(
 		'title' => 'Blur Background of Photo Online | Blur Image Background',
 		'description' => 'Blur background of photo online. Blur picture background, add blur the image background for portrait photos.',
 		'h1' => 'Blur Background of Photo Online | Blur Image Background',
-		'lead' => '<p>Blur background of photo when the subject is fine and the room behind them is not. A blur image background edit keeps a person or a common object readable while the street, office, or crowd falls out of focus. The finder is coarse: hair and fur can look cut out, and unusual subjects are often missed. Paint those parts. The photo stays on your device.</p>',
+		'lead' => '<p>Blur background of photo when the subject is fine and the room behind them is not. A blur image background edit keeps a person, or the main object in front, readable while the street, office, or backdrop falls out of focus. Hair, fur, writing, and shapes that blend in can be missed. Paint those parts. The photo stays on your device.</p>',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'background',
 			'subject' => TRUE,
 			'note_below' => TRUE,
-			'note' => 'Only common people, animals, and objects are recognized. The outline is coarse, so hair and fur often look cut out. Paint anything it misses. Feather softens that edge.',
+			'note' => 'Objects keeps the main subject, such as a product, and blurs the backdrop. People and animals means a person or a common animal. Writing, logos, and edges that blend in are often missed. Paint those. Feather softens the edge.',
 		),
 		'sections' => array(
 			array(
@@ -122,7 +122,7 @@ return array(
 			),
 			array(
 				'h2' => 'Tips for background picture blur',
-				'html' => '<p>The finder uses a small map, so fine edges are soft or missing. People and animals means a person, bird, cat, dog, horse, cow, or sheep. Objects means common things such as a bottle, chair, car, or sofa. Small, unusual, or partly hidden subjects are missed. Paint those. A huge Strength on a hard edge still looks like a cutout.</p>',
+				'html' => '<p>People and animals means a person, bird, cat, dog, horse, cow, or sheep. Objects keeps the main thing in front, such as a bottle or a product, and blurs the backdrop. It can miss writing, logos, and parts that match the background. Paint those. Edges stay coarse. A huge Strength on a hard edge still looks like a cutout.</p>',
 			),
 			array(
 				'h2' => 'How to edit blur background pics',
@@ -130,7 +130,7 @@ return array(
 			),
 		),
 		'faqs' => array(
-			array('q' => 'How do I blur the image background for portrait photos?', 'a' => '<p>Choose People and animals, then Blur background. The room softens. The outline is coarse and hair can look cut out, so paint the missed parts and raise Feather. The photo is not uploaded. The first click downloads the finder (about 6 MB); later clicks reuse it.</p>'),
+			array('q' => 'How do I blur the image background for portrait photos?', 'a' => '<p>Choose People and animals, then Blur background. The room softens. The outline is coarse and hair can look cut out, so paint the missed parts and raise Feather. The photo is not uploaded. The first click for a choice downloads that finder; later clicks reuse it.</p>'),
 			array('q' => 'Can I adjust blur strength for background picture blur?', 'a' => '<p>Yes. The slider is live. Stronger background picture blur hides more clutter and also looks less like a camera lens, so stop when the subject still feels attached to the scene.</p>'),
 			array('q' => 'Does blurring background pics reduce photo quality?', 'a' => '<p>The background loses detail on purpose. With Invert on, the painted subject is copied from the original. Export is PNG, so you are not adding a second round of JPEG damage on top of the blur.</p>'),
 		),

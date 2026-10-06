@@ -119,14 +119,17 @@
 	var autoShape = document.createElement('canvas');
 	var small = document.createElement('canvas');
 	var categoryCache = null;
+	var thingCache = null;
 	var autoHasPixels = false;
 	var protectMode = 'life';
 	var autoBusy = false;
 	var autoToken = 0;
 	var segmenter = null;
 	var segmenterPromise = null;
+	var thingSession = null;
+	var thingSessionPromise = null;
+	var thingTensor = null;
 	var LIFE_CLASSES = { 3: 1, 8: 1, 10: 1, 12: 1, 13: 1, 15: 1, 17: 1 };
-	var THING_CLASSES = { 1: 1, 2: 1, 4: 1, 5: 1, 6: 1, 7: 1, 9: 1, 11: 1, 14: 1, 16: 1, 18: 1, 19: 1, 20: 1 };
 	var ready = false;
 	var showingOriginal = false;
 	var painting = false;
@@ -277,6 +280,7 @@
 		autoToken++;
 		autoBusy = false;
 		categoryCache = null;
+		thingCache = null;
 		autoHasPixels = false;
 		maskShown = false;
 		setAutoProgress(false, 0, '');
@@ -607,8 +611,11 @@
 			if (subjectMode && (settings.protect === 'life' || settings.protect === 'things')) protectMode = settings.protect;
 			if (subjectMode && (settings.maskOp === 'keep' || settings.maskOp === 'erase')) maskOp = settings.maskOp;
 			if (subjectMode) {
-				if (String(settings.autoMask) === '1' && categoryCache) rasterizeCategory();
-				else clearAutoShape();
+				if (String(settings.autoMask) === '1') {
+					if (protectMode === 'things' && thingCache) applyThingMask();
+					else if (protectMode !== 'things' && categoryCache) rasterizeCategory();
+					else clearAutoShape();
+				} else clearAutoShape();
 			}
 		} else {
 			sharpen.value = settings.sharpen;
@@ -1287,6 +1294,7 @@
 		autoToken++;
 		autoBusy = false;
 		categoryCache = null;
+		thingCache = null;
 		clearAutoShape();
 		setAutoProgress(false, 0, '');
 		clearMask();
@@ -1628,7 +1636,7 @@
 			clearAutoShape();
 			return false;
 		}
-		var keep = protectMode === 'things' ? THING_CLASSES : LIFE_CLASSES;
+		var keep = LIFE_CLASSES;
 		var mw = categoryCache.width;
 		var mh = categoryCache.height;
 		var src = categoryCache.data;
@@ -1657,6 +1665,79 @@
 		actx.drawImage(scratch, 0, 0, autoShape.width, autoShape.height);
 		autoHasPixels = count > 0;
 		return autoHasPixels;
+	}
+
+	function applyThingMask() {
+		var size = 320;
+		if (!thingCache || thingCache.length < size * size || !source.width) {
+			clearAutoShape();
+			return false;
+		}
+		var img = new ImageData(size, size);
+		var px = img.data;
+		var count = 0;
+		var i;
+		for (i = 0; i < size * size; i++) {
+			var alpha = thingCache[i];
+			if (alpha < 24) continue;
+			var o = i * 4;
+			px[o] = 255;
+			px[o + 1] = 255;
+			px[o + 2] = 255;
+			px[o + 3] = alpha;
+			count++;
+		}
+		var ratio = count / (size * size);
+		if (ratio < 0.015 || ratio > 0.97) {
+			clearAutoShape();
+			return false;
+		}
+		var scratch = document.createElement('canvas');
+		scratch.width = size;
+		scratch.height = size;
+		scratch.getContext('2d').putImageData(img, 0, 0);
+		sizeTo(autoShape, source.width, source.height);
+		var actx = autoShape.getContext('2d');
+		actx.setTransform(1, 0, 0, 1, 0, 0);
+		actx.imageSmoothingEnabled = true;
+		actx.clearRect(0, 0, autoShape.width, autoShape.height);
+		actx.drawImage(scratch, 0, 0, autoShape.width, autoShape.height);
+		autoHasPixels = true;
+		return true;
+	}
+
+	function thingInput(canvas) {
+		var size = 320;
+		var scratch = document.createElement('canvas');
+		scratch.width = size;
+		scratch.height = size;
+		var ctx = scratch.getContext('2d');
+		ctx.drawImage(canvas, 0, 0, size, size);
+		var data = ctx.getImageData(0, 0, size, size).data;
+		var peak = 1;
+		var i;
+		for (i = 0; i < data.length; i += 4) {
+			if (data[i] > peak) peak = data[i];
+			if (data[i + 1] > peak) peak = data[i + 1];
+			if (data[i + 2] > peak) peak = data[i + 2];
+		}
+		var mean = [0.485, 0.456, 0.406];
+		var std = [0.229, 0.224, 0.225];
+		var plane = size * size;
+		var input = new Float32Array(3 * plane);
+		var y;
+		var x;
+		var c;
+		for (y = 0; y < size; y++) {
+			for (x = 0; x < size; x++) {
+				var p = (y * size + x) * 4;
+				var at = y * size + x;
+				for (c = 0; c < 3; c++) {
+					input[c * plane + at] = (data[p + c] / peak - mean[c]) / std[c];
+				}
+			}
+		}
+		return input;
 	}
 
 	function readCategory(maskResult) {
@@ -1733,6 +1814,53 @@
 		return segmenterPromise;
 	}
 
+	function loadThingSession() {
+		var modelUrl = editor.getAttribute('data-object-model');
+		var ortBase = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.21.0/dist/';
+		if (!modelUrl) return Promise.reject(new Error('no model'));
+		reportAuto(0.02, '');
+		return trackFetch(ortBase + 'ort.wasm.min.mjs', function (ratio) {
+			reportAuto(0.02 + ratio * 0.06, '');
+		}).then(function () {
+			return import(ortBase + 'ort.wasm.min.mjs');
+		}).then(function (ortMod) {
+			ortMod.env.wasm.wasmPaths = ortBase;
+			ortMod.env.wasm.numThreads = 1;
+			thingTensor = ortMod.Tensor;
+			return trackFetch(ortBase + 'ort-wasm-simd-threaded.mjs', function (ratio) {
+				reportAuto(0.08 + ratio * 0.04, '');
+			}).then(function () {
+				return trackFetch(ortBase + 'ort-wasm-simd-threaded.wasm', function (ratio) {
+					reportAuto(0.12 + ratio * 0.50, '');
+				});
+			}).then(function () {
+				reportAuto(0.64, '');
+				return trackFetch(modelUrl, function (ratio) {
+					reportAuto(0.64 + ratio * 0.26, '');
+				});
+			}).then(function (modelBuffer) {
+				reportAuto(0.92, '');
+				return ortMod.InferenceSession.create(new Uint8Array(modelBuffer), {
+					executionProviders: ['wasm']
+				});
+			});
+		});
+	}
+
+	function ensureThingSession() {
+		if (thingSession) return Promise.resolve(thingSession);
+		if (!thingSessionPromise) {
+			thingSessionPromise = loadThingSession().then(function (created) {
+				thingSession = created;
+				return created;
+			}, function (err) {
+				thingSessionPromise = null;
+				throw err;
+			});
+		}
+		return thingSessionPromise;
+	}
+
 	function segmentSource(token) {
 		if (categoryCache) {
 			reportAuto(0.97, 'Blurring the background…');
@@ -1754,18 +1882,61 @@
 		});
 	}
 
+	function segmentThings(token) {
+		if (thingCache) {
+			reportAuto(0.97, '');
+			return Promise.resolve(applyThingMask());
+		}
+		reportAuto(0.93, '');
+		return waitFrame().then(function () {
+			if (token !== autoToken || !thingSession || !thingTensor) return null;
+			var feeds = {};
+			feeds[thingSession.inputNames[0]] = new thingTensor('float32', thingInput(source), [1, 3, 320, 320]);
+			return thingSession.run(feeds).then(function (out) {
+				if (token !== autoToken) return null;
+				var pred = out[thingSession.outputNames[0]].data;
+				var min = pred[0];
+				var max = pred[0];
+				var i;
+				for (i = 1; i < pred.length; i++) {
+					if (pred[i] < min) min = pred[i];
+					if (pred[i] > max) max = pred[i];
+				}
+				if (max - min < 1e-4) return false;
+				var bytes = new Uint8Array(pred.length);
+				for (i = 0; i < pred.length; i++) {
+					var n = (pred[i] - min) / (max - min);
+					if (n < 0) n = 0;
+					if (n > 1) n = 1;
+					bytes[i] = Math.round(n * 255);
+				}
+				thingCache = bytes;
+				reportAuto(0.97, '');
+				return applyThingMask();
+			});
+		});
+	}
+
 	function chooseProtect(mode) {
 		if (!subjectMode || autoBusy || protectMode === mode) return;
 		protectMode = mode;
 		syncProtectChoices();
-		if (categoryCache) {
-			var found = rasterizeCategory();
+		var cached = mode === 'things' ? thingCache : categoryCache;
+		if (cached) {
+			var found = mode === 'things' ? applyThingMask() : rasterizeCategory();
 			if (found) {
 				subjectAuto = true;
-				setStatus('Kept that choice sharp. Paint any missed part. Hair and fur often need a touch-up.');
+				setStatus(mode === 'things'
+					? 'Kept the subject sharp. Paint any part it missed.'
+					: 'Kept that choice sharp. Paint any missed part. Hair and fur often need a touch-up.');
 			} else {
-				setStatus('Nothing in that choice was found. Try the other choice, or paint the subject.');
+				setStatus(mode === 'things'
+					? 'No clear subject was found. Try People and animals, or paint the subject.'
+					: 'Nothing in that choice was found. Try the other choice, or paint the subject.');
 			}
+			requestRender();
+		} else {
+			clearAutoShape();
 			requestRender();
 		}
 		syncLabels();
@@ -1775,25 +1946,33 @@
 	function blurBackground() {
 		if (!subjectMode || !ready || autoBusy) return;
 		var token = ++autoToken;
+		var objects = protectMode === 'things';
+		var cached = objects ? thingCache : categoryCache;
 		autoBusy = true;
 		syncAutoButton();
-		setAutoProgress(true, categoryCache ? 0.9 : 0.02, categoryCache ? 'Finding the subject…' : 'Downloading the runtime…');
-		ensureSegmenter().then(function () {
+		setAutoProgress(true, cached ? 0.9 : 0.02, '');
+		var loader = objects ? ensureThingSession : ensureSegmenter;
+		var runner = objects ? segmentThings : segmentSource;
+		loader().then(function () {
 			if (token !== autoToken) return null;
-			return segmentSource(token);
+			return runner(token);
 		}).then(function (found) {
 			if (token !== autoToken || found == null) return;
 			if (!found) {
 				clearAutoShape();
 				requestRender();
-				setStatus('Nothing in that choice was found. Try the other choice, or paint the subject.');
+				setStatus(objects
+					? 'No clear subject was found. Try People and animals, or paint the subject.'
+					: 'Nothing in that choice was found. Try the other choice, or paint the subject.');
 				return;
 			}
 			subjectAuto = true;
 			syncLabels();
 			requestRender();
 			commitSettings();
-			setStatus('Background softened. Paint any missed part. Hair and fur often need a touch-up.');
+			setStatus(objects
+				? 'Background softened. Paint any part of the subject it missed.'
+				: 'Background softened. Paint any missed part. Hair and fur often need a touch-up.');
 		}).catch(function () {
 			if (token !== autoToken) return;
 			setStatus('The finder could not run in this browser. Paint the subject instead.');

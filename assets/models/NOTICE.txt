@@ -1,0 +1,4 @@
+u2netp.onnx is the portable U^2-Net salient-object model.
+Copyright Xuebin Qin and contributors.
+Licensed under the Apache License, Version 2.0.
+This file is the rembg release asset u2netp.onnx.
