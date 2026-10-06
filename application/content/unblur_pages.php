@@ -13,6 +13,9 @@ return array(
 		'tool' => array(
 			'mode' => 'unblur',
 			'preset' => 'sharpen',
+			'shortcuts' => array(
+				array('path' => 'unblur-image/motion-blur', 'label' => 'Motion Blur'),
+			),
 			'heading' => 'How to un blur an image online',
 			'intro' => '<p>The editor applies an unsharp mask and a little contrast in the browser. Load the sample to see a soft picture tighten, or upload your own blurry photo. The file is not uploaded to a server.</p>',
 			'note' => 'Raise clarity a little at a time. If halos appear around edges, you have gone past what the file contains.',

@@ -4,7 +4,7 @@
 	<h1><?= html_escape($page['h1']) ?></h1>
 	<div class="lead prose"><?= $page['lead'] ?></div>
 	<?php if ( ! empty($page['tool']['shortcuts'])): ?>
-	<nav class="tool-links" aria-label="Blur tools">
+	<nav class="tool-links" aria-label="Common jobs">
 		<p class="tool-links-title">Common jobs</p>
 		<div class="tool-links-row">
 			<?php foreach ($page['tool']['shortcuts'] as $link): ?>

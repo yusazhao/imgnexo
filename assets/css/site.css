@@ -738,6 +738,12 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	.faq-item summary h3 { font-size: 1.4rem; }
 	.site-footer p, .site-footer li { font-size: 1.3125rem; }
 	.legal { font-size: 1.25rem; }
+	button.effect-card { font-size: 1rem; }
+	.tool-links-title { font-size: 1.2rem; }
+	.tool-links a { font-size: 1.0625rem; }
+	.control-group label, .control-label { font-size: 1.15rem; }
+	.choice-row.angle-presets .choice { font-size: 1rem; }
+	.tune-icon { width: 1.2rem; height: 1.2rem; }
 	.sheet > .tool-links { display: flex; align-items: center; flex-wrap: nowrap; gap: .75rem; }
 	.sheet > .tool-links .tool-links-title { margin: 0; }
 	.sheet > .tool-links .tool-links-row { flex-wrap: nowrap; }
@@ -754,6 +760,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 		background: var(--card);
 		border-bottom: 1px solid var(--line);
 	}
+	.choice-row.scope-cards.batch-whole-only { grid-template-columns: 1fr; max-width: 11rem; }
 	.steps, .step-cards { gap: .35rem; margin-top: .4rem; }
 	.steps li, .step-cards li {
 		display: block;

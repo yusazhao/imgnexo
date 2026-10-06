@@ -309,8 +309,12 @@
 		setChoice(scopeBrushBtn, scopeName === 'brush');
 		setChoice(scopeMarqueeBtn, scopeName === 'marquee');
 		setChoice(scopeLassoBtn, scopeName === 'lasso');
+		var batchNarrow = jobName === 'batch' && window.matchMedia('(max-width: 900px)').matches;
+		if (scopeWholeBtn && scopeWholeBtn.parentNode) scopeWholeBtn.parentNode.classList.toggle('batch-whole-only', batchNarrow);
 		[scopeBrushBtn, scopeMarqueeBtn, scopeLassoBtn].forEach(function (button) {
-			if (button) button.disabled = jobName === 'batch';
+			if (!button) return;
+			button.disabled = jobName === 'batch';
+			button.hidden = batchNarrow;
 		});
 		brushGroup.hidden = !brushing;
 		if (featherGroup && !subjectMode) featherGroup.hidden = !regional;
