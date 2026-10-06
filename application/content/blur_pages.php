@@ -9,13 +9,14 @@ return array(
 		'title' => 'Blur Image Online – Add Blur Effect to Pictures & Photos',
 		'description' => 'Free online tool to blur image, blur pic, add blur for pictures. Apply blur on image, make photos blurry in seconds.',
 		'h1' => 'Blur Image Online – Add Blur Effect to Pictures & Photos',
-		'lead' => '<p>Blur a picture in your browser when part of the frame should be harder to read. On a single image, soften the whole photo or paint over a face, some text, or a busy background. Batch applies that same whole-image blur to several photos and downloads them together. The originals stay on your device.</p>',
+		'lead' => '<p>Blur a picture in your browser when part of the frame should be harder to read. Brush is selected, so you can paint a face, some text, or a busy background, then raise Strength. Gaussian softens, Pixel blocks, and Noise scatters. Batch applies that same whole-image blur to several photos. Motion and radial effects are on the <a href="{{path:blur-image/effect}}">blur effect</a> page. The originals stay on your device.</p>',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'soft',
 			'heading' => 'How to Blur an Image Online',
 			'intro' => '<p>The photo stays in your browser. Choose Single for one picture, including a brush stroke, or Batch when several pictures should get the same whole-image blur. Download a PNG, or one zip of every image.</p>',
 			'batch' => TRUE,
+			'basic' => TRUE,
 			'note_below' => TRUE,
 			'shortcuts' => array(
 				array('path' => 'blur-image/background', 'label' => 'Blur Background'),
@@ -23,10 +24,10 @@ return array(
 				array('path' => 'blur-image/text', 'label' => 'Blur Text'),
 				array('path' => 'blur-image/effect', 'label' => 'Blur Effects'),
 			),
-			'note' => 'Gaussian softens and Pixel blocks detail. Noise scatters pixels, Motion streaks sideways, Radial pulls toward the center, and Color smears red and blue apart. On a single image, Brush paints the change, Marquee drags a rectangle, and Lasso draws a freehand shape.',
+			'note' => 'Brush is ready. Gaussian softens, Pixel blocks detail, and Noise scatters pixels. Raise Strength, then paint. Marquee and Lasso cover a box or a freehand shape.',
 			'steps' => array(
 				'Choose Single or Batch, then upload a JPG, PNG, or WEBP.',
-				'Pick an effect and raise strength. Brush, Marquee, or Lasso works on one image. Batch covers every whole image.',
+				'Brush is selected. Raise Strength, then paint the part that should be harder to read. Marquee and Lasso cover a box or a freehand shape. Batch covers every whole image.',
 				'On Single, hold “Hold for original”, then download the whole photo or the frame you placed. Batch downloads every image in one zip.',
 			),
 		),
@@ -303,7 +304,7 @@ return array(
 			'mode' => 'blur',
 			'preset' => 'effect',
 			'effects' => TRUE,
-			'note' => 'One effect runs at a time. Pixel uses block size. Motion uses angle and distance. Drag the point to place a radial center.',
+			'note' => 'Whole image is selected. Motion adds Speed and Angle. Radial uses Blur Radius and a center you can drag. Pixel uses block size.',
 		),
 		'sections' => array(
 			array(

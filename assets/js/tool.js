@@ -5,7 +5,7 @@
 	var mode = editor.getAttribute('data-mode');
 	var presetName = editor.getAttribute('data-preset') || (mode === 'unblur' ? 'sharpen' : 'soft');
 	var presets = {
-		soft: { effect: 'gaussian', gaussian: 0, pixel: 1, scope: 'whole', brush: 48 },
+		soft: { effect: 'gaussian', gaussian: 0, pixel: 1, scope: 'brush', brush: 48 },
 		background: { effect: 'gaussian', gaussian: 18, pixel: 12, scope: 'brush', brush: 72 },
 		face: { effect: 'pixel', gaussian: 4, pixel: 16, scope: 'brush', brush: 46 },
 		text: { effect: 'pixel', gaussian: 14, pixel: 16, scope: 'marquee', brush: 26 },
@@ -153,7 +153,6 @@
 	var redactGrayBtn = document.getElementById('redact-gray');
 	var motionGroup = document.getElementById('motion-group');
 	var motionAngleInput = document.getElementById('motion-angle');
-	var motionDistance = document.getElementById('motion-distance');
 	var radialHint = document.getElementById('radial-hint');
 	var intensityName = document.getElementById('intensity-name');
 	var focusLayer = document.getElementById('focus-layer');
@@ -221,13 +220,11 @@
 		var strength = Number(strengths[effectName] || 0);
 		intensity.min = effectName === 'pixel' ? '1' : '0';
 		intensity.max = '40';
-		if (!(effectPage && effectName === 'motion')) intensity.value = String(strength);
+		intensity.value = String(strength);
 		document.getElementById('intensity-out').textContent = (effectName === 'pixel' && strength <= 1) ? 'off' : strength + ' px';
 		if (strengthGroup && !effectPage) strengthGroup.hidden = effectName === 'bar' || effectName === 'gray';
-		if (intensityName) intensityName.textContent = effectName === 'pixel' ? 'Block Size' : 'Strength';
-		if (motionDistance) {
-			motionDistance.value = String(strengths.motion);
-			document.getElementById('motion-distance-out').textContent = strengths.motion + ' px';
+		if (intensityName) {
+			intensityName.textContent = effectName === 'pixel' ? 'Block Size' : effectName === 'motion' ? 'Speed' : effectName === 'radial' ? 'Blur Radius' : 'Strength';
 		}
 		if (motionAngleInput) {
 			motionAngleInput.value = String(motionAngle);
@@ -1638,6 +1635,10 @@
 		if (!batchEnabled || jobName === name) return;
 		loadToken++;
 		jobName = name;
+		if (name === 'single') {
+			var preset = presets[presetName] || presets.soft;
+			scopeName = preset.scope === 'brush' || preset.scope === 'marquee' || preset.scope === 'lasso' ? preset.scope : 'whole';
+		}
 		clearSingleWork();
 		clearBatch();
 		dropzone.hidden = false;
@@ -1645,7 +1646,9 @@
 		syncJob();
 		setStatus(name === 'batch'
 			? 'Batch blurs up to ' + batchLimit() + ' whole images with one setting, then downloads a zip.'
-			: 'Single image. Use Brush when only part of the photo should change.');
+			: presetName === 'soft'
+				? 'Single image. Brush is ready. Raise Strength, then paint the part that should be harder to read.'
+				: 'Single image. Use Brush when only part of the photo should change.');
 	}
 
 	fileInput.addEventListener('change', function () {
@@ -1676,11 +1679,10 @@
 	redoBtn.addEventListener('click', redo);
 	resetBtn.addEventListener('click', restoreImage);
 
-	[intensity, brush, sharpen, radius, contrast, feather, motionAngleInput, motionDistance].forEach(function (input) {
+	[intensity, brush, sharpen, radius, contrast, feather, motionAngleInput].forEach(function (input) {
 		if (!input) return;
 		input.addEventListener('input', function () {
 			if (input === intensity) strengths[effectName] = Number(intensity.value);
-			if (input === motionDistance) strengths.motion = Number(motionDistance.value);
 			if (input === motionAngleInput) motionAngle = Number(motionAngleInput.value);
 			syncLabels();
 			requestRender();
@@ -1691,6 +1693,8 @@
 	function chooseEffect(name) {
 		if (effectName === name) return;
 		effectName = name;
+		if (effectPage && effectName === 'motion' && strengths.motion < 1) strengths.motion = 24;
+		if (effectPage && effectName === 'radial' && strengths.radial < 1) strengths.radial = 18;
 		syncLabels();
 		requestRender();
 		commitSettings();
@@ -1700,7 +1704,7 @@
 	function syncEffectControls() {
 		if (!effectPage) return;
 		if (motionGroup) motionGroup.hidden = effectName !== 'motion';
-		if (strengthGroup) strengthGroup.hidden = effectName === 'motion';
+		if (strengthGroup) strengthGroup.hidden = false;
 		if (radialHint) radialHint.hidden = effectName !== 'radial';
 		placeFocus();
 	}
@@ -3261,5 +3265,7 @@
 			? 'Click or drag an image here. Then blur the faces.'
 			: textMode
 				? 'Click or drag an image here. Then blur the text.'
-				: 'Click or drag an image here. Editing stays in this browser.');
+				: presetName === 'soft'
+					? 'Click or drag an image here. Brush is ready. Raise Strength, then paint what should be harder to read.'
+					: 'Click or drag an image here. Editing stays in this browser.');
 })();

@@ -247,15 +247,9 @@ $preset = $tool['preset'];
 				<label for="intensity"><span id="intensity-name">Strength</span> <output id="intensity-out">8 px</output></label>
 				<input id="intensity" type="range" min="0" max="40" value="8">
 			</div>
-			<div id="motion-group" hidden>
-				<div class="control-group">
-					<label for="motion-angle">Angle <output id="motion-angle-out">0°</output></label>
-					<input id="motion-angle" type="range" min="0" max="360" step="1" value="0">
-				</div>
-				<div class="control-group">
-					<label for="motion-distance">Distance <output id="motion-distance-out">0 px</output></label>
-					<input id="motion-distance" type="range" min="0" max="80" step="1" value="0">
-				</div>
+			<div class="control-group" id="motion-group" hidden>
+				<label for="motion-angle">Angle <output id="motion-angle-out">0°</output></label>
+				<input id="motion-angle" type="range" min="0" max="360" step="1" value="0">
 			</div>
 			<p class="hint" id="radial-hint" hidden>Drag the point on the photo to move the center.</p>
 			<div class="control-group" id="brush-group" hidden>
@@ -285,16 +279,18 @@ $preset = $tool['preset'];
 					<button type="button" class="choice is-on" id="effect-gaussian" aria-pressed="true">Gaussian</button>
 					<button type="button" class="choice" id="effect-pixel" aria-pressed="false">Pixel</button>
 					<button type="button" class="choice" id="effect-noise" aria-pressed="false">Noise</button>
+					<?php if (empty($tool['basic'])): ?>
 					<button type="button" class="choice" id="effect-motion" aria-pressed="false">Motion</button>
 					<button type="button" class="choice" id="effect-radial" aria-pressed="false">Radial</button>
 					<button type="button" class="choice" id="effect-color" aria-pressed="false">Color</button>
+					<?php endif; ?>
 				</div>
 			</div>
 			<div class="control-group" data-for="blur">
 				<span class="control-label" id="scope-label">Apply to</span>
 				<div class="choice-row" role="radiogroup" aria-labelledby="scope-label">
-					<button type="button" class="choice is-on" id="scope-whole" aria-pressed="true">Whole image</button>
-					<button type="button" class="choice" id="scope-brush" aria-pressed="false">Brush</button>
+					<button type="button" class="choice<?php if (empty($tool['basic'])): ?> is-on<?php endif; ?>" id="scope-whole" aria-pressed="<?= empty($tool['basic']) ? 'true' : 'false' ?>">Whole image</button>
+					<button type="button" class="choice<?php if ( ! empty($tool['basic'])): ?> is-on<?php endif; ?>" id="scope-brush" aria-pressed="<?= ! empty($tool['basic']) ? 'true' : 'false' ?>">Brush</button>
 					<button type="button" class="choice" id="scope-marquee" aria-pressed="false" title="Rectangular marquee">Marquee</button>
 					<button type="button" class="choice" id="scope-lasso" aria-pressed="false" title="Freehand lasso">Lasso</button>
 				</div>
@@ -303,11 +299,11 @@ $preset = $tool['preset'];
 				<label for="intensity">Strength <output id="intensity-out">0 px</output></label>
 				<input id="intensity" type="range" min="0" max="40" value="0">
 			</div>
-			<div class="control-group" id="brush-group" hidden>
+			<div class="control-group" id="brush-group"<?php if (empty($tool['basic'])): ?> hidden<?php endif; ?>>
 				<label for="brush">Brush size <output id="brush-out">48 px</output></label>
 				<input id="brush" type="range" min="8" max="140" value="48">
 			</div>
-			<div class="control-group" id="feather-group" hidden>
+			<div class="control-group" id="feather-group"<?php if (empty($tool['basic'])): ?> hidden<?php endif; ?>>
 				<label for="feather">Feather <output id="feather-out">0 px</output></label>
 				<input id="feather" type="range" min="0" max="48" value="0">
 			</div>
