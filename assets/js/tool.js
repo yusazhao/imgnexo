@@ -8,7 +8,7 @@
 		soft: { effect: 'gaussian', gaussian: 0, pixel: 1, scope: 'whole', brush: 48 },
 		background: { effect: 'gaussian', gaussian: 18, pixel: 12, scope: 'brush', brush: 72 },
 		face: { effect: 'pixel', gaussian: 4, pixel: 16, scope: 'brush', brush: 46 },
-		text: { effect: 'gaussian', gaussian: 14, pixel: 12, scope: 'brush', brush: 26 },
+		text: { effect: 'pixel', gaussian: 14, pixel: 16, scope: 'marquee', brush: 26 },
 		online: { effect: 'gaussian', gaussian: 10, pixel: 8, scope: 'whole', brush: 48 },
 		effect: { effect: 'gaussian', gaussian: 8, pixel: 10, scope: 'whole', brush: 48 },
 		sharpen: { sharpen: 110, radius: 1.4, contrast: 8 },
@@ -31,6 +31,8 @@
 	var brush = document.getElementById('brush');
 	var brushGroup = document.getElementById('brush-group');
 	var subjectMode = editor.getAttribute('data-subject') === '1';
+	var faceMode = editor.getAttribute('data-face') === '1';
+	var textMode = editor.getAttribute('data-text') === '1';
 	var subjectAutoBtn = document.getElementById('subject-auto');
 	var feather = document.getElementById('feather');
 	var featherGroup = document.getElementById('feather-group');
@@ -46,7 +48,7 @@
 	var autoProgress = document.getElementById('auto-progress');
 	var autoProgressBar = document.getElementById('auto-progress-bar');
 	var autoProgressLabel = document.getElementById('auto-progress-label');
-	var effectNames = ['gaussian', 'pixel', 'noise', 'motion', 'radial', 'color'];
+	var effectNames = ['gaussian', 'pixel', 'noise', 'motion', 'radial', 'color', 'bar', 'gray'];
 	var effectButtons = {};
 	effectNames.forEach(function (name) {
 		effectButtons[name] = document.getElementById('effect-' + name);
@@ -130,6 +132,24 @@
 	var thingSessionPromise = null;
 	var thingTensor = null;
 	var LIFE_CLASSES = { 3: 1, 8: 1, 10: 1, 12: 1, 13: 1, 15: 1, 17: 1 };
+	var faceBoxes = [];
+	var faceBusy = false;
+	var faceDetector = null;
+	var faceDetectorPromise = null;
+	var faceLayer = document.getElementById('face-layer');
+	var blurFacesBtn = document.getElementById('blur-faces');
+	var strengthGroup = document.getElementById('strength-group');
+	var FACE_PAD = 0.18;
+	var textBoxes = [];
+	var textBusy = false;
+	var textWorker = null;
+	var textWorkerPromise = null;
+	var textLayer = document.getElementById('text-layer');
+	var blurTextAllBtn = document.getElementById('blur-text-all');
+	var blurTextSensitiveBtn = document.getElementById('blur-text-sensitive');
+	var redactTones = document.getElementById('redact-tones');
+	var redactBlackBtn = document.getElementById('redact-black');
+	var redactGrayBtn = document.getElementById('redact-gray');
 	var ready = false;
 	var showingOriginal = false;
 	var painting = false;
@@ -146,7 +166,7 @@
 	var applyingHistory = false;
 	var effectName = 'gaussian';
 	var scopeName = 'whole';
-	var strengths = { gaussian: 0, pixel: 1, noise: 0, motion: 0, radial: 0, color: 0 };
+	var strengths = { gaussian: 0, pixel: 1, noise: 0, motion: 0, radial: 0, color: 0, bar: 1, gray: 1 };
 
 	Array.prototype.forEach.call(editor.querySelectorAll('[data-for]'), function (el) {
 		el.hidden = el.getAttribute('data-for') !== mode;
@@ -158,7 +178,8 @@
 			effectName = strengths[preset.effect] != null ? preset.effect : 'gaussian';
 			strengths.gaussian = preset.gaussian;
 			strengths.pixel = preset.pixel;
-			scopeName = preset.scope === 'brush' ? 'brush' : 'whole';
+			if (preset.scope === 'brush' || preset.scope === 'marquee' || preset.scope === 'lasso') scopeName = preset.scope;
+			else scopeName = 'whole';
 			brush.value = preset.brush;
 			if (feather && !subjectMode) feather.value = '0';
 			if (subjectMode) {
@@ -179,6 +200,7 @@
 	}
 
 	function effectIdle() {
+		if (effectName === 'bar' || effectName === 'gray') return false;
 		var amount = Number(strengths[effectName] || 0);
 		return effectName === 'pixel' ? amount <= 1 : amount <= 0;
 	}
@@ -189,6 +211,7 @@
 		intensity.max = '40';
 		intensity.value = String(strength);
 		document.getElementById('intensity-out').textContent = (effectName === 'pixel' && strength <= 1) ? 'off' : strength + ' px';
+		if (strengthGroup) strengthGroup.hidden = effectName === 'bar' || effectName === 'gray';
 		document.getElementById('brush-out').textContent = brush.value + ' px';
 		document.getElementById('zoom-out').textContent = Math.round(zoom * 100) + '%';
 		document.getElementById('sharpen-out').textContent = (Number(sharpen.value) / 100).toFixed(2);
@@ -199,6 +222,7 @@
 		syncProtectChoices();
 		syncRefine();
 		syncScope();
+		syncTextStyle();
 	}
 
 	function setChoice(button, on) {
@@ -286,6 +310,8 @@
 		setAutoProgress(false, 0, '');
 		effectKey = '';
 		source.getContext('2d').drawImage(img, 0, 0, w, h);
+		faceBusy = false;
+		textBusy = false;
 		ready = true;
 		editor.classList.add('is-editing');
 		dropzone.hidden = true;
@@ -299,6 +325,10 @@
 		zoomBar.hidden = mode !== 'blur';
 		strokes = [];
 		strokeDraft = null;
+		faceBoxes = [];
+		placeFaceBoxes();
+		textBoxes = [];
+		placeTextBoxes();
 		history = [];
 		historyAt = -1;
 		clearMask();
@@ -307,6 +337,8 @@
 		requestRender();
 		syncJob();
 		syncAutoButton();
+		syncFaceButton();
+		syncTextButtons();
 		syncRefine();
 		if (cropName !== 'original') centerCrop();
 		placeCrop();
@@ -502,7 +534,11 @@
 			releaseDecoded(img);
 			setStatus(note || (subjectMode
 				? 'Choose People and animals, or Objects, then blur the background.'
-				: 'Preview ready. Your image stays in this browser.'));
+				: faceMode
+					? 'Click Blur faces. Then remove a wrong box, or paint any face it missed.'
+					: textMode
+						? 'Click Auto Blur All Text, or Blur Sensitive Only. Then remove a wrong box, or mark any text it missed.'
+						: 'Preview ready. Your image stays in this browser.'));
 		}, function () {
 			if (token !== loadToken) return;
 			setStatus('This browser could not read that file. Try JPG or PNG.');
@@ -568,6 +604,8 @@
 				brush: brush.value
 			};
 			if (feather) settings.feather = feather.value;
+			if (faceMode) settings.faces = JSON.stringify(faceBoxes);
+			if (textMode) settings.texts = JSON.stringify(textBoxes);
 			if (subjectMode) {
 				settings.subjectAuto = subjectAuto ? 1 : 0;
 				settings.protect = protectMode;
@@ -605,6 +643,8 @@
 			});
 			scopeName = settings.scope === 'brush' || settings.scope === 'marquee' || settings.scope === 'lasso' ? settings.scope : 'whole';
 			if (subjectMode && scopeName === 'whole') scopeName = 'brush';
+			if (faceMode) scopeName = 'brush';
+			if (textMode && scopeName !== 'brush' && scopeName !== 'marquee') scopeName = 'marquee';
 			brush.value = settings.brush;
 			if (feather && settings.feather != null) feather.value = settings.feather;
 			if (subjectMode && settings.subjectAuto != null) subjectAuto = String(settings.subjectAuto) === '1';
@@ -616,6 +656,20 @@
 					else if (protectMode !== 'things' && categoryCache) rasterizeCategory();
 					else clearAutoShape();
 				} else clearAutoShape();
+			}
+			if (faceMode) {
+				faceBoxes = [];
+				if (settings.faces) {
+					try { faceBoxes = JSON.parse(settings.faces) || []; } catch (err) { faceBoxes = []; }
+				}
+				placeFaceBoxes();
+			}
+			if (textMode) {
+				textBoxes = [];
+				if (settings.texts) {
+					try { textBoxes = JSON.parse(settings.texts) || []; } catch (err) { textBoxes = []; }
+				}
+				placeTextBoxes();
 			}
 		} else {
 			sharpen.value = settings.sharpen;
@@ -725,6 +779,13 @@
 		var list = strokes.slice();
 		if (strokeDraft && strokeDraft.points.length) list.push(strokeDraft);
 		drawStrokeList(sctx, list, false);
+		if (faceMode || textMode) {
+			sctx.fillStyle = '#fff';
+			var coverBoxes = faceMode ? faceBoxes : textBoxes;
+			coverBoxes.forEach(function (box) {
+				sctx.fillRect(box.x, box.y, box.w, box.h);
+			});
+		}
 		if (subjectMode && eraseShape.width) {
 			var ectx = eraseShape.getContext('2d');
 			ectx.clearRect(0, 0, eraseShape.width, eraseShape.height);
@@ -794,6 +855,10 @@
 		strokes = [];
 		strokeDraft = null;
 		clearAutoShape();
+		faceBoxes = [];
+		placeFaceBoxes();
+		textBoxes = [];
+		placeTextBoxes();
 		redrawMask();
 		applyingHistory = false;
 		layoutStage();
@@ -801,7 +866,11 @@
 		requestRender();
 		setStatus(subjectMode
 			? 'Image restored. Choose what to keep sharp, then blur the background again.'
-			: 'Image restored. Paint and adjustments are back to the start.');
+			: faceMode
+				? 'Image restored. Click Blur faces again, or paint the faces yourself.'
+				: textMode
+					? 'Image restored. Click Auto Blur All Text again, or mark the writing yourself.'
+					: 'Image restored. Paint and adjustments are back to the start.');
 	}
 
 	function effectCacheKey() {
@@ -1043,7 +1112,11 @@
 	function paintEffect(src, dest, scale) {
 		var amount = Number(strengths[effectName] || 0) * (scale || 1);
 		sizeTo(dest, src.width, src.height);
-		if (effectName === 'pixel') paintPixel(src, dest, amount);
+		if (effectName === 'bar' || effectName === 'gray') {
+			var barCtx = dest.getContext('2d');
+			barCtx.fillStyle = effectName === 'gray' ? '#4b5563' : '#000';
+			barCtx.fillRect(0, 0, dest.width, dest.height);
+		} else if (effectName === 'pixel') paintPixel(src, dest, amount);
 		else if (effectName === 'noise') paintNoise(src, dest, amount);
 		else if (effectName === 'motion') paintMotion(src, dest, amount);
 		else if (effectName === 'radial') paintRadial(src, dest, amount);
@@ -1105,6 +1178,8 @@
 	}
 
 	function shapeIsEmpty() {
+		if (faceMode && faceBoxes.length) return false;
+		if (textMode && textBoxes.length) return false;
 		if (strokeDraft && selectionUseful(strokeDraft)) return false;
 		for (var i = 0; i < strokes.length; i++) {
 			if (selectionUseful(strokes[i])) return false;
@@ -1288,11 +1363,17 @@
 		editor.classList.remove('is-editing');
 		strokes = [];
 		strokeDraft = null;
+		faceBoxes = [];
+		placeFaceBoxes();
+		textBoxes = [];
+		placeTextBoxes();
 		history = [];
 		historyAt = -1;
 		showingOriginal = false;
 		autoToken++;
 		autoBusy = false;
+		faceBusy = false;
+		textBusy = false;
 		categoryCache = null;
 		thingCache = null;
 		clearAutoShape();
@@ -1305,6 +1386,8 @@
 		downloadBtn.disabled = true;
 		originalBtn.disabled = true;
 		syncAutoButton();
+		syncFaceButton();
+		syncTextButtons();
 		syncRefine();
 		placeCrop();
 		updateHistoryButtons();
@@ -1535,6 +1618,11 @@
 			setStatus(refineStatus());
 			return;
 		}
+		if (textMode) {
+			if (name === 'marquee') setStatus('Drag a rectangle around any writing the finder missed.');
+			else if (name === 'brush') setStatus('Paint any writing the finder missed.');
+			return;
+		}
 		if (name === 'marquee') setStatus('Drag a rectangle. The blur stays inside it.');
 		else if (name === 'lasso') setStatus('Draw around an area and release. The blur stays inside that shape.');
 		else if (name === 'brush') setStatus('Paint where the blur should appear.');
@@ -1589,7 +1677,7 @@
 	}
 
 	function reportAuto(ratio, label) {
-		if (!autoBusy) return;
+		if (!autoBusy && !faceBusy && !textBusy) return;
 		setAutoProgress(true, ratio, label);
 	}
 
@@ -2004,12 +2092,425 @@
 	});
 	if (protectLifeBtn) protectLifeBtn.addEventListener('click', function () { chooseProtect('life'); });
 	if (protectThingsBtn) protectThingsBtn.addEventListener('click', function () { chooseProtect('things'); });
+	function syncFaceButton() {
+		if (!blurFacesBtn) return;
+		blurFacesBtn.disabled = !ready || faceBusy;
+	}
+
+	function placeFaceBoxes() {
+		if (!faceLayer) return;
+		faceLayer.innerHTML = '';
+		faceLayer.hidden = !faceBoxes.length || !source.width;
+		if (!source.width || !source.height) return;
+		faceBoxes.forEach(function (box, index) {
+			var btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'face-box';
+			btn.setAttribute('aria-label', 'Remove this face');
+			btn.style.left = (box.x / source.width * 100) + '%';
+			btn.style.top = (box.y / source.height * 100) + '%';
+			btn.style.width = (box.w / source.width * 100) + '%';
+			btn.style.height = (box.h / source.height * 100) + '%';
+			btn.addEventListener('click', function (event) {
+				event.preventDefault();
+				event.stopPropagation();
+				faceBoxes.splice(index, 1);
+				placeFaceBoxes();
+				redrawMask();
+				requestRender();
+				commitSettings();
+				setStatus('That box is removed. Paint any face that should still be covered.');
+			});
+			faceLayer.appendChild(btn);
+		});
+	}
+
+	function expandFaceBox(box, width, height) {
+		var padW = box.width * FACE_PAD;
+		var padH = box.height * FACE_PAD;
+		var x = box.originX - padW / 2;
+		var y = box.originY - padH / 2;
+		var w = box.width + padW;
+		var h = box.height + padH;
+		if (x < 0) { w += x; x = 0; }
+		if (y < 0) { h += y; y = 0; }
+		if (x + w > width) w = width - x;
+		if (y + h > height) h = height - y;
+		if (w < 2 || h < 2) return null;
+		return { x: x, y: y, w: w, h: h };
+	}
+
+	function loadFaceDetector() {
+		var visionUrl = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/+esm';
+		var wasmBase = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm';
+		var modelUrl = 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_full_range/float16/latest/blaze_face_full_range.tflite';
+		reportAuto(0.02, '');
+		return trackFetch(visionUrl, function (ratio) {
+			reportAuto(0.02 + ratio * 0.08, '');
+		}).then(function () {
+			return import(visionUrl);
+		}).then(function (vision) {
+			return vision.FilesetResolver.isSimdSupported().then(function (simd) {
+				var stem = simd ? 'vision_wasm_internal' : 'vision_wasm_nosimd_internal';
+				return trackFetch(wasmBase + '/' + stem + '.js', function (ratio) {
+					reportAuto(0.10 + ratio * 0.06, '');
+				}).then(function () {
+					return trackFetch(wasmBase + '/' + stem + '.wasm', function (ratio) {
+						reportAuto(0.16 + ratio * 0.46, '');
+					});
+				}).then(function () {
+					reportAuto(0.62, '');
+					return trackFetch(modelUrl, function (ratio) {
+						reportAuto(0.62 + ratio * 0.26, '');
+					}).then(function (modelBuffer) {
+						return { vision: vision, model: new Uint8Array(modelBuffer) };
+					});
+				});
+			});
+		}).then(function (pack) {
+			reportAuto(0.90, '');
+			return pack.vision.FilesetResolver.forVisionTasks(wasmBase).then(function (fileset) {
+				function create(delegate) {
+					return pack.vision.FaceDetector.createFromOptions(fileset, {
+						baseOptions: { modelAssetBuffer: pack.model, delegate: delegate },
+						runningMode: 'IMAGE',
+						minDetectionConfidence: 0.5
+					});
+				}
+				return create('GPU').catch(function () { return create('CPU'); });
+			});
+		});
+	}
+
+	function ensureFaceDetector() {
+		if (faceDetector) return Promise.resolve(faceDetector);
+		if (!faceDetectorPromise) {
+			faceDetectorPromise = loadFaceDetector().then(function (created) {
+				faceDetector = created;
+				return created;
+			}, function (err) {
+				faceDetectorPromise = null;
+				throw err;
+			});
+		}
+		return faceDetectorPromise;
+	}
+
+	function blurFaces() {
+		if (!faceMode || !ready || faceBusy) return;
+		var token = ++autoToken;
+		faceBusy = true;
+		autoBusy = true;
+		syncFaceButton();
+		setAutoProgress(true, faceDetector ? 0.9 : 0.02, '');
+		ensureFaceDetector().then(function () {
+			if (token !== autoToken || !faceDetector) return null;
+			reportAuto(0.94, '');
+			return waitFrame().then(function () {
+				if (token !== autoToken || !faceDetector) return null;
+				var found = faceDetector.detect(source);
+				var boxes = [];
+				var list = found && found.detections ? found.detections : [];
+				list.forEach(function (hit) {
+					var raw = hit.boundingBox;
+					if (!raw) return;
+					var rw = raw.width;
+					var rh = raw.height;
+					var rx = raw.originX;
+					var ry = raw.originY;
+					if (rw > 0 && rw <= 1 && rh > 0 && rh <= 1 && source.width > 2) {
+						rx *= source.width;
+						ry *= source.height;
+						rw *= source.width;
+						rh *= source.height;
+					}
+					if (rw < 2 || rh < 2) return;
+					var box = expandFaceBox({ originX: rx, originY: ry, width: rw, height: rh }, source.width, source.height);
+					if (box) boxes.push(box);
+				});
+				return boxes;
+			});
+		}).then(function (boxes) {
+			if (token !== autoToken || !boxes) return;
+			faceBoxes = boxes;
+			placeFaceBoxes();
+			redrawMask();
+			requestRender();
+			commitSettings();
+			setStatus(boxes.length
+				? 'Faces covered. Click a box to remove it, or paint any face that was missed.'
+				: 'No face was found. Paint any face that should be covered.');
+		}).catch(function () {
+			if (token !== autoToken) return;
+			setStatus('The finder could not run in this browser. Paint the faces instead.');
+		}).then(function () {
+			if (token !== autoToken) return;
+			faceBusy = false;
+			autoBusy = false;
+			setAutoProgress(false, 0, '');
+			syncFaceButton();
+		});
+	}
+
+	function syncTextButtons() {
+		var locked = !ready || textBusy;
+		if (blurTextAllBtn) blurTextAllBtn.disabled = locked;
+		if (blurTextSensitiveBtn) blurTextSensitiveBtn.disabled = locked;
+	}
+
+	function syncTextStyle() {
+		if (!textMode) return;
+		var solid = effectName === 'bar' || effectName === 'gray';
+		setChoice(effectButtons.bar, solid);
+		setChoice(effectButtons.pixel, effectName === 'pixel');
+		setChoice(effectButtons.gaussian, effectName === 'gaussian');
+		if (redactTones) redactTones.hidden = !solid;
+		setChoice(redactBlackBtn, effectName === 'bar');
+		setChoice(redactGrayBtn, effectName === 'gray');
+	}
+
+	function placeTextBoxes() {
+		if (!textLayer) return;
+		textLayer.innerHTML = '';
+		textLayer.hidden = !textBoxes.length || !source.width;
+		if (!source.width || !source.height) return;
+		textBoxes.forEach(function (box, index) {
+			var btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'ocr-box';
+			btn.setAttribute('aria-label', box.text ? 'Remove ' + box.text : 'Remove this text');
+			if (box.text) btn.title = box.text;
+			btn.style.left = (box.x / source.width * 100) + '%';
+			btn.style.top = (box.y / source.height * 100) + '%';
+			btn.style.width = (box.w / source.width * 100) + '%';
+			btn.style.height = (box.h / source.height * 100) + '%';
+			btn.addEventListener('click', function (event) {
+				event.preventDefault();
+				event.stopPropagation();
+				textBoxes.splice(index, 1);
+				placeTextBoxes();
+				redrawMask();
+				requestRender();
+				commitSettings();
+				setStatus('That box is removed. Mark any text that should still be covered.');
+			});
+			textLayer.appendChild(btn);
+		});
+	}
+
+	function expandTextBox(box, width, height) {
+		var padW = Math.max(3, box.w * 0.12);
+		var padH = Math.max(3, box.h * 0.2);
+		var x = box.x - padW / 2;
+		var y = box.y - padH / 2;
+		var w = box.w + padW;
+		var h = box.h + padH;
+		if (x < 0) { w += x; x = 0; }
+		if (y < 0) { h += y; y = 0; }
+		if (x + w > width) w = width - x;
+		if (y + h > height) h = height - y;
+		if (w < 2 || h < 2) return null;
+		return { x: x, y: y, w: w, h: h, text: box.text || '' };
+	}
+
+	function readWord(word) {
+		if (!word) return null;
+		var b = word.bbox || word;
+		var x0 = b.x0 != null ? b.x0 : b.left;
+		var y0 = b.y0 != null ? b.y0 : b.top;
+		var x1 = b.x1 != null ? b.x1 : b.right;
+		var y1 = b.y1 != null ? b.y1 : b.bottom;
+		if (x0 == null || y0 == null || x1 == null || y1 == null) return null;
+		return {
+			text: String(word.text || ''),
+			confidence: Number(word.confidence || 0),
+			x0: x0,
+			y0: y0,
+			x1: x1,
+			y1: y1
+		};
+	}
+
+	function groupWords(data) {
+		var lines = [];
+		function addLine(line) {
+			var words = (line.words || []).map(readWord).filter(Boolean);
+			if (words.length) lines.push(words);
+		}
+		(data && data.blocks ? data.blocks : []).forEach(function (block) {
+			(block.paragraphs || []).forEach(function (para) {
+				(para.lines || []).forEach(addLine);
+			});
+		});
+		if (lines.length) return lines;
+		(data && data.lines ? data.lines : []).forEach(addLine);
+		if (lines.length) return lines;
+		var flat = (data && data.words ? data.words : []).map(readWord).filter(Boolean);
+		flat.sort(function (a, b) { return a.y0 - b.y0 || a.x0 - b.x0; });
+		flat.forEach(function (word) {
+			var last = lines[lines.length - 1];
+			var mid = (word.y0 + word.y1) / 2;
+			if (!last || mid > last[0].y1 + 2) lines.push([word]);
+			else last.push(word);
+		});
+		return lines;
+	}
+
+	function numericToken(text) {
+		return /^[\d\s().+\-xX]+$/.test(String(text || '')) && /\d/.test(text);
+	}
+
+	function sensitiveWords(words) {
+		var hit = {};
+		var parts = [];
+		var cursor = 0;
+		var i;
+		for (i = 0; i < words.length; i++) {
+			var text = String(words[i].text || '');
+			if (i) cursor += 1;
+			parts.push({ i: i, start: cursor, end: cursor + text.length });
+			cursor += text.length;
+		}
+		var line = words.map(function (word) { return String(word.text || ''); }).join(' ');
+		var email = /[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/ig;
+		var match;
+		while ((match = email.exec(line))) {
+			for (i = 0; i < parts.length; i++) {
+				if (parts[i].end > match.index && parts[i].start < match.index + match[0].length) hit[parts[i].i] = 1;
+			}
+		}
+		var run = [];
+		function flush() {
+			if (!run.length) return;
+			var joined = run.map(function (word) { return String(word.text || ''); }).join('');
+			var extra = joined.replace(/[\d\s().+\-xX]/g, '');
+			var digits = joined.replace(/\D/g, '');
+			if (!extra && digits.length >= 10 && digits.length <= 19) {
+				run.forEach(function (word) { hit[word._i] = 1; });
+			}
+			run = [];
+		}
+		words.forEach(function (word, idx) {
+			word._i = idx;
+			if (numericToken(word.text)) run.push(word);
+			else flush();
+		});
+		flush();
+		return words.filter(function (word, idx) { return hit[idx]; });
+	}
+
+	function boxesFromOcr(data, width, height, sensitive) {
+		var boxes = [];
+		groupWords(data).forEach(function (words) {
+			var chosen = sensitive ? sensitiveWords(words) : words;
+			chosen.forEach(function (word) {
+				var text = String(word.text || '').trim();
+				if (!text || !/[0-9A-Za-z]/.test(text)) return;
+				var floor = sensitive ? 15 : 40;
+				if (word.confidence && word.confidence < floor) return;
+				var w = word.x1 - word.x0;
+				var h = word.y1 - word.y0;
+				if (w < 2 || h < 2) return;
+				var box = expandTextBox({ x: word.x0, y: word.y0, w: w, h: h, text: text }, width, height);
+				if (box) boxes.push(box);
+			});
+		});
+		return boxes;
+	}
+
+	function textLogger(message) {
+		if (!textBusy) return;
+		var status = message && message.status ? String(message.status) : '';
+		var ratio = message && message.progress ? Number(message.progress) : 0;
+		var p = 0.12;
+		if (status.indexOf('core') >= 0) p = 0.12 + ratio * 0.28;
+		else if (status.indexOf('initial') >= 0) p = 0.42;
+		else if (status.indexOf('lang') >= 0 || status.indexOf('traineddata') >= 0) p = 0.48 + ratio * 0.22;
+		else if (status.indexOf('recogniz') >= 0) p = 0.72 + ratio * 0.24;
+		reportAuto(p, '');
+	}
+
+	function loadTextWorker() {
+		var esm = 'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.esm.min.js';
+		reportAuto(0.04, '');
+		return import(esm).then(function (mod) {
+			reportAuto(0.08, '');
+			var api = mod.default || mod;
+			return api.createWorker('eng', 1, { logger: textLogger });
+		});
+	}
+
+	function ensureTextWorker() {
+		if (textWorker) return Promise.resolve(textWorker);
+		if (!textWorkerPromise) {
+			textWorkerPromise = loadTextWorker().then(function (created) {
+				textWorker = created;
+				return created;
+			}, function (err) {
+				textWorkerPromise = null;
+				throw err;
+			});
+		}
+		return textWorkerPromise;
+	}
+
+	function blurText(sensitive) {
+		if (!textMode || !ready || textBusy) return;
+		var token = ++autoToken;
+		textBusy = true;
+		syncTextButtons();
+		setAutoProgress(true, textWorker ? 0.72 : 0.04, '');
+		ensureTextWorker().then(function (worker) {
+			if (token !== autoToken || !worker) return null;
+			var snap = document.createElement('canvas');
+			snap.width = source.width;
+			snap.height = source.height;
+			snap.getContext('2d').drawImage(source, 0, 0);
+			reportAuto(0.74, '');
+			return worker.recognize(snap, {}, { text: true, blocks: true }).then(function (ret) {
+				if (token !== autoToken) return null;
+				return boxesFromOcr(ret && ret.data, snap.width, snap.height, sensitive);
+			});
+		}).then(function (boxes) {
+			if (token !== autoToken || !boxes) return;
+			textBoxes = boxes;
+			if (sensitive && boxes.length && effectName !== 'bar' && effectName !== 'gray') effectName = 'bar';
+			placeTextBoxes();
+			syncLabels();
+			redrawMask();
+			requestRender();
+			commitSettings();
+			if (!boxes.length) {
+				setStatus(sensitive
+					? 'No email, phone, or long number was found. Try all text, or mark the writing yourself.'
+					: 'No text was found. Drag a box or paint any writing that should be covered.');
+				return;
+			}
+			setStatus(sensitive
+				? 'Sensitive text is covered with a solid block. Click a box to remove it, or mark anything missed.'
+				: 'Text covered. Click a box to remove it, or mark any writing that was missed.');
+		}).catch(function () {
+			if (token !== autoToken) return;
+			setStatus('The finder could not run in this browser. Drag a box or paint the writing instead.');
+		}).then(function () {
+			if (token !== autoToken) return;
+			textBusy = false;
+			setAutoProgress(false, 0, '');
+			syncTextButtons();
+		});
+	}
+
+	if (blurTextAllBtn) blurTextAllBtn.addEventListener('click', function () { blurText(false); });
+	if (blurTextSensitiveBtn) blurTextSensitiveBtn.addEventListener('click', function () { blurText(true); });
+	if (redactBlackBtn) redactBlackBtn.addEventListener('click', function () { chooseEffect('bar'); });
+	if (redactGrayBtn) redactGrayBtn.addEventListener('click', function () { chooseEffect('gray'); });
+	if (blurFacesBtn) blurFacesBtn.addEventListener('click', blurFaces);
 	if (blurBgBtn) blurBgBtn.addEventListener('click', blurBackground);
 	effectNames.forEach(function (name) {
 		if (effectButtons[name]) effectButtons[name].addEventListener('click', function () { chooseEffect(name); });
 	});
-	scopeWholeBtn.addEventListener('click', function () { chooseScope('whole'); });
-	scopeBrushBtn.addEventListener('click', function () { chooseScope('brush'); });
+	if (scopeWholeBtn) scopeWholeBtn.addEventListener('click', function () { chooseScope('whole'); });
+	if (scopeBrushBtn) scopeBrushBtn.addEventListener('click', function () { chooseScope('brush'); });
 	if (scopeMarqueeBtn) scopeMarqueeBtn.addEventListener('click', function () { chooseScope('marquee'); });
 	if (scopeLassoBtn) scopeLassoBtn.addEventListener('click', function () { chooseScope('lasso'); });
 
@@ -2590,5 +3091,9 @@
 	syncJob();
 	setStatus(subjectMode
 		? 'Click or drag an image here. Then choose what to keep sharp and blur the background.'
-		: 'Click or drag an image here. Editing stays in this browser.');
+		: faceMode
+			? 'Click or drag an image here. Then blur the faces.'
+			: textMode
+				? 'Click or drag an image here. Then blur the text.'
+				: 'Click or drag an image here. Editing stays in this browser.');
 })();

@@ -451,9 +451,66 @@ button.text-btn.is-on, button.text-btn.is-on:hover { color: var(--accent); }
 .control-group { display: grid; gap: .25rem; }
 .control-group label, .control-label { font-size: .92rem; font-weight: 600; color: #334155; }
 .choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
-.choice-row.refine-shapes { grid-template-columns: 1fr 1fr 1fr; }
-#blur-background { width: 100%; }
-#blur-background:disabled, #blur-background:disabled:hover { opacity: .45; cursor: default; background: var(--accent); }
+.choice-row.refine-shapes, .choice-row.face-effects, .choice-row.text-effects { grid-template-columns: 1fr 1fr 1fr; }
+.face-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+button.face-box, button.face-box:hover {
+	position: absolute;
+	display: block;
+	width: auto;
+	min-width: 0;
+	min-height: 0;
+	padding: 0;
+	touch-action: none;
+	border: 2px dashed #2563eb;
+	border-radius: 2px;
+	background: rgba(37, 99, 235, 0.16);
+	color: #fff;
+	box-shadow: none;
+	pointer-events: auto;
+	cursor: pointer;
+}
+button.face-box:hover { background: rgba(220, 38, 38, 0.28); border-color: #dc2626; }
+button.face-box::after {
+	content: "×";
+	position: absolute;
+	top: 1px;
+	right: 4px;
+	font-size: 1rem;
+	line-height: 1;
+	text-shadow: 0 1px 2px rgba(15, 23, 42, 0.7);
+}
+.text-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+button.ocr-box, button.ocr-box:hover {
+	position: absolute;
+	display: block;
+	width: auto;
+	min-width: 0;
+	min-height: 0;
+	padding: 0;
+	touch-action: none;
+	border: 2px solid #dc2626;
+	border-radius: 2px;
+	background: rgba(220, 38, 38, 0.28);
+	color: #fff;
+	box-shadow: none;
+	pointer-events: auto;
+	cursor: pointer;
+}
+button.ocr-box:hover { background: rgba(220, 38, 38, 0.45); }
+button.ocr-box::after {
+	content: "×";
+	position: absolute;
+	top: 0;
+	right: 2px;
+	font-size: .85rem;
+	line-height: 1;
+	text-shadow: 0 1px 2px rgba(15, 23, 42, 0.7);
+}
+#blur-background, #blur-faces, #blur-text-all, #blur-text-sensitive { width: 100%; }
+#blur-background:disabled, #blur-background:disabled:hover,
+#blur-faces:disabled, #blur-faces:disabled:hover,
+#blur-text-all:disabled, #blur-text-all:disabled:hover { opacity: .45; cursor: default; background: var(--accent); }
+#blur-text-sensitive:disabled, #blur-text-sensitive:disabled:hover { opacity: .45; cursor: default; }
 .auto-progress { display: block; }
 .auto-progress[hidden] { display: none; }
 .auto-progress-track { height: .45rem; background: #e2e8f0; border-radius: 999px; overflow: hidden; }

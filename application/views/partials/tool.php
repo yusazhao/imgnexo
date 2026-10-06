@@ -2,7 +2,7 @@
 $mode = $tool['mode'];
 $preset = $tool['preset'];
 ?>
-<section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?><?php if ( ! empty($tool['subject'])): ?> data-subject="1" data-object-model="<?= html_escape(asset_url('models/u2netp.onnx')) ?>"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
+<section class="editor" id="editor" data-mode="<?= html_escape($mode) ?>" data-preset="<?= html_escape($preset) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="1"<?php endif; ?><?php if ( ! empty($tool['subject'])): ?> data-subject="1" data-object-model="<?= html_escape(asset_url('models/u2netp.onnx')) ?>"<?php endif; ?><?php if ( ! empty($tool['face'])): ?> data-face="1"<?php endif; ?><?php if ( ! empty($tool['text'])): ?> data-text="1"<?php endif; ?> aria-label="<?= $mode === 'unblur' ? 'Unblur photo editor' : 'Blur image editor' ?>">
 	<?php if ( ! empty($tool['batch'])): ?>
 	<div class="job-switch">
 		<div class="choice-row" role="radiogroup" aria-label="Single or batch">
@@ -42,6 +42,12 @@ $preset = $tool['preset'];
 									<button type="button" class="crop-handle" data-corner="se" aria-label="Resize from bottom right"></button>
 								</div>
 							</div>
+							<?php if ( ! empty($tool['face'])): ?>
+							<div class="face-layer" id="face-layer" hidden></div>
+							<?php endif; ?>
+							<?php if ( ! empty($tool['text'])): ?>
+							<div class="text-layer" id="text-layer" hidden></div>
+							<?php endif; ?>
 						</div>
 					</div>
 				</div>
@@ -145,6 +151,71 @@ $preset = $tool['preset'];
 					<label for="intensity">Strength <output id="intensity-out">18 px</output></label>
 					<input id="intensity" type="range" min="0" max="40" value="18">
 				</div>
+			</div>
+			<?php elseif ( ! empty($tool['face'])): ?>
+			<div class="tune-step" id="auto-group">
+				<p class="tune-step-title">Find the faces</p>
+				<p class="hint">Each box is widened past the eyes and chin. Click a box to remove it.</p>
+				<button type="button" class="primary" id="blur-faces" disabled>Blur faces</button>
+				<div class="auto-progress" id="auto-progress" hidden>
+					<div class="auto-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Working"><div class="auto-progress-bar" id="auto-progress-bar"></div></div>
+				</div>
+			</div>
+			<div class="tune-step" id="effect-group">
+				<p class="tune-step-title">Cover</p>
+				<div class="choice-row face-effects" role="radiogroup" aria-label="Cover">
+					<button type="button" class="choice is-on" id="effect-pixel" aria-pressed="true">Pixel</button>
+					<button type="button" class="choice" id="effect-gaussian" aria-pressed="false">Gaussian</button>
+					<button type="button" class="choice" id="effect-bar" aria-pressed="false">Black bar</button>
+				</div>
+				<div class="control-group" id="strength-group">
+					<label for="intensity">Strength <output id="intensity-out">16 px</output></label>
+					<input id="intensity" type="range" min="1" max="40" value="16">
+				</div>
+				<div class="control-group" id="brush-group">
+					<label for="brush">Brush size <output id="brush-out">46 px</output></label>
+					<input id="brush" type="range" min="8" max="140" value="46">
+				</div>
+				<p class="hint">Paint any face the finder missed.</p>
+			</div>
+			<?php elseif ( ! empty($tool['text'])): ?>
+			<div class="tune-step" id="auto-group">
+				<p class="tune-step-title">Find the text</p>
+				<p class="hint">Red boxes mark the writing. Click a box to remove it. Each box is widened past the letters.</p>
+				<button type="button" class="primary" id="blur-text-all" disabled>Auto Blur All Text</button>
+				<button type="button" id="blur-text-sensitive" disabled>Blur Sensitive Only</button>
+				<div class="auto-progress" id="auto-progress" hidden>
+					<div class="auto-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Working"><div class="auto-progress-bar" id="auto-progress-bar"></div></div>
+				</div>
+			</div>
+			<div class="tune-step" id="effect-group">
+				<p class="tune-step-title">Cover</p>
+				<div class="choice-row text-effects" role="radiogroup" aria-label="Cover">
+					<button type="button" class="choice" id="effect-bar" aria-pressed="false">Redact</button>
+					<button type="button" class="choice is-on" id="effect-pixel" aria-pressed="true">Pixel</button>
+					<button type="button" class="choice" id="effect-gaussian" aria-pressed="false">Blur</button>
+				</div>
+				<div class="choice-row" id="redact-tones" hidden role="radiogroup" aria-label="Redact color">
+					<button type="button" class="choice is-on" id="redact-black" aria-pressed="true">Black</button>
+					<button type="button" class="choice" id="redact-gray" aria-pressed="false">Gray</button>
+				</div>
+				<div class="control-group" id="strength-group">
+					<label for="intensity">Strength <output id="intensity-out">16 px</output></label>
+					<input id="intensity" type="range" min="1" max="40" value="16">
+				</div>
+				<p class="hint">Redact is a solid block for passwords, card numbers, and IDs. Pixel and Blur can still show the shape of large type.</p>
+			</div>
+			<div class="tune-step">
+				<p class="tune-step-title">Add missed text</p>
+				<div class="choice-row" role="radiogroup" aria-label="Add missed text">
+					<button type="button" class="choice is-on" id="scope-marquee" aria-pressed="true">Marquee</button>
+					<button type="button" class="choice" id="scope-brush" aria-pressed="false">Brush</button>
+				</div>
+				<div class="control-group" id="brush-group" hidden>
+					<label for="brush">Brush size <output id="brush-out">26 px</output></label>
+					<input id="brush" type="range" min="8" max="140" value="26">
+				</div>
+				<p class="hint">Drag a rectangle or paint handwriting and any writing the finder missed.</p>
 			</div>
 			<?php else: ?>
 			<div class="control-group" id="effect-group" data-for="blur">

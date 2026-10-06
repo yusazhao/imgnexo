@@ -157,16 +157,13 @@ return array(
 		'title' => 'Blur Face in Photo Online – Pixelate or Blur Faces',
 		'description' => 'Blur face in photo online. Blur a face in a picture to protect privacy, apply photo blur face in one click.',
 		'h1' => 'Blur Face in Photo Online – Pixelate or Blur Faces',
-		'lead' => '<p>Blur face in photo before you post a street shot, a classroom, or a picture of a minor. To blur a face in a picture, cover the whole head, not only the eyes. Photo blur face edits should remove identity, not just look artistic.</p>',
-		'figure' => array(
-			'src' => 'img/blur-face-in-photo-example.svg',
-			'alt' => 'blur face in photo example',
-			'caption' => 'A usable blur face in photo example covers the full head, including hairline and chin.',
-		),
+		'lead' => '<p>Blur face in photo before you post a street shot, a classroom, or a picture of a minor. The finder marks each face and widens the box past the eyes and chin. Remove a wrong box, or paint a face it missed. The photo stays on your device.</p>',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'face',
-			'note' => 'Paint each face, then keep pixelate high enough that eyes and teeth are not recognizable.',
+			'face' => TRUE,
+			'note_below' => TRUE,
+			'note' => 'Each found face is widened past the eyes and chin. Click a box to remove a wrong one. Paint any face the finder missed. Pixel blocks the features. Gaussian softens them. Black bar covers the box in solid black.',
 		),
 		'sections' => array(
 			array(
@@ -175,15 +172,15 @@ return array(
 			),
 			array(
 				'h2' => 'How to blur a face in a picture',
-				'html' => '<p>Upload the shot, set Apply to Brush, and stroke from forehead to chin, ear to ear. Blur a face in a picture with Pixel so the features become blocks. Switch to Gaussian only if you want a soft cover instead of blocks. Use zoom to check for a missed eye or ear.</p>',
+				'html' => '<p>Add the photo, then click Blur faces. The first time, this tab downloads the finder. Each box is already wider than the eyes and chin, so hair and ears are inside the cover. Click a box to drop a miss. Paint any face that was skipped. Pixel is the privacy default. Gaussian is a soft cover. Black bar fills the box with solid black, so Strength does not apply.</p>',
 			),
 			array(
 				'h2' => 'Pixelate vs soft blur for photo blur face',
-				'html' => '<p>Soft photo blur face can still be recognizable at a low strength. Pixelate breaks the features into blocks and is the better default for privacy. Gaussian blur is fine for a stylistic portrait when you are allowed to show that person and only want a softer look.</p>',
+				'html' => '<p>Pixel breaks the features into blocks and is the default for privacy. A light Gaussian can still look like the person. Black bar hides the widened box completely. Use it when the face must not be recognizable at all.</p>',
 			),
 		),
 		'faqs' => array(
-			array('q' => 'Can I blur multiple faces in one photo?', 'a' => '<p>Yes. Paint every face before you download. A crowd shot is not private if one person in the back row is still sharp.</p>'),
+			array('q' => 'Can I blur multiple faces in one photo?', 'a' => '<p>Yes. Blur faces marks every face it finds. Click a box to remove one that is wrong. Paint anyone the finder skipped, including a person in the back row. A crowd shot is not private if one person stays sharp. The photo is not uploaded. The first click downloads the finder; later clicks reuse it.</p>'),
 			array('q' => 'Will blur face in photo permanently change my original file?', 'a' => '<p>No. Blur face in photo here builds a new PNG in the browser. Your camera file stays where it was unless you overwrite it yourself later.</p>'),
 		),
 		'opposite' => array(
@@ -209,11 +206,13 @@ return array(
 		'title' => 'Blur Text Image Online | Blur Writing in Photo',
 		'description' => 'Blur text image easily. Blur writing in photo to hide sensitive text information from pictures.',
 		'h1' => 'Blur Text Image Online | Blur Writing in Photo',
-		'lead' => '<p>Blur text image content when a picture shows an address, account number, medical note, or private message. Blur writing in photo is safer than covering it with a thin mark someone can read around.</p>',
+		'lead' => '<p>Blur text image content when a picture shows an address, account number, medical note, or private message. The finder marks the writing. Remove a wrong box, or mark anything it missed. The photo stays on your device.</p>',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'text',
-			'note' => 'Use a smaller brush and paint every character. Pixelate if the letters are still guessable.',
+			'text' => TRUE,
+			'note_below' => TRUE,
+			'note' => 'Auto Blur All Text covers every line it can read. Blur Sensitive Only covers emails, phone numbers, and long numbers such as a card or an ID. Click a red box to remove it. Handwriting and other scripts are often missed. Drag a rectangle or paint those.',
 		),
 		'sections' => array(
 			array(
@@ -222,12 +221,12 @@ return array(
 			),
 			array(
 				'h2' => 'How to blur writing in photo online',
-				'html' => '<p>To blur writing in photo, paint the full line, including ascenders and punctuation. A blur that only hits the center of a word often leaves enough shape to read it. Follow with pixelate when the type is large.</p>',
+				'html' => '<p>Add the photo, then click Auto Blur All Text or Blur Sensitive Only. The first time, this tab downloads the finder. Each box is already wider than the letters. Click a red box to drop a miss. Drag a rectangle or paint handwriting and anything skipped. Redact fills the box with black or gray, and Strength does not apply. Pixel blocks the letters. Blur softens them.</p>',
 			),
 		),
 		'faqs' => array(
-			array('q' => 'Can I selectively blur partial text on an image?', 'a' => '<p>Yes. Paint only the private line and leave the rest of the picture sharp. Selectively covering one phrase is the usual blur writing in photo task.</p>'),
-			array('q' => 'Is blur text image function free?', 'a' => '<p>Yes. The blur text image control is part of the same free browser editor. No account is required.</p>'),
+			array('q' => 'Can I selectively blur partial text on an image?', 'a' => '<p>Yes. Blur Sensitive Only covers emails, phone numbers, and long numbers, and leaves other writing sharp. Click a red box to remove one line. Drag a rectangle or paint a phrase the finder skipped.</p>'),
+			array('q' => 'Is blur text image function free?', 'a' => '<p>Yes. The blur text image control is part of the same free browser editor. No account is required. The photo is not uploaded. The first click downloads the finder; later clicks reuse it.</p>'),
 		),
 		'opposite' => array(
 			'text' => 'This tool covers writing. It will not make blurry text sharp again.',
