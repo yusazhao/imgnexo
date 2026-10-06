@@ -45,7 +45,7 @@ HTML
 <h2>Use a small radius first</h2>
 <p>Raise clarity until the subject separates from the background, then stop. A larger radius grabs more of the blur but also rings high-contrast edges. Hold the original control every time you change a slider. Keep the download only when it is actually clearer.</p>
 <h2>Do not confuse this with adding blur</h2>
-<p>Remove blur from image work is the opposite of a <a href="{{path:blur-image}}">blur image</a> edit. If you meant to hide a face, sharpening will make that face easier to recognize. For repair examples across snapshots, see <a href="{{path:unblur-image/photos}}">fix blurry photos</a>.</p>
+<p>Remove blur from image work is the opposite of a <a href="{{path:blur-image}}">blur image</a> edit. If you meant to hide a face, sharpening will make that face easier to recognize. For repair examples across snapshots, see <a href="{{path:unblur-image}}">fix blurry photos</a>.</p>
 HTML
 	),
 	array(
@@ -64,7 +64,7 @@ HTML
 		'html' => <<<'HTML'
 <p>Fuzzy old photos are often soft because of the lens, the print, or the scan, all at once. You can fix fuzzy photos a little. You should not expect a modern camera file to appear inside a 1970s print.</p>
 <h2>Separate scan blur from print blur</h2>
-<p>If the print looks sharper than the file, rescan before you edit. Sharpening a bad scan just makes a sharper copy of the wrong blur. When the print itself is soft, a modest pass on <a href="{{path:unblur-image/photos}}">fix blurry photos</a> is the ceiling.</p>
+<p>If the print looks sharper than the file, rescan before you edit. Sharpening a bad scan just makes a sharper copy of the wrong blur. When the print itself is soft, a modest pass on <a href="{{path:unblur-image}}">fix blurry photos</a> is the ceiling.</p>
 <h2>Keep grain looking like grain</h2>
 <p>High radius finds every speck and outlines it. For old snapshots, prefer a lower radius and less contrast. Skin, sky, and blank walls show the damage first. If those areas start to ripple, undo the last increase.</p>
 <h2>Archive the untouched scan</h2>
@@ -137,7 +137,7 @@ HTML
 <h2>Stop when halos show up</h2>
 <p>Motion settings use a stronger clarity value, so bright edges grow a pale outline quickly. Compare against the original. If the outline is the main change you see, the repair did not work. Keep the camera file.</p>
 <h2>Shoot the next frame differently</h2>
-<p>More light, a faster shutter, and a braced camera prevent the blur you are trying to undo. For ordinary soft focus that is not a streak, use <a href="{{path:unblur-image/photos}}">fix blurry photos</a> instead of the motion preset.</p>
+<p>More light, a faster shutter, and a braced camera prevent the blur you are trying to undo. For ordinary soft focus that is not a streak, use <a href="{{path:unblur-image}}">fix blurry photos</a> instead of the motion preset.</p>
 HTML
 	),
 	array(
@@ -184,6 +184,30 @@ HTML
 <p>If neighboring pixels were averaged for good, the difference between the original and a further blur is small and noisy. Amplifying it does not recreate a license plate or a pupil. Motion streaks have the extra problem that the edge is in the wrong place. Read <a href="{{path:blog/unblur-motion-blur-photo}}">motion blur limits</a> before you spend time on a streaked frame.</p>
 <h2>Use the matching tool</h2>
 <p>Blur removal is only for pictures that should become clearer. Adding Gaussian or Pixel blur is <a href="{{path:blur-image}}">blur image</a>. Mixing those jobs on one page confuses both the edit and the reason you opened the file.</p>
+HTML
+	),
+	array(
+		'slug' => 'how-to-unblur-photos-on-iphone',
+		'path' => 'blog/how-to-unblur-photos-on-iphone',
+		'date' => '2026-10-06',
+		'title' => 'How to Fix Blurry Photos on iPhone (3 Easy Ways)',
+		'description' => 'Unblur photo iPhone shots in Safari. Fix a blur photo iPhone file without an app, or pick a sharper frame you already took.',
+		'h1' => 'How to Fix Blurry Photos on iPhone (3 Easy Ways)',
+		'excerpt' => 'Three ways to deal with a blurry iPhone photo: sharpen it in the browser, choose a better frame, or reshoot when the detail is gone.',
+		'crumbs' => array(
+			array('name' => 'Home', 'path' => ''),
+			array('name' => 'Blog', 'path' => 'blog'),
+			array('name' => 'Unblur on iPhone', 'path' => 'blog/how-to-unblur-photos-on-iphone'),
+		),
+		'html' => <<<'HTML'
+<p>A blur photo iphone shot is usually a missed tap, a moving subject, or Portrait mode locked on the background. You can unblur photo iphone files in Safari or Chrome. No App Store install is required. Mild softness often improves. A heavy smear does not grow new detail.</p>
+<h2>Way 1: Sharpen it in the browser</h2>
+<p>This is the direct repair. Open <a href="{{path:unblur-image/iphone}}">unblur photo iPhone</a>, tap Select image, and choose the photo from your library. Raise clarity a little. If edges grow a white outline, lower the radius. Hold the original button, and keep the download only when the picture is actually clearer.</p>
+<p>The original stays in Photos. The browser makes a new PNG. Save that PNG into Photos if you want it in the library. The page does not ask for camera access, and the file is not uploaded.</p>
+<h2>Way 2: Pick a sharper frame you already took</h2>
+<p>A Live Photo stores a short moment around the still. Open it in Photos and see whether another instant is sharper than the one the camera kept. A burst works the same way: a middle frame is often steadier. If that frame is still a bit soft, run it through the same browser tool.</p>
+<h2>Way 3: Stop when the detail is gone, then reshoot</h2>
+<p>If the face is a smooth shape, sharpening only outlines the blob. If the subject is streaked and the room is sharp, the person moved. Read <a href="{{path:unblur-image/motion-blur}}">motion blur photo</a> before you expect a still pose back. Wipe the lens, tap the subject to focus, and hold the phone with both hands for the next shot. Ordinary soft focus that is not a streak belongs on <a href="{{path:unblur-image}}">unblur image</a>.</p>
 HTML
 	),
 );

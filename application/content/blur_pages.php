@@ -137,7 +137,7 @@ return array(
 		),
 		'opposite' => array(
 			'text' => 'Background blur adds softness. It will not repair a portrait that is already out of focus.',
-			'path' => 'unblur-image/photos',
+			'path' => 'unblur-image',
 			'label' => 'Fix blurry photos',
 		),
 		'related' => array(

@@ -25,6 +25,8 @@ if ( ! function_exists('tune_icon')) {
 			'strength' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2" fill="currentColor"/><circle cx="8" cy="8" r="4.3" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".5"/><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".25"/></svg>',
 			'brush' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="4.2" cy="11.2" r="2.3" fill="currentColor" opacity=".35"/><circle cx="8.2" cy="8" r="1.8" fill="currentColor" opacity=".65"/><circle cx="11.6" cy="5" r="1.25" fill="currentColor"/></svg>',
 			'feather' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="3.5" width="6" height="9" rx="1" fill="currentColor"/><rect x="7.5" y="3.5" width="2.4" height="9" fill="currentColor" opacity=".45"/><rect x="9.9" y="3.5" width="2.2" height="9" fill="currentColor" opacity=".18"/></svg>',
+			'single' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="3" width="10" height="10" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
+			'batch' => '<svg class="tune-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.2" y="3.5" width="3.8" height="9" rx=".8" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="6.1" y="3.5" width="3.8" height="9" rx=".8" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="3.5" width="3.8" height="9" rx=".8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>',
 		);
 		return isset($icons[$name]) ? $icons[$name] : '';
 	}
@@ -34,8 +36,8 @@ if ( ! function_exists('tune_icon')) {
 	<?php if ( ! empty($tool['batch'])): ?>
 	<div class="job-switch">
 		<div class="choice-row" role="radiogroup" aria-label="Single or batch">
-			<button type="button" class="choice is-on" id="job-single" aria-pressed="true">Single</button>
-			<button type="button" class="choice" id="job-batch" aria-pressed="false">Batch</button>
+			<button type="button" class="choice is-on" id="job-single" aria-pressed="true"><?= tune_icon('single') ?>Single</button>
+			<button type="button" class="choice" id="job-batch" aria-pressed="false"><?= tune_icon('batch') ?>Batch</button>
 		</div>
 	</div>
 	<?php endif; ?>

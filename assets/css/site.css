@@ -180,6 +180,7 @@ h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 .tool-block .editor, .tool-shell .editor { background: transparent; border: 0; box-shadow: none; padding: 0; text-align: left; }
 
 .job-switch { max-width: 22rem; margin-bottom: .85rem; }
+.job-switch button.choice { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; }
 .editor-layout {
 	display: grid;
 	grid-template-columns: minmax(0, 1.45fr) minmax(240px, .75fr);

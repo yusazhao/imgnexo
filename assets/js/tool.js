@@ -12,7 +12,6 @@
 		online: { effect: 'gaussian', gaussian: 10, pixel: 8, scope: 'whole', brush: 48 },
 		effect: { effect: 'gaussian', gaussian: 8, pixel: 10, scope: 'whole', brush: 48 },
 		sharpen: { sharpen: 110, radius: 1.4, contrast: 8 },
-		photos: { sharpen: 130, radius: 1.6, contrast: 10 },
 		iphone: { sharpen: 120, radius: 1.3, contrast: 8 },
 		motion: { sharpen: 180, radius: 2.4, contrast: 6 }
 	};

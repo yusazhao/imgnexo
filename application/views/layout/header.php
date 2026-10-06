@@ -96,8 +96,7 @@ if (isset($nav) && $nav === 'home')
 					<a href="<?= html_escape(page_url('blur-image/face')) ?>">Blur Face</a>
 					<a href="<?= html_escape(page_url('blur-image/text')) ?>">Blur Text</a>
 					<a href="<?= html_escape(page_url('blur-image/effect')) ?>">Blur Effects</a>
-					<a href="<?= html_escape(page_url('unblur-image')) ?>">Unblur Image</a>
-					<a href="<?= html_escape(page_url('unblur-image/photos')) ?>">Fix Blurry Photos</a>
+					<a href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">Motion Blur</a>
 				</div>
 			</details>
 			<a href="<?= html_escape(page_url('unblur-image')) ?>"<?= nav_is_current('unblur-image') ? ' aria-current="page"' : '' ?>>Unblur</a>

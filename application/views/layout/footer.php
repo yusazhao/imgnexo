@@ -21,7 +21,6 @@
 			<h2>Remove blur</h2>
 			<ul>
 				<li><a href="<?= html_escape(page_url('unblur-image')) ?>">Unblur image</a></li>
-				<li><a href="<?= html_escape(page_url('unblur-image/photos')) ?>">Fix blurry photos</a></li>
 				<li><a href="<?= html_escape(page_url('unblur-image/iphone')) ?>">Blur photo iPhone</a></li>
 				<li><a href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">Motion blur photo</a></li>
 			</ul>
@@ -33,6 +32,7 @@
 				<li><a href="<?= html_escape(page_url('blog/how-to-make-picture-blurry')) ?>">Make a picture blurry</a></li>
 				<li><a href="<?= html_escape(page_url('blog/how-to-remove-blur-from-photo')) ?>">Remove blur from photo</a></li>
 				<li><a href="<?= html_escape(page_url('blog/how-to-fix-fuzzy-photos')) ?>">Fix fuzzy photos</a></li>
+				<li><a href="<?= html_escape(page_url('blog/how-to-unblur-photos-on-iphone')) ?>">Unblur photos on iPhone</a></li>
 			</ul>
 		</div>
 	</div>

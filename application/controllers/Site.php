@@ -43,6 +43,12 @@ class Site extends CI_Controller {
 
 	public function unblur($slug = '')
 	{
+		if (trim($slug, '/') === 'photos')
+		{
+			header('Location: '.canonical_url('unblur-image'), TRUE, 301);
+			exit;
+		}
+
 		$this->show_page('unblur', $slug, 'unblur');
 	}
 
