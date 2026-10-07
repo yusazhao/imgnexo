@@ -72,13 +72,11 @@ img { max-width: 100%; height: auto; }
 	place-items: center;
 	width: 2.35rem;
 	height: 2.35rem;
+	flex: 0 0 auto;
 	border-radius: 10px;
 	background: var(--accent);
-	color: white;
-	font-weight: 800;
-	letter-spacing: -0.04em;
-	font-size: .78rem;
 }
+.logo-mark svg { width: 100%; height: 100%; display: block; }
 .logo-text { display: grid; line-height: 1.05; row-gap: .22rem; }
 .logo-text strong { font-size: 1.05rem; letter-spacing: -0.03em; }
 .logo-text small {
@@ -770,8 +768,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 		max-width: calc(100% - 2rem);
 		flex-wrap: nowrap;
 		justify-content: center;
+		gap: 3rem;
 	}
 	.logo { margin-right: 0; }
+	.logo-mark { width: 2.7rem; height: 2.7rem; }
 	.site-nav { flex: 0 0 auto; flex-wrap: nowrap; justify-content: flex-start; gap: .35rem; }
 	.site-nav > a, .menu summary { font-size: 1.3125rem; }
 	.site-nav > a {
