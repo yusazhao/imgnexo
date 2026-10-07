@@ -34,13 +34,31 @@
 			</ul>
 		</div>
 	</div>
+	<?php
+	$footer_email = 'support@imgnexo.com';
+	if (file_exists(APPPATH.'config/site_info.php'))
+	{
+		$_footer_info = include APPPATH.'config/site_info.php';
+		if (is_array($_footer_info) && ! empty($_footer_info['contact_email']))
+		{
+			$footer_email = $_footer_info['contact_email'];
+		}
+		unset($_footer_info);
+	}
+	?>
 	<div class="wrap footer-legal-links">
 		<p class="legal">
 			Copyright <?= date('Y') ?> Imgnexo.
+			<span class="legal-sep" aria-hidden="true">·</span>
+			<a href="mailto:<?= html_escape($footer_email) ?>"><?= html_escape($footer_email) ?></a>
+			<span class="legal-sep" aria-hidden="true">·</span>
 			<a href="<?= html_escape(page_url('about-us')) ?>">About Us</a>
-			· <a href="<?= html_escape(page_url('privacy-policy')) ?>">Privacy Policy</a>
-			· <a href="<?= html_escape(page_url('terms-of-service')) ?>">Terms of Service</a>
-			· <a href="<?= html_escape(page_url('contact')) ?>">Contact</a>
+			<span class="legal-sep" aria-hidden="true">·</span>
+			<a href="<?= html_escape(page_url('privacy-policy')) ?>">Privacy Policy</a>
+			<span class="legal-sep" aria-hidden="true">·</span>
+			<a href="<?= html_escape(page_url('terms-of-service')) ?>">Terms of Service</a>
+			<span class="legal-sep" aria-hidden="true">·</span>
+			<a href="<?= html_escape(page_url('contact')) ?>">Contact</a>
 		</p>
 	</div>
 </footer>

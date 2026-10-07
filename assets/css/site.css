@@ -966,7 +966,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
 .site-footer { border-top: 1px solid var(--line); background: rgba(255, 255, 255, 0.72); padding: 2.2rem 0 1.4rem; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 1.5rem; }
-.site-footer strong { display: block; margin: 0 0 .55rem; font-size: .95rem; letter-spacing: 0; }
+.site-footer strong { display: block; margin: 0 0 .55rem; font-size: inherit; letter-spacing: 0; }
 .site-footer ul { list-style: none; margin: 0; padding: 0; }
 .site-footer a { color: #334155; text-decoration: none; }
 .site-footer a:hover { color: var(--accent); }
@@ -974,6 +974,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .legal { margin: 1.4rem 0 0; padding-top: 1rem; border-top: 1px solid var(--line); color: #94a3b8; font-size: .88rem; text-align: center; }
 .legal a { color: #64748b; text-decoration: none; }
 .legal a:hover { color: var(--accent); }
+.legal-sep { display: inline-block; margin: 0 .85em; color: #cbd5e1; }
 .prose > .lead { font-size: 1.05rem; color: #334155; margin-bottom: 1.25rem; }
 .prose h2 { margin: 1.6rem 0 .55rem; font-size: 1.25rem; color: var(--ink); }
 
@@ -1020,7 +1021,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	.crumbs ol { font-size: 1.25rem; }
 	h3 { font-size: 1.55rem; }
 	.faq-item summary h3 { font-size: 1.4rem; }
-	.site-footer p, .site-footer li { font-size: 1.3125rem; }
+	.site-footer p, .site-footer li, .site-footer strong { font-size: 1.3125rem; }
 	.legal { font-size: 1.25rem; }
 	button.effect-card { font-size: 1rem; }
 	.tool-links-title { font-size: 1.2rem; }
