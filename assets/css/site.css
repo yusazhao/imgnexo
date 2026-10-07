@@ -421,13 +421,13 @@ button.text-btn, button.text-btn:hover {
 button.text-btn.is-on, button.text-btn.is-on:hover { color: var(--accent); }
 .lang-picker { display: grid; gap: .45rem; }
 .lang-head { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; }
-.lang-label { margin: 0; color: #334155; font-size: .78rem; font-weight: 600; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+.lang-label { margin: 0; color: #334155; font-size: .9rem; font-weight: 700; letter-spacing: 0; text-transform: none; white-space: nowrap; }
 #lang-more, #lang-more:hover {
 	margin-left: auto;
 	padding: 0;
 	min-height: 0;
-	font-size: .78rem;
-	font-weight: 600;
+	font-size: .9rem;
+	font-weight: 700;
 	line-height: 1.2;
 	color: var(--accent);
 	text-align: right;
@@ -893,6 +893,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	.tool-links-title { font-size: 1.2rem; }
 	.tool-links a { font-size: 1.0625rem; }
 	.control-group label, .control-label { font-size: 1.15rem; }
+	.hint { font-size: 1.05rem; }
 	.choice-row.angle-presets .choice { font-size: 1rem; }
 	.tune-icon { width: 1.2rem; height: 1.2rem; }
 	.steps li:before, .step-cards li:before {
