@@ -48,7 +48,7 @@ return array(
 			),
 			array(
 				'h2' => 'Unblur Photo on iPhone',
-				'html' => '<p>You can work on a blur photo iphone shot from Safari or Chrome. No shortcut or install is required. Phone-specific limits are on the <a href="{{path:unblur-image/iphone}}">iPhone unblur</a> page.</p>',
+				'html' => '<p>You can work on a blur photo iphone shot from Safari or Chrome. No shortcut or App Store install is required. Open this page, choose the photo from your library, and raise clarity a little. If edges grow a white outline, lower the radius. A longer walkthrough is in <a href="{{path:blog/how-to-unblur-photos-on-iphone}}">how to fix blurry photos on iPhone</a>.</p>',
 			),
 		),
 		'faqs' => array(
@@ -64,6 +64,8 @@ return array(
 			array('q' => 'How do I perform blur remove from photo without software?', 'a' => '<p>Use the editor on this page. Blur remove from photo here is the clarity slider plus a small radius. A walkthrough is in <a href="{{path:blog/how-to-remove-blur-from-photo}}">how to remove blur from photo</a>.</p>'),
 			array('q' => 'Is blur remove photo process fully automatic?', 'a' => '<p>The blur remove photo math runs as soon as you move the slider, but you choose the strength. Automatic does not mean every picture has a correct preset.</p>'),
 			array('q' => 'What is blur pic clear feature for?', 'a' => '<p>Blur pic clear is the gentle setting: a small clarity boost for a slightly soft snapshot. It is the wrong control for hiding a face. That job is <a href="{{path:blur-image/face}}">blur face in photo</a>.</p>'),
+			array('q' => 'Will unblur process modify my original iPhone photo file?', 'a' => '<p>No. The original stays in your library. The browser makes a new PNG. You only replace the iPhone photo if you later save over it yourself.</p>'),
+			array('q' => 'Do I need iOS special permission for this tool?', 'a' => '<p>You only need the normal permission to pick a photo when the file dialog asks. The page does not ask for camera access, and it does not need a special iOS entitlement.</p>'),
 		),
 		'opposite' => array(
 			'text' => 'This page tries to clear blur. If you want to add blur, hide a face, or cover writing, switch tools.',
@@ -78,55 +80,6 @@ return array(
 		'crumbs' => array(
 			array('name' => 'Home', 'path' => ''),
 			array('name' => 'Unblur Image', 'path' => 'unblur-image'),
-		),
-	),
-	array(
-		'group' => 'unblur',
-		'slug' => 'iphone',
-		'path' => 'unblur-image/iphone',
-		'faq_heading' => 'FAQ',
-		'title' => 'Unblur Photo iPhone Online – Fix Blurry iPhone Photos',
-		'description' => 'Fix blur photo iphone without installing app. Unblur your blurry iPhone snapshots directly in browser.',
-		'h1' => 'Unblur Photo iPhone Online – Fix Blurry iPhone Photos',
-		'lead' => '<p>A blur photo iphone file is usually a missed tap-to-focus, a moving kid, or Portrait mode aimed at the wrong plane. You can try to clear it in the phone browser. No App Store install is required.</p>',
-		'tool' => array(
-			'mode' => 'unblur',
-			'preset' => 'iphone',
-			'note' => 'On a phone, use the original button to check you are not just adding crunch. Download, then save the PNG to Photos if you want to keep it.',
-			'heading' => 'How to unblur a photo on iPhone',
-			'steps' => array(
-				'Open this page in Safari or Chrome and choose the photo from your library.',
-				'Raise clarity a little. If edges grow a white outline, lower the radius.',
-				'Hold the original. Download the PNG and save it to Photos. The original stays in your library.',
-			),
-		),
-		'sections' => array(
-			array(
-				'h2' => 'Why photos become blurry on iPhone',
-				'html' => '<p>iPhone blur often comes from focusing on the background, from Night mode still moving, or from a lens that needs a wipe. Live Photos and Portrait shots can also save a frame that looked fine in the viewfinder and soft in the still. Identify that before you sharpen.</p>',
-			),
-			array(
-				'h2' => 'How to unblur blur photo iphone via web tool',
-				'html' => '<p>Open this page in Safari or Chrome, upload the blur photo iphone image from your library, and raise clarity. Compare with the original. If the face turns into an outline, lower the radius. For a deeper repair discussion, go back to <a href="{{path:unblur-image}}">unblur image</a>.</p>',
-			),
-		),
-		'faqs' => array(
-			array('q' => 'Will unblur process modify my original iPhone photo file?', 'a' => '<p>No. The original stays in your library. The browser makes a new PNG. You only replace the iPhone photo if you later save over it yourself.</p>'),
-			array('q' => 'Do I need iOS special permission for this tool?', 'a' => '<p>You only need the normal permission to pick a photo when the file dialog asks. The page does not ask for camera access, and it does not need a special iOS entitlement.</p>'),
-		),
-		'opposite' => array(
-			'text' => 'To add blur to an iPhone picture, for example a stranger in the background, use the blur tool.',
-			'path' => 'blur-image/face',
-			'label' => 'Blur face in photo',
-		),
-		'related' => array(
-			array('path' => 'blog/how-to-unblur-photos-on-iphone', 'label' => 'How to fix blurry photos on iPhone'),
-			array('path' => 'unblur-image', 'label' => 'Unblur image'),
-		),
-		'crumbs' => array(
-			array('name' => 'Home', 'path' => ''),
-			array('name' => 'Unblur Image', 'path' => 'unblur-image'),
-			array('name' => 'iPhone', 'path' => 'unblur-image/iphone'),
 		),
 	),
 	array(

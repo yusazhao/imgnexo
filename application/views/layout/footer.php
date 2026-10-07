@@ -14,14 +14,12 @@
 				<li><a href="<?= html_escape(page_url('blur-image/face')) ?>">Blur face in photo</a></li>
 				<li><a href="<?= html_escape(page_url('blur-image/text')) ?>">Blur text image</a></li>
 				<li><a href="<?= html_escape(page_url('blur-image/effect')) ?>">Gaussian blur</a></li>
-				<li><a href="<?= html_escape(page_url('blur-image/online')) ?>">Blur image online</a></li>
 			</ul>
 		</div>
 		<div>
 			<h2>Remove blur</h2>
 			<ul>
 				<li><a href="<?= html_escape(page_url('unblur-image')) ?>">Unblur image</a></li>
-				<li><a href="<?= html_escape(page_url('unblur-image/iphone')) ?>">Blur photo iPhone</a></li>
 				<li><a href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">Motion blur photo</a></li>
 			</ul>
 		</div>

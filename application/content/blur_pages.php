@@ -60,7 +60,7 @@ return array(
 			),
 			array(
 				'h2' => 'Online Blur Image Tool',
-				'html' => '<p>You can blur image online, blur picture online, or blur pic online without installing software. Open the <a href="{{path:blur-image/online}}">browser editor</a>, drop the file, and download the result. Nothing is stored on a server.</p>',
+				'html' => '<p>You can blur image online, blur picture online, or blur pic online without installing software. Use the editor on this page, drop the file, and download the result. Nothing is stored on a server.</p>',
 			),
 			array(
 				'h2' => 'Image Blurring Tool & Photo Blur App',
@@ -80,6 +80,8 @@ return array(
 			array('q' => 'What is the difference between blur pic and blur picture?', 'a' => '<p>Blur pic and blur picture are the same request. So are blur and image, blur for pictures, and the common misspelling blure picture. All of them mean you want the photograph softened or partly hidden, not sharpened.</p>'),
 			array('q' => 'Can I apply blur for pictures without download app?', 'a' => '<p>Yes. Blur for pictures in this browser and download only the finished PNG. There is no app to install.</p>'),
 			array('q' => 'How to put blur on image easily?', 'a' => '<p>To put blur on image, drop the file on the editor, choose Gaussian or Pixel, and move Strength. Set Apply to Brush when only a license plate, a face, or a line of text should change. Batch is the whole-image path for several files at once.</p>'),
+			array('q' => 'Do I need account for blur image online service?', 'a' => '<p>No. The blur image online editor does not ask you to sign in. There is no library of your past uploads because the file never leaves the device.</p>'),
+			array('q' => 'What file size limit for blur picture online?', 'a' => '<p>One file can be up to 15 MB. JPG, PNG, and WEBP are accepted. If the long edge is above 1600 pixels, the editor scales the working copy down so blur picture online stays usable on a phone. The download is a PNG of that working copy.</p>'),
 		),
 		'opposite' => array(
 			'text' => 'This page adds blur. If the photo is already soft and you want it clearer, switch tools.',
@@ -260,59 +262,6 @@ return array(
 			array('name' => 'Home', 'path' => ''),
 			array('name' => 'Blur Image', 'path' => 'blur-image'),
 			array('name' => 'Text', 'path' => 'blur-image/text'),
-		),
-	),
-	array(
-		'group' => 'blur',
-		'slug' => 'online',
-		'path' => 'blur-image/online',
-		'faq_heading' => 'FAQ',
-		'title' => 'Blur Image Online Free – No Software Installation',
-		'description' => 'Use blur image online tool without app. Blur picture online, blur pic online directly inside browser.',
-		'h1' => 'Blur Image Online Free – No Software Installation',
-		'lead' => '<p>Blur image online in the browser you already have. The file is not uploaded. Blur picture online and blur pic online from a laptop or a phone, then save a PNG of the working copy.</p>',
-		'tool' => array(
-			'mode' => 'blur',
-			'preset' => 'online',
-			'note' => 'Works in the browser you already have. Close the tab when you are done and the picture leaves memory.',
-			'heading' => 'How to blur a picture online',
-			'steps' => array(
-				'Upload a JPG, PNG, or WEBP. The file stays in this browser.',
-				'Choose Gaussian or Pixel and raise Strength. Brush keeps the change in one area.',
-				'Hold the original, then download the PNG.',
-			),
-		),
-		'sections' => array(
-			array(
-				'h2' => 'Benefits of blur image online editor',
-				'html' => '<p>A blur image online editor on this site skips installers and accounts. Pixels are processed in the tab, then discarded when you close it. There is no saved library. Background, face, and text steps stay on the <a href="{{path:blur-image}}">main blur image page</a> so this page can stay about the browser limits.</p>',
-			),
-			array(
-				'h2' => 'How to use blur picture online',
-				'html' => '<p>To blur picture online, drop the file, choose Gaussian or Pixel, and raise Strength. Strength opens at 0, so the photo stays unchanged until you move it. Brush limits the change to one region. Whole image softens the full frame.</p>',
-			),
-			array(
-				'h2' => 'Supported formats for blur pic online',
-				'html' => '<p>Blur pic online accepts JPG, PNG, and WEBP. If the long edge is above 1600 pixels, the editor scales the working copy down before you paint. The download is a PNG of that working copy, not a re-save of the camera original at full size.</p>',
-			),
-		),
-		'faqs' => array(
-			array('q' => 'Do I need account for blur image online service?', 'a' => '<p>No. The blur image online editor does not ask you to sign in. There is no library of your past uploads because the file never leaves the device.</p>'),
-			array('q' => 'What file size limit for blur picture online?', 'a' => '<p>There is no server quota. The practical limit is what your browser can hold in memory. Photos are reduced if the long edge is above 1600 pixels so blur picture online stays usable on a phone.</p>'),
-		),
-		'opposite' => array(
-			'text' => 'Online blur adds a blur effect. To sharpen a blurry photo in the browser, use the other tool.',
-			'path' => 'unblur-image',
-			'label' => 'Fix blurry photos',
-		),
-		'related' => array(
-			array('path' => 'blur-image', 'label' => 'Blur picture'),
-			array('path' => 'blog/how-to-make-picture-blurry', 'label' => 'How to make a picture blurry online'),
-		),
-		'crumbs' => array(
-			array('name' => 'Home', 'path' => ''),
-			array('name' => 'Blur Image', 'path' => 'blur-image'),
-			array('name' => 'Online', 'path' => 'blur-image/online'),
 		),
 	),
 	array(

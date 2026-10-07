@@ -9,10 +9,8 @@
 		background: { effect: 'gaussian', gaussian: 18, pixel: 12, scope: 'brush', brush: 72 },
 		face: { effect: 'pixel', gaussian: 4, pixel: 16, scope: 'brush', brush: 46 },
 		text: { effect: 'pixel', gaussian: 14, pixel: 16, scope: 'marquee', brush: 26 },
-		online: { effect: 'gaussian', gaussian: 10, pixel: 8, scope: 'whole', brush: 48 },
 		effect: { effect: 'gaussian', gaussian: 8, pixel: 10, scope: 'whole', brush: 48 },
 		sharpen: { sharpen: 110, radius: 1.4, contrast: 8 },
-		iphone: { sharpen: 120, radius: 1.3, contrast: 8 },
 		motion: { angle: 0, length: 24, strength: 70 }
 	};
 

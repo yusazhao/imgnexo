@@ -22,7 +22,7 @@ return array(
 <h2>Pick Gaussian or Pixel</h2>
 <p>Gaussian blur looks smooth and is enough for a teaser. Pixel is stronger when someone might try to read the hidden part. The <a href="{{path:blur-image/effect}}">blur effect</a> page uses one of those at a time. It does not wash the photo toward a fade, and it does not add motion streaks. For a backdrop-only pass, follow <a href="{{path:blur-image/background}}">blur background of photo</a>.</p>
 <h2>Check the download, not just the preview</h2>
-<p>Download the PNG and open it outside the editor. Look for a sharp island you missed: an ear, a digit, a reflection in a window. The original on your device is unchanged unless you overwrite it. You can <a href="{{path:blur-image/online}}">blur picture online</a> again if the first pass was too light.</p>
+<p>Download the PNG and open it outside the editor. Look for a sharp island you missed: an ear, a digit, a reflection in a window. The original on your device is unchanged unless you overwrite it. You can <a href="{{path:blur-image}}">blur picture online</a> again if the first pass was too light.</p>
 HTML
 	),
 	array(
@@ -202,7 +202,7 @@ HTML
 		'html' => <<<'HTML'
 <p>A blur photo iphone shot is usually a missed tap, a moving subject, or Portrait mode locked on the background. You can unblur photo iphone files in Safari or Chrome. No App Store install is required. Mild softness often improves. A heavy smear does not grow new detail.</p>
 <h2>Way 1: Sharpen it in the browser</h2>
-<p>This is the direct repair. Open <a href="{{path:unblur-image/iphone}}">unblur photo iPhone</a>, tap Select image, and choose the photo from your library. Raise clarity a little. If edges grow a white outline, lower the radius. Hold the original button, and keep the download only when the picture is actually clearer.</p>
+<p>This is the direct repair. Open <a href="{{path:unblur-image}}">unblur image</a> in Safari or Chrome, tap Select image, and choose the photo from your library. Raise clarity a little. If edges grow a white outline, lower the radius. Hold the original button, and keep the download only when the picture is actually clearer.</p>
 <p>The original stays in Photos. The browser makes a new PNG. Save that PNG into Photos if you want it in the library. The page does not ask for camera access, and the file is not uploaded.</p>
 <h2>Way 2: Pick a sharper frame you already took</h2>
 <p>A Live Photo stores a short moment around the still. Open it in Photos and see whether another instant is sharper than the one the camera kept. A burst works the same way: a middle frame is often steadier. If that frame is still a bit soft, run it through the same browser tool.</p>
