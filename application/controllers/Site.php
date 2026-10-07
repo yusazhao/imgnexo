@@ -34,14 +34,10 @@ class Site extends CI_Controller {
 				),
 			),
 			'schema_home' => TRUE,
-			'collection_items' => array(
-				array('name' => 'Blur Image Online', 'path' => 'blur-image', 'description' => 'Add Gaussian or Pixel blur to a picture in the browser.'),
-				array('name' => 'Unblur Image Online', 'path' => 'unblur-image', 'description' => 'Fix mild soft-focus photos with a clarity pass in the browser.'),
-				array('name' => 'Blur Photo Background', 'path' => 'blur-image/background', 'description' => 'Soften the background while keeping the subject clearer.'),
-				array('name' => 'Blur Face in Photo', 'path' => 'blur-image/face', 'description' => 'Cover faces with Pixel, Gaussian, or a black bar.'),
-				array('name' => 'Blur Text in Photo', 'path' => 'blur-image/text', 'description' => 'Find and redact writing in screenshots and documents.'),
-				array('name' => 'Blur Effects', 'path' => 'blur-image/effect', 'description' => 'Apply Gaussian, Pixel, Motion, Radial, and related looks.'),
-				array('name' => 'Fix Motion Blur Photo', 'path' => 'unblur-image/motion-blur', 'description' => 'Directional deblur for streaked camera shake.'),
+			// Core apps listed on the homepage WebPage.about; append new tools here when they launch.
+			'home_apps' => array(
+				array('name' => 'Blur Image Tool', 'path' => 'blur-image'),
+				array('name' => 'Unblur Image Tool', 'path' => 'unblur-image'),
 			),
 		));
 	}

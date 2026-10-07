@@ -56,12 +56,17 @@ if ( ! empty($faqs))
 
 if ( ! empty($schema_home))
 {
+	$https = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+		OR (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+	$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '127.0.0.1';
+	$logo_url = ($https ? 'https' : 'http').'://'.$host.asset_url('favicon.svg');
+
 	$org = array(
 		'@type' => 'Organization',
 		'@id' => $org_id,
 		'name' => $brand,
 		'url' => canonical_url(''),
-		'description' => 'Free browser tools to blur or unblur photos. Image edits run on your device. More utilities may be added over time.',
+		'logo' => $logo_url,
 	);
 
 	if (is_array($info) && ! empty($info['operator_name']))
@@ -79,57 +84,32 @@ if ( ! empty($schema_home))
 	$graph[] = array(
 		'@type' => 'WebSite',
 		'@id' => $website_id,
-		'name' => $brand,
 		'url' => canonical_url(''),
-		'description' => isset($meta['description']) ? $meta['description'] : '',
+		'name' => $brand,
 		'publisher' => array('@id' => $org_id),
-		'inLanguage' => 'en',
 	);
 
-	$list_items = array();
-	$position = 1;
+	$about = array();
 
-	if ( ! empty($collection_items) && is_array($collection_items))
+	if ( ! empty($home_apps) && is_array($home_apps))
 	{
-		foreach ($collection_items as $item)
+		foreach ($home_apps as $app)
 		{
-			$list_items[] = array(
-				'@type' => 'ListItem',
-				'position' => $position++,
-				'name' => $item['name'],
-				'url' => canonical_url($item['path']),
-				'description' => isset($item['description']) ? $item['description'] : '',
-				'item' => array(
-					'@type' => 'WebApplication',
-					'name' => $item['name'],
-					'url' => canonical_url($item['path']),
-					'description' => isset($item['description']) ? $item['description'] : '',
-					'applicationCategory' => 'MultimediaApplication',
-					'operatingSystem' => 'Any',
-					'offers' => array(
-						'@type' => 'Offer',
-						'price' => '0',
-						'priceCurrency' => 'USD',
-					),
-				),
+			$about[] = array(
+				'@type' => 'WebApplication',
+				'name' => $app['name'],
+				'url' => canonical_url($app['path']),
 			);
 		}
 	}
 
 	$graph[] = array(
-		'@type' => 'CollectionPage',
-		'@id' => canonical_url('').'#collection',
-		'name' => isset($meta['title']) ? $meta['title'] : $brand,
-		'description' => isset($meta['description']) ? $meta['description'] : '',
+		'@type' => 'WebPage',
+		'@id' => canonical_url('').'#webpage',
 		'url' => canonical_url(''),
+		'name' => isset($meta['title']) ? $meta['title'] : $brand,
 		'isPartOf' => array('@id' => $website_id),
-		'about' => array('@id' => $org_id),
-		'mainEntity' => array(
-			'@type' => 'ItemList',
-			'name' => 'Imgnexo browser tools',
-			'numberOfItems' => count($list_items),
-			'itemListElement' => $list_items,
-		),
+		'about' => $about,
 	);
 }
 

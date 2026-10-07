@@ -2,12 +2,12 @@
 <article class="sheet home">
 	<section class="home-intro">
 		<h1>Free Online Image Utilities &amp; Photo Tools | Imgnexo</h1>
-		<p class="dek">Easy-to-use, browser-based image tools. Processing stays private on your device.</p>
+		<p class="dek">Imgnexo is a free suite of browser-based image tools. Soften a photo for privacy or style, or try to clear a mildly blurry shot when the detail is still almost there. Pick the job first—adding blur and removing blur are opposite edits—and keep the file in this tab either way. No account and no install.</p>
 	</section>
 
 	<section class="home-categories">
 		<h2>Explore Photo Tool Categories</h2>
-		<p class="section-intro">Pick a category, then open the main tool or jump straight to a common job. New categories will appear here as the suite grows.</p>
+		<p class="section-intro">Start with a category when you are not sure which page to open. Each card links to the main tool for that job, plus shortcuts for common tasks. New categories can sit beside these as the suite grows—blur and unblur are only the first two.</p>
 		<div class="category-grid">
 			<article class="category-card">
 				<figure class="category-art" aria-label="A sharp person in front of a blurred background figure">
@@ -41,7 +41,7 @@
 				</figure>
 				<span class="kicker">Add blur</span>
 				<h3>Image Blurring &amp; Effects</h3>
-				<p>Add background blur, anonymize faces, mask sensitive text, or apply creative camera blur effects.</p>
+				<p>Add background blur, anonymize faces, mask sensitive text, or apply creative camera blur effects. Soften one picture with Gaussian or Pixel—including a brush stroke—or apply the same whole-image blur to several files and download them together.</p>
 				<a class="feature-go" href="<?= html_escape(page_url('blur-image')) ?>">Go to Blur Image Tools</a>
 				<nav class="category-links" aria-label="Blur tools">
 					<a href="<?= html_escape(page_url('blur-image/background')) ?>">Blur Background</a>
@@ -85,7 +85,7 @@
 				</figure>
 				<span class="kicker">Clear soft photos</span>
 				<h3>Image Enhancement &amp; Unblurring</h3>
-				<p>Clear blurry photos, fix motion blur from camera shake, and restore soft snapshot details online.</p>
+				<p>Clear blurry photos, fix motion blur from camera shake, and restore soft snapshot details online. A clarity pass can help when edges are still almost there. It does not invent a sharper face or a readable sign from a smooth blob.</p>
 				<a class="feature-go" href="<?= html_escape(page_url('unblur-image')) ?>">Go to Unblur Image Tools</a>
 				<nav class="category-links" aria-label="Unblur tools">
 					<a href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">Fix Motion Blur</a>
@@ -96,7 +96,7 @@
 
 	<section>
 		<h2>Popular Quick Tools</h2>
-		<p class="section-intro">High-traffic shortcuts across categories. Open the exact editor you need in one click.</p>
+		<p class="section-intro">Already know the job? These shortcuts open the exact editor—blur a face, hide writing, soften a background, or try a light unblur—without browsing the full category first.</p>
 		<div class="feature-grid">
 			<a class="feature" href="<?= html_escape(page_url('blur-image')) ?>">
 				<span class="kicker">Blur</span>
@@ -146,7 +146,8 @@
 	<section class="home-platform">
 		<h2>All-in-One Online Photo Processing Platform</h2>
 		<div class="prose">
-			<p>Imgnexo provides a fast, free, and privacy-focused suite of online image tools. Whether you need to blur sensitive information, recover motion-blurred pictures, or prepare images for everyday sharing and product work, all processing happens directly inside your web browser. No software installation required.</p>
+			<p>Imgnexo provides a fast, free, and privacy-focused suite of online image tools. Whether you need to blur sensitive information before you post, recover a mildly soft or motion-blurred picture, or prepare images for everyday sharing and product work, the edit runs directly inside your web browser.</p>
+			<p>There is no software install and no sign-in wall. Soften and clarify stay separate so you open the page that matches the result you want. Guides on the <a href="<?= html_escape(page_url('blog')) ?>">blog</a> explain limits in plain language—for example when a long motion trail cannot be rebuilt—so expectations match what a single frame can still give back.</p>
 		</div>
 	</section>
 
