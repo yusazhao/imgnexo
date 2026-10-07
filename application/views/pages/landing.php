@@ -25,6 +25,10 @@
 
 	<?php if ( ! empty($page['tool'])): ?>
 	<section class="tool-block">
+		<p class="privacy-ondevice">
+			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+			Your image never leaves this device.
+		</p>
 		<?php $this->load->view('partials/tool', array('tool' => $page['tool'])); ?>
 	</section>
 	<?php if ( ! empty($page['tool']['heading']) || ! empty($page['tool']['intro']) || ! empty($page['tool']['steps'])): ?>

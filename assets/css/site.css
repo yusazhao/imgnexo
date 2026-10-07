@@ -231,6 +231,22 @@ h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 .tool-shell .dek, .tool-block .prose { text-align: center; }
 .tool-shell .dek { margin-inline: auto; }
 .tool-block .editor, .tool-shell .editor { background: transparent; border: 0; box-shadow: none; padding: 0; text-align: left; }
+.privacy-ondevice {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: .45rem;
+	margin: 0 0 1rem;
+	padding: .55rem .9rem;
+	border-radius: 999px;
+	background: #ecfdf5;
+	color: #0f766e;
+	font-size: .92rem;
+	font-weight: 600;
+	line-height: 1.3;
+	text-align: center;
+}
+.privacy-ondevice svg { flex: 0 0 auto; color: #0d9488; }
 
 .job-switch { max-width: 22rem; margin-bottom: .85rem; }
 .job-switch button.choice { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; }
