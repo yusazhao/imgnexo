@@ -907,6 +907,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	.sheet > .tool-links .tool-links-row { flex-wrap: nowrap; }
 }
 @media (max-width: 900px) {
+	#zoom-fit { display: none; }
 	.hero, .editor-layout, .steps, .step-cards, .feature-grid, .feature-grid.pair, .quick-links, .related, .footer-grid { grid-template-columns: 1fr; }
 	.editor-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
 	.editor-stage { display: contents; }
