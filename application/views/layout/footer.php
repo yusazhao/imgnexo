@@ -34,8 +34,14 @@
 			</ul>
 		</div>
 	</div>
-	<div class="wrap">
-		<p class="legal">Copyright <?= date('Y') ?> Imgnexo. Free browser tools for blurring and unblurring photos.</p>
+	<div class="wrap footer-legal-links">
+		<p class="legal">
+			Copyright <?= date('Y') ?> Imgnexo.
+			<a href="<?= html_escape(page_url('about')) ?>">About</a>
+			· <a href="<?= html_escape(page_url('privacy')) ?>">Privacy</a>
+			· <a href="<?= html_escape(page_url('terms')) ?>">Terms</a>
+			· <a href="<?= html_escape(page_url('contact')) ?>">Contact</a>
+		</p>
 	</div>
 </footer>
 <?php if ( ! empty($load_tool)): ?>

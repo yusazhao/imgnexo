@@ -819,9 +819,17 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	text-decoration: none;
 	color: var(--ink);
 }
+.prose .post-tool-card.is-lead {
+	margin: .75rem 0 1.35rem;
+	padding: 1.15rem 1.2rem;
+	border-color: #93c5fd;
+	background: var(--soft);
+}
 .prose .post-tool-card strong { color: var(--ink); font-size: 1.12rem; }
+.prose .post-tool-card.is-lead strong { font-size: 1.22rem; }
 .prose .post-tool-card > span:not(.kicker):not(.feature-go) { color: #475569; }
 .prose .post-tool-card:hover { border-color: #bfdbfe; }
+.prose .post-tool-card.is-lead:hover { background: #fff; border-color: var(--accent); }
 .prose .post-diagram {
 	margin: 1rem 0 1.2rem;
 	padding: 0;
@@ -871,6 +879,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .site-footer a:hover { color: var(--accent); }
 .site-footer p { color: var(--muted); }
 .legal { margin: 1.4rem 0 0; padding-top: 1rem; border-top: 1px solid var(--line); color: #94a3b8; font-size: .88rem; text-align: center; }
+.legal a { color: #64748b; text-decoration: none; }
+.legal a:hover { color: var(--accent); }
+.prose > .lead { font-size: 1.05rem; color: #334155; margin-bottom: 1.25rem; }
+.prose h2 { margin: 1.6rem 0 .55rem; font-size: 1.25rem; color: var(--ink); }
 
 @media (min-width: 901px) {
 	body { font-size: 1.375rem; }

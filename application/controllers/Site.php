@@ -5,6 +5,8 @@ class Site extends CI_Controller {
 
 	private $pages = NULL;
 	private $posts = NULL;
+	private $info_pages = NULL;
+	private $site_info = NULL;
 
 	public function index()
 	{
@@ -89,8 +91,33 @@ class Site extends CI_Controller {
 			),
 			'nav' => 'blog',
 			'crumbs' => $post['crumbs'],
-			'faqs' => array(),
+			'faqs' => ! empty($post['faqs']) ? $post['faqs'] : array(),
 			'post' => $post,
+		));
+	}
+
+	public function info($slug = '')
+	{
+		$page = $this->find_info_page($slug);
+
+		if ( ! $page)
+		{
+			return $this->not_found();
+		}
+
+		$page = $this->expand_info_page($page);
+
+		$this->render('pages/info', array(
+			'meta' => array(
+				'title' => $page['title'],
+				'description' => $page['description'],
+				'path' => $page['path'],
+			),
+			'nav' => 'home',
+			'crumbs' => $page['crumbs'],
+			'faqs' => array(),
+			'page' => $page,
+			'organization' => ($page['slug'] === 'about') ? $this->organization_schema() : NULL,
 		));
 	}
 
@@ -107,6 +134,11 @@ class Site extends CI_Controller {
 		foreach ($this->posts() as $post)
 		{
 			$urls[] = array('path' => $post['path'], 'trailing' => TRUE);
+		}
+
+		foreach ($this->info_pages() as $page)
+		{
+			$urls[] = array('path' => $page['path'], 'trailing' => TRUE);
 		}
 
 		$this->output->set_content_type('application/xml');
@@ -222,6 +254,129 @@ class Site extends CI_Controller {
 		}
 
 		return $this->posts;
+	}
+
+	private function info_pages()
+	{
+		if ($this->info_pages === NULL)
+		{
+			$this->info_pages = include APPPATH.'content/info_pages.php';
+		}
+
+		return $this->info_pages;
+	}
+
+	private function find_info_page($slug)
+	{
+		$slug = trim($slug, '/');
+
+		foreach ($this->info_pages() as $page)
+		{
+			if ($page['slug'] === $slug)
+			{
+				return $page;
+			}
+		}
+
+		return NULL;
+	}
+
+	private function site_info()
+	{
+		if ($this->site_info === NULL)
+		{
+			$this->site_info = include APPPATH.'config/site_info.php';
+		}
+
+		return $this->site_info;
+	}
+
+	private function expand_info_page($page)
+	{
+		$info = $this->site_info();
+		$email = trim(isset($info['contact_email']) ? $info['contact_email'] : '');
+		$operator = trim(isset($info['operator_name']) ? $info['operator_name'] : '');
+		$jurisdiction = trim(isset($info['jurisdiction']) ? $info['jurisdiction'] : '');
+		$effective = isset($info['effective_date']) ? $info['effective_date'] : '';
+		$response = isset($info['response_window']) ? $info['response_window'] : 'within a few business days';
+		$brand = isset($info['brand']) ? $info['brand'] : 'Imgnexo';
+
+		if ($operator !== '')
+		{
+			$operator_line = html_escape($operator).' operates this website and publishes free browser photo tools under the brand <strong>'.html_escape($brand).'</strong>.';
+			$operator_short = html_escape($operator);
+			$about_operator = '<p>'.html_escape($operator).' publishes Imgnexo. We focus on clear product limits rather than marketing claims that the tools cannot keep.</p>';
+		}
+		else
+		{
+			$operator_line = 'This website is published under the brand <strong>'.html_escape($brand).'</strong>. Free browser tools to blur or unblur photos are offered without an account.';
+			$operator_short = html_escape($brand);
+			$about_operator = '<p>Imgnexo is published as an independent browser-tools project. The legal operator name will be listed here once confirmed. Until then, treat the brand name Imgnexo as the public face of the service, and use <a href="'.html_escape(page_url('contact')).'">Contact</a> for accountability requests.</p>';
+		}
+
+		if ($email !== '')
+		{
+			$safe = html_escape($email);
+			$contact_block = '<p>Email: <a href="mailto:'.$safe.'">'.$safe.'</a></p>';
+		}
+		else
+		{
+			$contact_block = '<p>A public support email is not listed yet. Add <code>contact_email</code> in the site identity config before launch, or reach us through the channel your host provides while that field is empty.</p>';
+		}
+
+		if ($jurisdiction !== '')
+		{
+			$jurisdiction_block = 'These terms are governed by the laws of '.html_escape($jurisdiction).', without regard to conflict-of-law rules. Courts in that jurisdiction may hear disputes, except where consumer law gives you mandatory rights elsewhere.';
+		}
+		else
+		{
+			$jurisdiction_block = 'Governing law and venue will follow the place where the operator is established once that is published on this site. Until a jurisdiction is listed in the site identity config, mandatory consumer protections in your country still apply where they cannot be waived.';
+		}
+
+		$tokens = array(
+			'{{effective_date}}' => html_escape(format_date($effective)),
+			'{{operator_line}}' => $operator_line,
+			'{{operator_short}}' => $operator_short,
+			'{{about_operator}}' => $about_operator,
+			'{{contact_block}}' => $contact_block,
+			'{{jurisdiction_block}}' => $jurisdiction_block,
+			'{{response_window}}' => html_escape($response),
+		);
+
+		$page = $this->expand_tree($page);
+
+		foreach ($page as $key => $value)
+		{
+			if (is_string($value))
+			{
+				$page[$key] = strtr($value, $tokens);
+			}
+		}
+
+		return $page;
+	}
+
+	private function organization_schema()
+	{
+		$info = $this->site_info();
+		$org = array(
+			'@type' => 'Organization',
+			'name' => isset($info['brand']) ? $info['brand'] : 'Imgnexo',
+			'url' => canonical_url(''),
+			'description' => 'Free browser tools to blur or unblur photos. Image edits run on your device.',
+		);
+
+		if ( ! empty($info['operator_name']))
+		{
+			$org['legalName'] = $info['operator_name'];
+		}
+
+		if ( ! empty($info['contact_email']))
+		{
+			$org['email'] = $info['contact_email'];
+		}
+
+		return $org;
 	}
 
 	private function expand_tree($value)

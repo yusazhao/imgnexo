@@ -52,6 +52,35 @@ if (isset($nav) && $nav === 'home')
 		'url' => canonical_url(''),
 	);
 }
+
+if ( ! empty($post) && is_array($post))
+{
+	$graph[] = array(
+		'@type' => 'Article',
+		'headline' => $post['h1'],
+		'description' => $post['description'],
+		'datePublished' => $post['date'],
+		'dateModified' => $post['date'],
+		'mainEntityOfPage' => array(
+			'@type' => 'WebPage',
+			'@id' => canonical_url($post['path']),
+		),
+		'author' => array(
+			'@type' => 'Organization',
+			'name' => 'Imgnexo',
+		),
+		'publisher' => array(
+			'@type' => 'Organization',
+			'name' => 'Imgnexo',
+			'url' => canonical_url(''),
+		),
+	);
+}
+
+if ( ! empty($organization) && is_array($organization))
+{
+	$graph[] = $organization;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
