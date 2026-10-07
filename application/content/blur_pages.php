@@ -74,7 +74,7 @@ return array(
 			array('q' => 'What is gaussian blur?', 'a' => '<p>Gaussian blur averages nearby pixels with a bell-curve falloff, so edges melt instead of turning into squares. The blur slider on this page is that style of soften. A longer guide is in <a href="{{path:blog/gaussian-blur-guide}}">the gaussian blur article</a>.</p>'),
 			array('q' => 'How to use pixelate blur on pictures?', 'a' => '<p>Choose Pixel and raise Strength. At 1 the picture stays as it is. Larger blocks hide faces and text more reliably than a light Gaussian soften. Pixel and Gaussian are separate, so switch effects instead of stacking them.</p>'),
 			array('q' => 'Can I blur image for WhatsApp?', 'a' => '<p>Yes. Edit first, download the PNG, then send that file in WhatsApp. Blurring inside this page does not connect to WhatsApp. A whatsapp blur image search usually means you want the censored file before you attach it to a chat.</p>'),
-			array('q' => 'What does fade images effect do?', 'a' => '<p>Fade images washes a photo toward a pale tone so contrast drops. It is not a privacy mask, and this editor does not include it. Use Gaussian to soften or Pixel to block a face or a line of text.</p>'),
+			array('q' => 'What does fade images effect do?', 'a' => '<p>A fade-style look softens contrast and detail so a photo feels gentler. On Imgnexo, use Gaussian to melt the scene, or open <a href="{{path:blur-image/effect}}">blur effects</a> for Motion and Radial soft transitions. Use Pixel when a face or a line of text must stay blocked.</p>'),
 			array('q' => 'Where can I get a blurry picture maker?', 'a' => '<p>This page is the blurry picture maker. Use the editor above, then download. You do not need a separate account.</p>'),
 			array('q' => 'Is there a blurry image maker for quick edits?', 'a' => '<p>Yes. The blurry image maker above is a short edit: upload, choose Gaussian or Pixel, set Strength, download. For a face-only or text-only pass, set Apply to Brush.</p>'),
 			array('q' => 'What is the difference between blur pic and blur picture?', 'a' => '<p>Blur pic and blur picture are the same request. So are blur and image, blur for pictures, and the common misspelling blure picture. All of them mean you want the photograph softened or partly hidden, not sharpened.</p>'),
@@ -270,7 +270,7 @@ return array(
 		'path' => 'blur-image/effect',
 		'faq_heading' => 'FAQ',
 		'title' => 'Blur Effect Image Online – Gaussian, Pixelate & Motion Effects',
-		'description' => 'Apply photo-style blur effects instantly. Choose from Gaussian, Pixelate, Motion, and Radial blurs. Adjust strength and apply to the whole image or specific areas.',
+		'description' => 'Apply photo blur effects online. Choose from Gaussian, Pixelate, Motion, and soft fade effects. Adjust blur strength for precise photo editing.',
 		'h1' => 'Blur Effect Image Online – Gaussian, Pixelate & Motion Effects',
 		'lead' => '<p>Apply photo-style blur effects instantly. Choose from Gaussian, Pixelate, Motion, and Radial blurs. Adjust strength and apply to the whole image or specific areas.</p>',
 		'tool' => array(
@@ -295,8 +295,8 @@ return array(
 				'html' => '<p>Pixelate blur replaces detail with flat blocks. It is the right blur effect on pictures when a face, plate, or line of type must not be reconstructed by looking harder. A light pixelate reads as a style. A heavy one reads as a mask.</p>',
 			),
 			array(
-				'h2' => 'Fade images are not offered here',
-				'html' => '<p>Fade images wash a photo toward a pale color so contrast falls. That is a color treatment, not a blur, and this editor does not do it. For a streak, choose Motion and set the angle. For a burst from one spot, choose Radial and drag the center. Gaussian softens. Pixel replaces detail with blocks.</p>',
+				'h2' => 'Soft Transition & Fade Effects for Images',
+				'html' => '<p>Soft transition and fade effects for images work by easing contrast and edge detail so a photo feels gentler or more atmospheric. For a soft fade look, choose Gaussian and raise Strength until the scene melts into color. For a streaked fade, choose Motion and set the angle. For a burst from one spot, choose Radial and drag the center. Pixel replaces detail with blocks when a region must stay unreadable.</p>',
 			),
 			array(
 				'h2' => 'Apply blurry effects on pictures & photos',
@@ -306,7 +306,7 @@ return array(
 		'faqs' => array(
 			array('q' => 'What is difference between gaussian blur and pixelate blur?', 'a' => '<p>Gaussian blur melts edges into neighboring colors. Pixelate blur builds visible squares. Use gaussian blur for a soft portrait look and pixelate blur when someone must not be identified.</p>'),
 			array('q' => 'Can I combine multiple blurry effects in one picture?', 'a' => '<p>No. Gaussian, Pixel, Noise, Motion, Radial, and Color are alternatives. Choose one and apply it to the whole image or to a region. Switching effects replaces the previous look.</p>'),
-			array('q' => 'How to create fade images for social media?', 'a' => '<p>This editor does not create fade images. For a teaser, choose Gaussian, leave Apply to on Whole image, and raise Strength until the subject is hard to recognize. Download the PNG.</p>'),
+			array('q' => 'How to create fade images for social media?', 'a' => '<p>For a soft fade-style teaser, choose Gaussian, leave Apply to on Whole image, and raise Strength until the subject eases into the background. Download the PNG and use it as a cover or story still.</p>'),
 		),
 		'opposite' => array(
 			'text' => 'These effects add softness. They are the wrong control if you are trying to clear a blurry photo.',

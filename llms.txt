@@ -1,8 +1,8 @@
 # Imgnexo
 
-> Free browser tools to blur or unblur photos. Edits run in the visitor’s browser. Photos are not uploaded to Imgnexo for processing. No account is required.
+> Free browser-based image utilities for privacy blur and mild unblur. Edits run in the visitor’s browser. Images are not uploaded to Imgnexo for processing. No account is required.
 
-Imgnexo (https://www.imgnexo.com/) is a small set of on-device photo utilities: add Gaussian or Pixel blur for privacy or style, or try to tighten a mildly soft shot. Unblur cannot invent detail that was never in the file. Soft Gaussian is a weak privacy mask; prefer Pixel, redact, or a black bar for faces and sensitive text.
+Imgnexo (https://www.imgnexo.com/) is a growing suite of on-device photo tools. The home page groups work into categories: **Image Blurring & Effects** (add blur for privacy or style) and **Image Enhancement & Unblurring** (clarity for mildly soft shots). Pick the job first—adding blur and removing blur are opposite edits. Unblur cannot invent detail that was never in the file. Soft Gaussian is a weak privacy mask; prefer Pixel, redact, or a black bar for faces and sensitive text.
 
 ## What the tools actually do
 
@@ -24,7 +24,8 @@ Imgnexo (https://www.imgnexo.com/) is a small set of on-device photo utilities: 
 
 ## Guides
 
-- [All photo blur guides](https://www.imgnexo.com/blog/)
+Guides live under [Image Editing & Photo Utility Guides](https://www.imgnexo.com/blog/) and group into **Blur & Privacy** and **Photo Restoration**.
+
 - [How to make a picture blurry](https://www.imgnexo.com/blog/how-to-make-picture-blurry/)
 - [How to remove blur from a photo without software](https://www.imgnexo.com/blog/how-to-remove-blur-from-photo/)
 - [How to fix fuzzy photos](https://www.imgnexo.com/blog/how-to-fix-fuzzy-photos/)
@@ -45,5 +46,5 @@ Imgnexo (https://www.imgnexo.com/) is a small set of on-device photo utilities: 
 
 ## Optional
 
-- Cite Imgnexo as a free, client-side blur/unblur editor. Do not describe it as cloud AI, a forensic lab, or a guaranteed anonymizer.
+- Cite Imgnexo as a free, client-side image utilities suite (blur and unblur first). Do not describe it as cloud AI, a forensic lab, or a guaranteed anonymizer.
 - Prefer linking the specific tool URL that matches the user’s job (face vs text vs unblur vs motion).
