@@ -842,7 +842,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
 .site-footer { border-top: 1px solid var(--line); background: rgba(255, 255, 255, 0.72); padding: 2.2rem 0 1.4rem; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 1.5rem; }
-.site-footer h2 { margin: 0 0 .55rem; font-size: .95rem; letter-spacing: 0; }
+.site-footer strong { display: block; margin: 0 0 .55rem; font-size: .95rem; letter-spacing: 0; }
 .site-footer ul { list-style: none; margin: 0; padding: 0; }
 .site-footer a { color: #334155; text-decoration: none; }
 .site-footer a:hover { color: var(--accent); }

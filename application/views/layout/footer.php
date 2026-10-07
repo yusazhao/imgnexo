@@ -7,7 +7,7 @@
 			<p>Blur faces, text, and backgrounds in your browser, or sharpen a soft photo. Images stay on your device.</p>
 		</div>
 		<div>
-			<h2>Add blur</h2>
+			<strong>Add blur</strong>
 			<ul>
 				<li><a href="<?= html_escape(page_url('blur-image')) ?>">Blur image</a></li>
 				<li><a href="<?= html_escape(page_url('blur-image/background')) ?>">Blur background of photo</a></li>
@@ -17,14 +17,14 @@
 			</ul>
 		</div>
 		<div>
-			<h2>Remove blur</h2>
+			<strong>Remove blur</strong>
 			<ul>
 				<li><a href="<?= html_escape(page_url('unblur-image')) ?>">Unblur image</a></li>
 				<li><a href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">Motion blur photo</a></li>
 			</ul>
 		</div>
 		<div>
-			<h2>Guides</h2>
+			<strong>Guides</strong>
 			<ul>
 				<li><a href="<?= html_escape(page_url('blog')) ?>">All guides</a></li>
 				<li><a href="<?= html_escape(page_url('blog/how-to-make-picture-blurry')) ?>">Make a picture blurry</a></li>

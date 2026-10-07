@@ -121,23 +121,39 @@ HTML
 		'slug' => 'unblur-motion-blur-photo',
 		'path' => 'blog/unblur-motion-blur-photo',
 		'date' => '2026-07-02',
-		'title' => 'Can You Unblur a Motion Blur Photo? Limits and Tips',
-		'description' => 'Motion blur can sometimes be tightened, but a streaked subject cannot be fully rebuilt from one frame.',
-		'h1' => 'Can You Unblur a Motion Blur Photo? Limits and Tips',
-		'excerpt' => 'Short camera shake may improve. A subject that moved through the frame usually cannot be put back together.',
+		'title' => 'Can You Unblur a Motion Blur Photo? Limits, Science & Solutions',
+		'description' => 'Learn when a motion blur photo can be tightened, how directional deblur works, and when a streaked subject cannot be rebuilt.',
+		'h1' => 'Can You Unblur a Motion Blur Photo? Limits, Science & Solutions',
+		'excerpt' => 'Mild camera shake may tighten. Heavy trails usually cannot. Match Motion angle to the streak, then stop when edges only grow halos.',
 		'crumbs' => array(
 			array('name' => 'Home', 'path' => ''),
 			array('name' => 'Blog', 'path' => 'blog'),
 			array('name' => 'Motion blur limits', 'path' => 'blog/unblur-motion-blur-photo'),
 		),
 		'html' => <<<'HTML'
-<p>You can try to unblur a motion blur photo. You should know the limit first: the sharp moment was averaged along a path. A slider can emphasize what is left. It cannot choose the position the subject used to occupy.</p>
-<h2>Short shake versus a moving subject</h2>
-<p>If the whole frame is slightly doubled, a clarity pass on <a href="{{path:unblur-image/motion-blur}}">motion blur photo</a> may help. If only the person is streaked and the room is sharp, the person moved. Sharpening will trace the streak. It will not invent a still pose.</p>
-<h2>Stop when halos show up</h2>
-<p>Motion settings use a stronger clarity value, so bright edges grow a pale outline quickly. Compare against the original. If the outline is the main change you see, the repair did not work. Keep the camera file.</p>
-<h2>Shoot the next frame differently</h2>
-<p>More light, a faster shutter, and a braced camera prevent the blur you are trying to undo. For ordinary soft focus that is not a streak, use <a href="{{path:unblur-image}}">fix blurry photos</a> instead of the motion preset.</p>
+<p>You can try to unblur a motion blur photo. Know the limit first: the sharp moment was averaged along a path while the shutter stayed open. A directional pass can emphasize what is left. It cannot invent the pose the subject never stored in that frame.</p>
+<h2>What Is Motion Blur and Why Is It Hard to Fix?</h2>
+<p>Optical blur (soft focus) is a miss on the focus plane. Edges melt in every direction. Directional motion blur is different: detail is smeared along one path because the camera or the subject moved. You see streaks, not a uniform haze.</p>
+<p>A general clarity pass helps soft focus. It is the wrong first tool for streaks. Soft focus that is not a streak belongs on <a href="{{path:unblur-image}}">unblur image</a>. Streaks belong on the motion repair page, where the pass follows one angle for the whole photo.</p>
+<h2>When Can a Motion Blurred Photo Be Saved? (Real Examples)</h2>
+<p>How far the streak runs decides what a single frame can give back.</p>
+<h3>Mild camera shake (slight hand tremor) — easy to fix</h3>
+<p>The whole frame is slightly doubled or dragged a few pixels. Background and subject share the same direction. Matching that angle and a short length often tightens edges enough to keep the shot.</p>
+<h3>Panned subject with a blurred background — moderate fix</h3>
+<p>You tracked a runner or a car so the subject stays almost sharp and the room smears. The tool still uses one direction for the full photo. You can reduce some of the smear, but you will not get a crisp background and a crisp subject at once if that was never in the file.</p>
+<h3>Fast moving objects with heavy trails — extremely hard</h3>
+<p>A long trail means many positions were averaged into one. Sharpening traces the smear. It does not pull the subject back into a still pose. Keep the original and reshoot with more light or a faster shutter when you can.</p>
+<h2>How Our Tool Restores Motion Blur Photos</h2>
+<p>The <a href="{{path:unblur-image/motion-blur}}">motion blur photo</a> editor uses directional deblurring, not the isotropic clarity slider on the main unblur page. You set Motion angle to the streak, Motion length to how far it runs, and Strength for how hard the pass pushes.</p>
+<p>Horizontal (0°) fits traffic and a sideways dash. Vertical (90°) fits up-and-down shake. Diagonal (45°) fits a tilted shake. Raise length until it matches the smear you see. If bright edges grow a pale outline and the subject is no clearer, back off. The repair did not invent missing detail.</p>
+<h2>Step-by-Step: How to Fix Motion Blur Pictures Online</h2>
+<ol>
+<li>Open <a href="{{path:unblur-image/motion-blur}}">fix motion blur photo</a>. Upload the streaked file, or load the sample.</li>
+<li>Set Motion angle to the streak. Use 0°, 90°, or 45° as a starting point, then fine-tune.</li>
+<li>Raise Motion length until it matches the smear. Adjust Strength carefully.</li>
+<li>Hold the original to compare. Download the PNG only when the picture is actually clearer.</li>
+</ol>
+<p>If the blur is soft focus without streaks, switch to <a href="{{path:unblur-image}}">unblur image</a> instead of the motion preset.</p>
 HTML
 	),
 	array(
