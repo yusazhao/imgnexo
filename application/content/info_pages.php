@@ -3,14 +3,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 return array(
 	array(
-		'slug' => 'privacy',
-		'path' => 'privacy',
+		'slug' => 'privacy-policy',
+		'path' => 'privacy-policy',
 		'title' => 'Privacy Policy – Imgnexo',
 		'description' => 'How Imgnexo handles photos and server logs. Image edits run in your browser—no photo upload to a cloud AI.',
 		'h1' => 'Privacy Policy',
 		'crumbs' => array(
 			array('name' => 'Home', 'path' => ''),
-			array('name' => 'Privacy Policy', 'path' => 'privacy'),
+			array('name' => 'Privacy Policy', 'path' => 'privacy-policy'),
 		),
 		'html' => <<<'HTML'
 <p class="lead">Effective date: {{effective_date}}. This policy explains what Imgnexo does—and does not—do with information when you use our free browser tools to blur or unblur photos.</p>
@@ -68,14 +68,14 @@ HTML
 	),
 
 	array(
-		'slug' => 'terms',
-		'path' => 'terms',
+		'slug' => 'terms-of-service',
+		'path' => 'terms-of-service',
 		'title' => 'Terms of Service – Imgnexo',
 		'description' => 'Terms for using Imgnexo’s free browser blur and unblur tools: licenses, limits, and acceptable use.',
 		'h1' => 'Terms of Service',
 		'crumbs' => array(
 			array('name' => 'Home', 'path' => ''),
-			array('name' => 'Terms of Service', 'path' => 'terms'),
+			array('name' => 'Terms of Service', 'path' => 'terms-of-service'),
 		),
 		'html' => <<<'HTML'
 <p class="lead">Effective date: {{effective_date}}. By using Imgnexo, you agree to these terms. If you do not agree, do not use the site.</p>
@@ -117,7 +117,7 @@ HTML
 <p>You agree to defend and hold harmless Imgnexo and {{operator_short}} from claims arising out of your misuse of the tools, your content, or your violation of these terms or applicable law.</p>
 
 <h2>Third-party services</h2>
-<p>When you blur or unblur a photo, the edit runs in your browser. Imgnexo does not call a third-party AI service with your file, and our own servers do not host an AI model or expose an AI API that receives your image for processing. Optional face, text, and background helpers follow the same rule: they do not upload your photo to an AI endpoint on this site or elsewhere. Serving the site’s ordinary HTML, CSS, and JavaScript is described in the <a href="{{path:privacy}}">Privacy Policy</a>.</p>
+<p>When you blur or unblur a photo, the edit runs in your browser. Imgnexo does not call a third-party AI service with your file, and our own servers do not host an AI model or expose an AI API that receives your image for processing. Optional face, text, and background helpers follow the same rule: they do not upload your photo to an AI endpoint on this site or elsewhere. Serving the site’s ordinary HTML, CSS, and JavaScript is described in the <a href="{{path:privacy-policy}}">Privacy Policy</a>.</p>
 
 <h2>Changes and termination</h2>
 <p>We may change these terms, the tools, or take the site offline. Continued use after a change means you accept the new terms. We may block access that appears abusive.</p>
@@ -126,19 +126,19 @@ HTML
 <p>{{jurisdiction_block}}</p>
 
 <h2>Contact</h2>
-<p>Questions about these terms: see <a href="{{path:contact}}">Contact</a>. Related reading: <a href="{{path:privacy}}">Privacy Policy</a> and <a href="{{path:about}}">About Us</a>.</p>
+<p>Questions about these terms: see <a href="{{path:contact}}">Contact</a>. Related reading: <a href="{{path:privacy-policy}}">Privacy Policy</a> and <a href="{{path:about-us}}">About Us</a>.</p>
 HTML
 	),
 
 	array(
-		'slug' => 'about',
-		'path' => 'about',
+		'slug' => 'about-us',
+		'path' => 'about-us',
 		'title' => 'About Us – Imgnexo',
 		'description' => 'What Imgnexo is: free browser tools to blur faces, text, and backgrounds, or try to clear soft photos—without uploading your images to our servers.',
 		'h1' => 'About Us',
 		'crumbs' => array(
 			array('name' => 'Home', 'path' => ''),
-			array('name' => 'About Us', 'path' => 'about'),
+			array('name' => 'About Us', 'path' => 'about-us'),
 		),
 		'html' => <<<'HTML'
 <p class="lead">Imgnexo is a small set of free photo tools that run in your browser. We help you add blur for privacy or style, or try to tighten a mildly soft shot—without creating an account or uploading the picture to our servers for processing.</p>
@@ -162,13 +162,13 @@ HTML
 </ul>
 
 <h2>Why that matters for trust</h2>
-<p>Search and privacy guidance rewards sites that say what they actually do. We would rather under-promise (mild soft focus may improve; heavy smear usually will not) than claim a forensic lab in the browser. If a claim on a landing page ever disagrees with this About page or the <a href="{{path:privacy}}">Privacy Policy</a>, treat the policy and this page as the accurate product description and tell us via <a href="{{path:contact}}">Contact</a>.</p>
+<p>Search and privacy guidance rewards sites that say what they actually do. We would rather under-promise (mild soft focus may improve; heavy smear usually will not) than claim a forensic lab in the browser. If a claim on a landing page ever disagrees with this About page or the <a href="{{path:privacy-policy}}">Privacy Policy</a>, treat the policy and this page as the accurate product description and tell us via <a href="{{path:contact}}">Contact</a>.</p>
 
 <h2>Who is behind Imgnexo</h2>
 {{about_operator}}
 
 <h2>Get in touch</h2>
-<p>Product questions, privacy requests, or corrections to our guides: <a href="{{path:contact}}">Contact</a>. Legal terms: <a href="{{path:terms}}">Terms of Service</a>.</p>
+<p>Product questions, privacy requests, or corrections to our guides: <a href="{{path:contact}}">Contact</a>. Legal terms: <a href="{{path:terms-of-service}}">Terms of Service</a>.</p>
 HTML
 	),
 
@@ -203,7 +203,7 @@ HTML
 </ul>
 
 <h2>Other pages</h2>
-<p><a href="{{path:about}}">About Us</a> · <a href="{{path:privacy}}">Privacy Policy</a> · <a href="{{path:terms}}">Terms of Service</a></p>
+<p><a href="{{path:about-us}}">About Us</a> · <a href="{{path:privacy-policy}}">Privacy Policy</a> · <a href="{{path:terms-of-service}}">Terms of Service</a></p>
 HTML
 	),
 );

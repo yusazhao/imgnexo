@@ -64,9 +64,9 @@ $route['unblur-image/(:any)'] = 'site/unblur/$1';
 $route['blog'] = 'site/blog';
 $route['blog/(:any)'] = 'site/article/$1';
 
-$route['privacy'] = 'site/info/privacy';
-$route['terms'] = 'site/info/terms';
-$route['about'] = 'site/info/about';
+$route['privacy-policy'] = 'site/info/privacy-policy';
+$route['terms-of-service'] = 'site/info/terms-of-service';
+$route['about-us'] = 'site/info/about-us';
 $route['contact'] = 'site/info/contact';
 
 $route['site'] = 'site/not_found';

@@ -117,7 +117,7 @@ class Site extends CI_Controller {
 			'crumbs' => $page['crumbs'],
 			'faqs' => array(),
 			'page' => $page,
-			'organization' => ($page['slug'] === 'about') ? $this->organization_schema() : NULL,
+			'organization' => ($page['slug'] === 'about-us') ? $this->organization_schema() : NULL,
 		));
 	}
 
