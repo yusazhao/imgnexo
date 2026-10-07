@@ -64,8 +64,6 @@ return array(
 			array('q' => 'How do I perform blur remove from photo without software?', 'a' => '<p>Use the editor on this page. Blur remove from photo here is the clarity slider plus a small radius. A walkthrough is in <a href="{{path:blog/how-to-remove-blur-from-photo}}">how to remove blur from photo</a>.</p>'),
 			array('q' => 'Is blur remove photo process fully automatic?', 'a' => '<p>The blur remove photo math runs as soon as you move the slider, but you choose the strength. Automatic does not mean every picture has a correct preset.</p>'),
 			array('q' => 'What is blur pic clear feature for?', 'a' => '<p>Blur pic clear is the gentle setting: a small clarity boost for a slightly soft snapshot. It is the wrong control for hiding a face. That job is <a href="{{path:blur-image/face}}">blur face in photo</a>.</p>'),
-			array('q' => 'Will unblur process modify my original iPhone photo file?', 'a' => '<p>No. The original stays in your library. The browser makes a new PNG. You only replace the iPhone photo if you later save over it yourself.</p>'),
-			array('q' => 'Do I need iOS special permission for this tool?', 'a' => '<p>You only need the normal permission to pick a photo when the file dialog asks. The page does not ask for camera access, and it does not need a special iOS entitlement.</p>'),
 		),
 		'opposite' => array(
 			'text' => 'This page tries to clear blur. If you want to add blur, hide a face, or cover writing, switch tools.',
