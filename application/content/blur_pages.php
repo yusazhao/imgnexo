@@ -225,12 +225,12 @@ return array(
 			'preset' => 'text',
 			'text' => TRUE,
 			'note_below' => TRUE,
-			'note' => 'Auto Blur All Text covers every line it can read, including Chinese and English. Blur Sensitive Only covers emails, phone numbers, and long numbers such as a card or an ID. Click a red box to remove it. Handwriting and very faint, widely spaced letters are often missed. Drag a rectangle or paint those.',
+			'note' => 'Auto Blur All Text covers every line it can read. English and Chinese are on. Add another language when the photo uses it, up to 4. Blur Sensitive Only covers emails, phone numbers, and long numbers such as a card or an ID. Drag a red box to move it, or a corner to resize it. Click × to remove it. Handwriting and very faint, widely spaced letters are often missed. Drag a rectangle or paint those.',
 			'heading' => 'How to blur writing in a photo',
 			'steps' => array(
 				'Upload the photo.',
-				'Click Auto Blur All Text, or Blur Sensitive Only for emails and long numbers.',
-				'Click a red box to remove it. Drag a rectangle or paint anything missed, then download.',
+				'Click Auto Blur All Text, or Blur Sensitive Only. Add a language first when the writing is not English or Chinese.',
+				'Drag a red box to move it, or a corner to resize it. Click × to remove it, or paint anything missed, then download.',
 			),
 		),
 		'sections' => array(
@@ -240,11 +240,11 @@ return array(
 			),
 			array(
 				'h2' => 'How to blur writing in photo online',
-				'html' => '<p>Add the photo, then click Auto Blur All Text or Blur Sensitive Only. The first time, this tab downloads the finder. Each box is already wider than the letters. Click a red box to drop a miss. Drag a rectangle or paint handwriting and anything skipped. Redact fills the box with black or gray, and Strength does not apply. Pixel blocks the letters. Blur softens them.</p>',
+				'html' => '<p>Add the photo, then click Auto Blur All Text or Blur Sensitive Only. English and Chinese are already selected. Add another language when the writing uses it. Up to 4. The first time, this tab downloads the finder for the languages you selected. Each box is already wider than the letters. Drag a red box to move it, or a corner to resize it. Click × to drop a miss. Drag a rectangle or paint handwriting and anything skipped. Redact fills the box with black or gray, and Strength does not apply. Pixel blocks the letters. Blur softens them.</p>',
 			),
 		),
 		'faqs' => array(
-			array('q' => 'Can I selectively blur partial text on an image?', 'a' => '<p>Yes. Blur Sensitive Only covers emails, phone numbers, and long numbers, and leaves other writing sharp. Click a red box to remove one line. Drag a rectangle or paint a phrase the finder skipped.</p>'),
+			array('q' => 'Can I selectively blur partial text on an image?', 'a' => '<p>Yes. Blur Sensitive Only covers emails, phone numbers, and long numbers, and leaves other writing sharp. Drag a red box to move it, or a corner to resize it. Click × to remove one line. Drag a rectangle or paint a phrase the finder skipped.</p>'),
 			array('q' => 'Is blur text image function free?', 'a' => '<p>Yes. The blur text image control is part of the same free browser editor. No account is required. The photo is not uploaded. The first click downloads the finder; later clicks reuse it.</p>'),
 		),
 		'opposite' => array(

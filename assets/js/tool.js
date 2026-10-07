@@ -155,12 +155,19 @@
 	var strengthGroup = document.getElementById('strength-group');
 	var FACE_MIN_SCORE = 0.34;
 	var textBoxes = [];
+	var textDrag = null;
+	var textResize = null;
 	var textBusy = false;
 	var textWorker = null;
 	var textWorkerPromise = null;
 	var textLayer = document.getElementById('text-layer');
 	var blurTextAllBtn = document.getElementById('blur-text-all');
 	var blurTextSensitiveBtn = document.getElementById('blur-text-sensitive');
+	var langPicker = document.getElementById('lang-picker');
+	var langMoreBtn = document.getElementById('lang-more');
+	var langChips = langPicker ? Array.prototype.slice.call(langPicker.querySelectorAll('.lang-chip')) : [];
+	var textLangKey = '';
+	var TEXT_LANG_CAP = 4;
 	var redactTones = document.getElementById('redact-tones');
 	var redactBlackBtn = document.getElementById('redact-black');
 	var redactGrayBtn = document.getElementById('redact-gray');
@@ -3034,6 +3041,8 @@
 		var locked = !ready || textBusy;
 		if (blurTextAllBtn) blurTextAllBtn.disabled = locked;
 		if (blurTextSensitiveBtn) blurTextSensitiveBtn.disabled = locked;
+		langChips.forEach(function (chip) { chip.disabled = textBusy; });
+		if (langMoreBtn) langMoreBtn.disabled = textBusy;
 	}
 
 	function syncTextStyle() {
@@ -3047,22 +3056,78 @@
 		setChoice(redactGrayBtn, effectName === 'gray');
 	}
 
+	function resizeTextBox(box, gesture, point) {
+		var min = 8;
+		var x = box.x;
+		var y = box.y;
+		var w = box.w;
+		var h = box.h;
+		if (gesture.corner === 'se') {
+			x = gesture.ax;
+			y = gesture.ay;
+			w = Math.max(min, point.x - gesture.ax);
+			h = Math.max(min, point.y - gesture.ay);
+		} else if (gesture.corner === 'nw') {
+			w = Math.max(min, gesture.ax - point.x);
+			h = Math.max(min, gesture.ay - point.y);
+			x = gesture.ax - w;
+			y = gesture.ay - h;
+		} else if (gesture.corner === 'ne') {
+			y = gesture.ay - Math.max(min, gesture.ay - point.y);
+			x = gesture.ax;
+			w = Math.max(min, point.x - gesture.ax);
+			h = gesture.ay - y;
+		} else {
+			x = gesture.ax - Math.max(min, gesture.ax - point.x);
+			y = gesture.ay;
+			w = gesture.ax - x;
+			h = Math.max(min, point.y - gesture.ay);
+		}
+		if (x < 0) { w += x; x = 0; }
+		if (y < 0) { h += y; y = 0; }
+		if (x + w > source.width) w = source.width - x;
+		if (y + h > source.height) h = source.height - y;
+		box.x = x;
+		box.y = y;
+		box.w = Math.max(1, w);
+		box.h = Math.max(1, h);
+	}
+
+	function endTextGesture(before) {
+		var box = textDrag ? textDrag.box : (textResize ? textResize.box : null);
+		var el = textDrag ? textDrag.el : (textResize ? textResize.el : null);
+		if (el) el.classList.remove('is-dragging');
+		textDrag = null;
+		textResize = null;
+		if (box) roundFaceBox(box);
+		placeTextBoxes();
+		redrawMask();
+		requestRender();
+		if (box && faceBoxKey(box) !== before) commitSettings();
+	}
+
 	function placeTextBoxes() {
 		if (!textLayer) return;
 		textLayer.innerHTML = '';
 		textLayer.hidden = !textBoxes.length || !source.width;
 		if (!source.width || !source.height) return;
 		textBoxes.forEach(function (box, index) {
-			var btn = document.createElement('button');
-			btn.type = 'button';
-			btn.className = 'ocr-box';
-			btn.setAttribute('aria-label', box.text ? 'Remove ' + box.text : 'Remove this text');
-			if (box.text) btn.title = box.text;
-			btn.style.left = (box.x / source.width * 100) + '%';
-			btn.style.top = (box.y / source.height * 100) + '%';
-			btn.style.width = (box.w / source.width * 100) + '%';
-			btn.style.height = (box.h / source.height * 100) + '%';
-			btn.addEventListener('click', function (event) {
+			var el = document.createElement('div');
+			el.className = 'ocr-box';
+			el.setAttribute('role', 'group');
+			el.setAttribute('aria-label', box.text ? 'Text cover ' + box.text : 'Text cover');
+			if (box.text) el.title = box.text;
+			layoutFaceBox(el, box);
+			var removeBtn = document.createElement('button');
+			removeBtn.type = 'button';
+			removeBtn.className = 'ocr-remove';
+			removeBtn.setAttribute('aria-label', 'Remove this text');
+			removeBtn.textContent = '×';
+			removeBtn.addEventListener('pointerdown', function (event) {
+				event.preventDefault();
+				event.stopPropagation();
+			});
+			removeBtn.addEventListener('click', function (event) {
 				event.preventDefault();
 				event.stopPropagation();
 				textBoxes.splice(index, 1);
@@ -3072,7 +3137,87 @@
 				commitSettings();
 				setStatus('That box is removed. Mark any text that should still be covered.');
 			});
-			textLayer.appendChild(btn);
+			el.appendChild(removeBtn);
+			['nw', 'ne', 'sw', 'se'].forEach(function (corner) {
+				var handle = document.createElement('button');
+				handle.type = 'button';
+				handle.className = 'ocr-handle';
+				handle.setAttribute('data-corner', corner);
+				handle.setAttribute('aria-label', 'Resize text cover');
+				handle.addEventListener('pointerdown', function (event) {
+					if (event.button !== 0) return;
+					event.preventDefault();
+					event.stopPropagation();
+					textResize = {
+						box: box,
+						el: el,
+						corner: corner,
+						ax: (corner === 'nw' || corner === 'sw') ? box.x + box.w : box.x,
+						ay: (corner === 'nw' || corner === 'ne') ? box.y + box.h : box.y,
+						before: faceBoxKey(box)
+					};
+					el.classList.add('is-dragging');
+					try { handle.setPointerCapture(event.pointerId); } catch (err) {}
+				});
+				handle.addEventListener('pointermove', function (event) {
+					if (!textResize || textResize.box !== box) return;
+					event.preventDefault();
+					event.stopPropagation();
+					resizeTextBox(box, textResize, imagePoint(event));
+					layoutFaceBox(el, box);
+					redrawMask();
+					requestRender();
+				});
+				handle.addEventListener('pointerup', function (event) {
+					if (!textResize || textResize.box !== box) return;
+					event.stopPropagation();
+					endTextGesture(textResize.before);
+				});
+				handle.addEventListener('pointercancel', function () {
+					if (!textResize || textResize.box !== box) return;
+					endTextGesture(textResize.before);
+				});
+				el.appendChild(handle);
+			});
+			el.addEventListener('pointerdown', function (event) {
+				if (event.button !== 0) return;
+				if (event.target.closest && event.target.closest('.ocr-handle, .ocr-remove')) return;
+				event.preventDefault();
+				event.stopPropagation();
+				textDrag = {
+					box: box,
+					el: el,
+					px: event.clientX,
+					py: event.clientY,
+					x: box.x,
+					y: box.y,
+					before: faceBoxKey(box)
+				};
+				el.classList.add('is-dragging');
+				try { el.setPointerCapture(event.pointerId); } catch (err) {}
+			});
+			el.addEventListener('pointermove', function (event) {
+				if (!textDrag || textDrag.box !== box) return;
+				event.preventDefault();
+				event.stopPropagation();
+				var rect = view.getBoundingClientRect();
+				var scaleX = rect.width ? view.width / rect.width : 1;
+				var scaleY = rect.height ? view.height / rect.height : 1;
+				moveFaceBox(box, textDrag.x + (event.clientX - textDrag.px) * scaleX, textDrag.y + (event.clientY - textDrag.py) * scaleY);
+				layoutFaceBox(el, box);
+				redrawMask();
+				requestRender();
+			});
+			el.addEventListener('pointerup', function (event) {
+				if (!textDrag || textDrag.box !== box) return;
+				event.stopPropagation();
+				endTextGesture(textDrag.before);
+			});
+			el.addEventListener('pointercancel', function () {
+				if (!textDrag || textDrag.box !== box) return;
+				endTextGesture(textDrag.before);
+			});
+			textLayer.appendChild(el);
 		});
 	}
 
@@ -3177,13 +3322,43 @@
 		return words.filter(function (word, idx) { return hit[idx]; });
 	}
 
+	function selectedTextLangs() {
+		var langs = [];
+		langChips.forEach(function (chip) {
+			if (chip.getAttribute('aria-pressed') === 'true') langs.push(chip.getAttribute('data-lang'));
+		});
+		return langs.length ? langs : ['eng'];
+	}
+
+	function textScriptPattern() {
+		var set = {};
+		selectedTextLangs().forEach(function (lang) { set[lang] = 1; });
+		var parts = ['0-9'];
+		var latin = ['eng', 'spa', 'fra', 'deu', 'por', 'ita', 'vie', 'ind', 'tur'];
+		var i;
+		for (i = 0; i < latin.length; i++) {
+			if (set[latin[i]]) {
+				parts.push('A-Za-z\\u00C0-\\u024F');
+				break;
+			}
+		}
+		if (set.chi_sim || set.chi_tra || set.jpn) parts.push('\\u3400-\\u9FFF');
+		if (set.jpn) parts.push('\\u3040-\\u30FF\\u31F0-\\u31FF');
+		if (set.kor) parts.push('\\uAC00-\\uD7AF');
+		if (set.rus || set.ukr) parts.push('\\u0400-\\u04FF');
+		if (set.ara) parts.push('\\u0600-\\u06FF');
+		if (set.hin) parts.push('\\u0900-\\u097F');
+		if (set.tha) parts.push('\\u0E00-\\u0E7F');
+		return new RegExp('[' + parts.join('') + ']');
+	}
+
 	function boxesFromOcr(data, width, height, sensitive) {
 		var boxes = [];
 		groupWords(data).forEach(function (words) {
 			var chosen = sensitive ? sensitiveWords(words) : words;
 			chosen.forEach(function (word) {
 				var text = String(word.text || '').trim();
-				if (!text || !/[0-9A-Za-z\u3400-\u9FFF]/.test(text)) return;
+				if (!text || !textScriptPattern().test(text)) return;
 				var floor = sensitive ? 15 : 40;
 				if (!(word.confidence >= floor)) return;
 				var w = word.x1 - word.x0;
@@ -3209,27 +3384,34 @@
 		reportAuto(p, '');
 	}
 
-	function loadTextWorker() {
+	function loadTextWorker(key) {
 		var esm = 'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.esm.min.js';
 		reportAuto(0.04, '');
 		return import(esm).then(function (mod) {
 			reportAuto(0.08, '');
 			var api = mod.default || mod;
-			return api.createWorker('eng+chi_sim', 1, { logger: textLogger });
+			return api.createWorker(key || 'eng+chi_sim', 1, { logger: textLogger });
 		});
 	}
 
 	function ensureTextWorker() {
-		if (textWorker) return Promise.resolve(textWorker);
-		if (!textWorkerPromise) {
-			textWorkerPromise = loadTextWorker().then(function (created) {
-				textWorker = created;
-				return created;
-			}, function (err) {
-				textWorkerPromise = null;
-				throw err;
-			});
-		}
+		var key = selectedTextLangs().join('+');
+		if (textWorker && textLangKey === key) return Promise.resolve(textWorker);
+		var previous = textWorker;
+		textWorker = null;
+		textWorkerPromise = null;
+		textLangKey = '';
+		var start = previous && previous.terminate ? previous.terminate().catch(function () { return null; }) : Promise.resolve();
+		textWorkerPromise = start.then(function () {
+			return loadTextWorker(key);
+		}).then(function (created) {
+			textWorker = created;
+			textLangKey = key;
+			return created;
+		}, function (err) {
+			textWorkerPromise = null;
+			throw err;
+		});
 		return textWorkerPromise;
 	}
 
@@ -3319,7 +3501,7 @@
 		if (x >= source.width || y >= source.height) return true;
 		if (x + w > source.width) w = source.width - x;
 		if (y + h > source.height) h = source.height - y;
-		var text = String(box.text || '').replace(/[^\u3400-\u9FFFa-zA-Z0-9]/g, '');
+		var text = String(box.text || '').replace(/[^\u3400-\u9FFF\u3040-\u30FF\u31F0-\u31FF\uAC00-\uD7AF\u0400-\u04FF\u0600-\u06FF\u0900-\u097F\u0E00-\u0E7FA-Za-z0-9\u00C0-\u024F]/g, '');
 		if (text.length <= 1 && box.w > source.width * 0.12) return true;
 		var data = source.getContext('2d').getImageData(x, y, w, h).data;
 		var mid = 0;
@@ -3340,7 +3522,7 @@
 	function strayMark(box) {
 		var text = String(box.text || '');
 		if (/[0-9A-Za-z]/.test(text)) return false;
-		var chars = text.replace(/[^\u3400-\u9FFF]/g, '');
+		var chars = text.replace(/[^\u3400-\u9FFF\u3040-\u30FF\u31F0-\u31FF\uAC00-\uD7AF\u0400-\u04FF\u0600-\u06FF\u0900-\u097F\u0E00-\u0E7F]/g, '');
 		return chars.length === 1 && box.w < source.width * 0.08;
 	}
 
@@ -3392,8 +3574,8 @@
 				return;
 			}
 			setStatus(sensitive
-				? 'Sensitive text is covered with a solid block. Click a box to remove it, or mark anything missed.'
-				: 'Text covered. Click a box to remove it, or mark any writing that was missed.');
+				? 'Sensitive text is covered with a solid block. Drag a box to move it, or a corner to resize it. Click × to remove it.'
+				: 'Text covered. Drag a box to move it, or a corner to resize it. Click × to remove it.');
 		}).catch(function () {
 			if (token !== autoToken) return;
 			setStatus('The finder could not run in this browser. Drag a box or paint the writing instead.');
@@ -3407,6 +3589,31 @@
 
 	if (blurTextAllBtn) blurTextAllBtn.addEventListener('click', function () { blurText(false); });
 	if (blurTextSensitiveBtn) blurTextSensitiveBtn.addEventListener('click', function () { blurText(true); });
+	langChips.forEach(function (chip) {
+		chip.addEventListener('click', function () {
+			if (textBusy) return;
+			var on = chip.getAttribute('aria-pressed') === 'true';
+			if (on) {
+				if (selectedTextLangs().length <= 1) {
+					setStatus('Keep at least one language.');
+					return;
+				}
+				setChoice(chip, false);
+				return;
+			}
+			if (selectedTextLangs().length >= TEXT_LANG_CAP) {
+				setStatus('Four languages is the limit. Turn one off before adding another.');
+				return;
+			}
+			setChoice(chip, true);
+			setStatus(chip.textContent + ' will load the next time you blur text.');
+		});
+	});
+	if (langMoreBtn && langPicker) langMoreBtn.addEventListener('click', function () {
+		var open = langPicker.classList.toggle('is-open');
+		langMoreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+		langMoreBtn.textContent = open ? 'Fewer languages' : 'More languages';
+	});
 	if (redactBlackBtn) redactBlackBtn.addEventListener('click', function () { chooseEffect('bar'); });
 	if (redactGrayBtn) redactGrayBtn.addEventListener('click', function () { chooseEffect('gray'); });
 	if (blurFacesBtn) blurFacesBtn.addEventListener('click', blurFaces);

@@ -239,7 +239,34 @@ if ( ! function_exists('tune_icon')) {
 			<?php elseif ( ! empty($tool['text'])): ?>
 			<div class="tune-step" id="auto-group">
 				<p class="tune-step-title">Find the text</p>
-				<p class="hint">Red boxes mark the writing. Click a box to remove it. Each box is widened past the letters.</p>
+				<div class="lang-picker" id="lang-picker">
+					<div class="lang-head">
+						<p class="lang-label" id="lang-label">Languages</p>
+						<button type="button" class="text-btn" id="lang-more" aria-expanded="false">More languages</button>
+					</div>
+					<div class="lang-chips" role="group" aria-labelledby="lang-label">
+						<button type="button" class="lang-chip is-on" data-lang="eng" aria-pressed="true">English</button>
+						<button type="button" class="lang-chip is-on" data-lang="chi_sim" aria-pressed="true">Chinese</button>
+						<button type="button" class="lang-chip is-extra" data-lang="chi_tra" aria-pressed="false">Traditional Chinese</button>
+						<button type="button" class="lang-chip is-extra" data-lang="jpn" aria-pressed="false">Japanese</button>
+						<button type="button" class="lang-chip is-extra" data-lang="kor" aria-pressed="false">Korean</button>
+						<button type="button" class="lang-chip is-extra" data-lang="spa" aria-pressed="false">Spanish</button>
+						<button type="button" class="lang-chip is-extra" data-lang="fra" aria-pressed="false">French</button>
+						<button type="button" class="lang-chip is-extra" data-lang="deu" aria-pressed="false">German</button>
+						<button type="button" class="lang-chip is-extra" data-lang="por" aria-pressed="false">Portuguese</button>
+						<button type="button" class="lang-chip is-extra" data-lang="ita" aria-pressed="false">Italian</button>
+						<button type="button" class="lang-chip is-extra" data-lang="vie" aria-pressed="false">Vietnamese</button>
+						<button type="button" class="lang-chip is-extra" data-lang="ind" aria-pressed="false">Indonesian</button>
+						<button type="button" class="lang-chip is-extra" data-lang="tur" aria-pressed="false">Turkish</button>
+						<button type="button" class="lang-chip is-extra" data-lang="rus" aria-pressed="false">Russian</button>
+						<button type="button" class="lang-chip is-extra" data-lang="ukr" aria-pressed="false">Ukrainian</button>
+						<button type="button" class="lang-chip is-extra" data-lang="ara" aria-pressed="false">Arabic</button>
+						<button type="button" class="lang-chip is-extra" data-lang="hin" aria-pressed="false">Hindi</button>
+						<button type="button" class="lang-chip is-extra" data-lang="tha" aria-pressed="false">Thai</button>
+					</div>
+					<p class="hint">Add a language only when the photo uses it. Up to 4.</p>
+				</div>
+				<p class="hint">Drag a red box to move it, or a corner to resize it. Click × to remove it.</p>
 				<button type="button" class="primary" id="blur-text-all" disabled>Auto Blur All Text</button>
 				<button type="button" id="blur-text-sensitive" disabled>Blur Sensitive Only</button>
 				<div class="auto-progress" id="auto-progress" hidden>
