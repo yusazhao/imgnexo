@@ -342,8 +342,8 @@ button.choice:disabled { opacity: .45; cursor: default; }
 	max-height: none;
 }
 .stage canvas.ink { position: absolute; inset: 0; cursor: crosshair; }
-.stage.is-region,
-.stage.is-zoomed { touch-action: none; }
+.stage.is-region .stage-canvas,
+.stage.is-zoomed .stage-canvas { touch-action: none; }
 .stage.is-space .stage-canvas,
 .stage.is-space .view,
 .stage.is-space .ink { cursor: grab; }
@@ -758,9 +758,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 		position: sticky;
 		top: var(--header-offset, 4.4rem);
 		z-index: 6;
-		justify-self: center;
+		justify-self: stretch;
 		background: var(--card);
 		border-bottom: 1px solid var(--line);
+		touch-action: pan-y;
 	}
 	.steps, .step-cards { gap: .35rem; margin-top: .4rem; }
 	.steps li, .step-cards li {

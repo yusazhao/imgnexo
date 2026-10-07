@@ -465,6 +465,7 @@
 		var fills = frameW >= outerW - 1;
 		var dispW = Math.max(1, Math.floor(frameW * zoom));
 		var dispH = Math.max(1, Math.floor(frameH * zoom));
+		var centerNarrow = narrow && dispW < outerW - 1;
 		var hugged = zoom <= 1.001;
 		var canvasRect = view.getBoundingClientRect();
 		var viewRect = stageViewport.getBoundingClientRect();
@@ -477,16 +478,24 @@
 			ratioX = (anchorX - canvasRect.left) / canvasRect.width;
 			ratioY = (anchorY - canvasRect.top) / canvasRect.height;
 		}
-		stage.style.width = fills ? '100%' : (frameW + 'px');
+		stage.style.width = narrow || fills ? '100%' : (frameW + 'px');
 		stage.style.maxWidth = '100%';
-		stageViewport.style.width = '100%';
+		if (centerNarrow) {
+			stageViewport.style.width = dispW + 'px';
+			stageViewport.style.marginLeft = 'auto';
+			stageViewport.style.marginRight = 'auto';
+		} else {
+			stageViewport.style.width = '100%';
+			stageViewport.style.marginLeft = '';
+			stageViewport.style.marginRight = '';
+		}
 		stageViewport.style.overflowX = hugged ? 'hidden' : 'auto';
 		stageViewport.style.overflowY = 'hidden';
 		stageViewport.style.height = dispH + 'px';
 		stageSizer.style.width = dispW + 'px';
 		stageSizer.style.height = dispH + 'px';
-		stageSizer.style.marginLeft = fills ? '' : 'auto';
-		stageSizer.style.marginRight = fills ? '' : 'auto';
+		stageSizer.style.marginLeft = !centerNarrow && !narrow && !fills ? 'auto' : '';
+		stageSizer.style.marginRight = !centerNarrow && !narrow && !fills ? 'auto' : '';
 		stageCanvas.style.width = dispW + 'px';
 		stageCanvas.style.height = dispH + 'px';
 		paintCanvasBox(view, dispW, dispH);
