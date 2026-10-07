@@ -18,9 +18,7 @@ class Site extends CI_Controller {
 			),
 			'nav' => 'home',
 			'load_tool' => FALSE,
-			'crumbs' => array(
-				array('name' => 'Home', 'path' => ''),
-			),
+			'crumbs' => array(),
 			'faqs' => array(
 				array(
 					'q' => 'Can I blur and unblur an image in the same tool?',
@@ -34,6 +32,16 @@ class Site extends CI_Controller {
 					'q' => 'Do I need to install photo blur app on my device?',
 					'a' => '<p>No install is required. Open the blur or unblur page, choose a picture, and adjust the effect. A separate photo blur app is unnecessary for a quick edit.</p>',
 				),
+			),
+			'schema_home' => TRUE,
+			'collection_items' => array(
+				array('name' => 'Blur Image Online', 'path' => 'blur-image', 'description' => 'Add Gaussian or Pixel blur to a picture in the browser.'),
+				array('name' => 'Unblur Image Online', 'path' => 'unblur-image', 'description' => 'Fix mild soft-focus photos with a clarity pass in the browser.'),
+				array('name' => 'Blur Photo Background', 'path' => 'blur-image/background', 'description' => 'Soften the background while keeping the subject clearer.'),
+				array('name' => 'Blur Face in Photo', 'path' => 'blur-image/face', 'description' => 'Cover faces with Pixel, Gaussian, or a black bar.'),
+				array('name' => 'Blur Text in Photo', 'path' => 'blur-image/text', 'description' => 'Find and redact writing in screenshots and documents.'),
+				array('name' => 'Blur Effects', 'path' => 'blur-image/effect', 'description' => 'Apply Gaussian, Pixel, Motion, Radial, and related looks.'),
+				array('name' => 'Fix Motion Blur Photo', 'path' => 'unblur-image/motion-blur', 'description' => 'Directional deblur for streaked camera shake.'),
 			),
 		));
 	}
@@ -56,6 +64,19 @@ class Site extends CI_Controller {
 
 	public function blog()
 	{
+		$posts = $this->posts();
+		$items = array();
+
+		foreach ($posts as $post)
+		{
+			$items[] = array(
+				'name' => $post['h1'],
+				'path' => $post['path'],
+				'description' => $post['excerpt'],
+				'date' => $post['date'],
+			);
+		}
+
 		$this->render('pages/blog_index', array(
 			'meta' => array(
 				'title' => 'Photo Blur Guides – Make Pictures Blurry or Fix Blurry Photos',
@@ -68,7 +89,9 @@ class Site extends CI_Controller {
 				array('name' => 'Blog', 'path' => 'blog'),
 			),
 			'faqs' => array(),
-			'posts' => $this->posts(),
+			'posts' => $posts,
+			'schema_blog' => TRUE,
+			'collection_items' => $items,
 		));
 	}
 
@@ -183,6 +206,7 @@ class Site extends CI_Controller {
 			'faqs' => $page['faqs'],
 			'page' => $page,
 			'load_tool' => ! empty($page['tool']),
+			'schema_webapp' => ! empty($page['tool']),
 		));
 	}
 

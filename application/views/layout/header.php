@@ -1,5 +1,15 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 $graph = array();
+$info = NULL;
+
+if (file_exists(APPPATH.'config/site_info.php'))
+{
+	$info = include APPPATH.'config/site_info.php';
+}
+
+$brand = (is_array($info) && ! empty($info['brand'])) ? $info['brand'] : 'Imgnexo';
+$org_id = canonical_url('').'#organization';
+$website_id = canonical_url('').'#website';
 
 if ( ! empty($crumbs))
 {
@@ -44,13 +54,162 @@ if ( ! empty($faqs))
 	);
 }
 
-if (isset($nav) && $nav === 'home')
+if ( ! empty($schema_home))
 {
+	$org = array(
+		'@type' => 'Organization',
+		'@id' => $org_id,
+		'name' => $brand,
+		'url' => canonical_url(''),
+		'description' => 'Free browser tools to blur or unblur photos. Image edits run on your device. More utilities may be added over time.',
+	);
+
+	if (is_array($info) && ! empty($info['operator_name']))
+	{
+		$org['legalName'] = $info['operator_name'];
+	}
+
+	if (is_array($info) && ! empty($info['contact_email']))
+	{
+		$org['email'] = $info['contact_email'];
+	}
+
+	$graph[] = $org;
+
 	$graph[] = array(
 		'@type' => 'WebSite',
-		'name' => 'Imgnexo',
+		'@id' => $website_id,
+		'name' => $brand,
 		'url' => canonical_url(''),
+		'description' => isset($meta['description']) ? $meta['description'] : '',
+		'publisher' => array('@id' => $org_id),
+		'inLanguage' => 'en',
 	);
+
+	$list_items = array();
+	$position = 1;
+
+	if ( ! empty($collection_items) && is_array($collection_items))
+	{
+		foreach ($collection_items as $item)
+		{
+			$list_items[] = array(
+				'@type' => 'ListItem',
+				'position' => $position++,
+				'name' => $item['name'],
+				'url' => canonical_url($item['path']),
+				'description' => isset($item['description']) ? $item['description'] : '',
+				'item' => array(
+					'@type' => 'WebApplication',
+					'name' => $item['name'],
+					'url' => canonical_url($item['path']),
+					'description' => isset($item['description']) ? $item['description'] : '',
+					'applicationCategory' => 'MultimediaApplication',
+					'operatingSystem' => 'Any',
+					'offers' => array(
+						'@type' => 'Offer',
+						'price' => '0',
+						'priceCurrency' => 'USD',
+					),
+				),
+			);
+		}
+	}
+
+	$graph[] = array(
+		'@type' => 'CollectionPage',
+		'@id' => canonical_url('').'#collection',
+		'name' => isset($meta['title']) ? $meta['title'] : $brand,
+		'description' => isset($meta['description']) ? $meta['description'] : '',
+		'url' => canonical_url(''),
+		'isPartOf' => array('@id' => $website_id),
+		'about' => array('@id' => $org_id),
+		'mainEntity' => array(
+			'@type' => 'ItemList',
+			'name' => 'Imgnexo browser tools',
+			'numberOfItems' => count($list_items),
+			'itemListElement' => $list_items,
+		),
+	);
+}
+
+if ( ! empty($schema_blog))
+{
+	$list_items = array();
+	$position = 1;
+
+	if ( ! empty($collection_items) && is_array($collection_items))
+	{
+		foreach ($collection_items as $item)
+		{
+			$entry = array(
+				'@type' => 'ListItem',
+				'position' => $position++,
+				'name' => $item['name'],
+				'url' => canonical_url($item['path']),
+				'item' => array(
+					'@type' => 'BlogPosting',
+					'headline' => $item['name'],
+					'url' => canonical_url($item['path']),
+					'description' => isset($item['description']) ? $item['description'] : '',
+				),
+			);
+
+			if ( ! empty($item['date']))
+			{
+				$entry['item']['datePublished'] = $item['date'];
+			}
+
+			$list_items[] = $entry;
+		}
+	}
+
+	$graph[] = array(
+		'@type' => 'CollectionPage',
+		'@id' => canonical_url('blog').'#collection',
+		'name' => 'Photo Blur Guides',
+		'description' => isset($meta['description']) ? $meta['description'] : '',
+		'url' => canonical_url('blog'),
+		'mainEntity' => array(
+			'@type' => 'ItemList',
+			'name' => 'Photo blur and unblur guides',
+			'numberOfItems' => count($list_items),
+			'itemListElement' => $list_items,
+		),
+	);
+}
+
+if ( ! empty($schema_webapp) && ! empty($page) && is_array($page))
+{
+	$app = array(
+		'@type' => 'WebApplication',
+		'@id' => canonical_url($page['path']).'#app',
+		'name' => $page['h1'],
+		'url' => canonical_url($page['path']),
+		'description' => $page['description'],
+		'applicationCategory' => 'MultimediaApplication',
+		'operatingSystem' => 'Any',
+		'browserRequirements' => 'Requires JavaScript. Runs in a modern browser.',
+		'offers' => array(
+			'@type' => 'Offer',
+			'price' => '0',
+			'priceCurrency' => 'USD',
+		),
+		'isAccessibleForFree' => TRUE,
+		'inLanguage' => 'en',
+	);
+
+	if (count($page['crumbs']) > 2)
+	{
+		$parent = $page['crumbs'][count($page['crumbs']) - 2];
+		$app['isPartOf'] = array(
+			'@type' => 'WebApplication',
+			'name' => $parent['name'],
+			'url' => canonical_url($parent['path']),
+		);
+	}
+
+	$graph[] = $app;
 }
 
 if ( ! empty($post) && is_array($post))
@@ -67,11 +226,11 @@ if ( ! empty($post) && is_array($post))
 		),
 		'author' => array(
 			'@type' => 'Organization',
-			'name' => 'Imgnexo',
+			'name' => $brand,
 		),
 		'publisher' => array(
 			'@type' => 'Organization',
-			'name' => 'Imgnexo',
+			'name' => $brand,
 			'url' => canonical_url(''),
 		),
 	);
@@ -79,6 +238,11 @@ if ( ! empty($post) && is_array($post))
 
 if ( ! empty($organization) && is_array($organization))
 {
+	if (empty($organization['@id']))
+	{
+		$organization['@id'] = $org_id;
+	}
+
 	$graph[] = $organization;
 }
 ?>
