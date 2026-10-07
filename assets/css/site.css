@@ -720,10 +720,26 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .opposite p { margin: 0; }
 
 .faq-item { background: white; border: 1px solid var(--line); border-radius: 14px; margin: .55rem 0; padding: 0 1rem; }
-.faq-item summary { cursor: pointer; list-style: none; padding: .9rem 0; }
+.faq-item summary {
+	cursor: pointer;
+	list-style: none;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: .75rem;
+	padding: .9rem 0;
+}
 .faq-item summary::-webkit-details-marker { display: none; }
-.faq-item summary h3 { display: inline; font-size: 1.02rem; font-weight: 600; }
-.faq-item summary:after { content: "+"; float: right; color: var(--accent); font-weight: 700; }
+.faq-item summary::marker { content: ""; }
+.faq-item summary h3 { margin: 0; font-size: 1.02rem; font-weight: 600; }
+.faq-item summary:after {
+	content: "+";
+	flex: 0 0 auto;
+	align-self: center;
+	color: var(--accent);
+	font-weight: 700;
+	line-height: 1;
+}
 .faq-item[open] summary:after { content: "–"; }
 .faq-item .prose { padding: 0 0 .9rem; }
 
