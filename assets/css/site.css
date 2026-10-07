@@ -123,6 +123,7 @@ h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 
 .dek, .lead, .prose { color: #475569; }
 .dek { font-size: 1.08rem; max-width: 38rem; }
+.sheet > .dek { max-width: none; }
 .prose p, .lead p { margin: 0 0 .9rem; }
 .prose ul, .prose ol { margin: 0 0 1rem; padding-left: 1.15rem; }
 
@@ -763,9 +764,26 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 @media (min-width: 901px) {
 	body { font-size: 1.375rem; }
 	.menu { display: none; }
-	.header-bar { flex-wrap: wrap; }
-	.site-nav { flex: 1 1 auto; min-width: 0; }
+	.site-header { container-type: inline-size; container-name: header; }
+	.header-bar {
+		width: max-content;
+		max-width: calc(100% - 2rem);
+		flex-wrap: nowrap;
+		justify-content: center;
+	}
+	.logo { margin-right: 0; }
+	.site-nav { flex: 0 0 auto; flex-wrap: nowrap; justify-content: flex-start; gap: 0; }
 	.site-nav > a, .menu summary { font-size: 1.3125rem; }
+	.site-nav > a { padding: .15rem .85rem; border-left: 1px solid #cbd5e1; }
+	.site-nav > a:first-child { padding-left: 0; border-left: 0; }
+	@container header (max-width: 1240px) {
+		.site-nav > a { padding-inline: .4rem; }
+		.site-nav > a:first-child { padding-left: 0; }
+	}
+	@container header (max-width: 1060px) {
+		.header-bar { width: calc(100% - 2rem); flex-wrap: wrap; }
+		.site-nav { flex: 1 1 100%; justify-content: center; }
+	}
 	.logo-text strong { font-size: 1.5rem; }
 	.logo-text small { font-size: .95rem; }
 	.logo-text { row-gap: .4rem; }
@@ -828,13 +846,22 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 		vertical-align: middle;
 	}
 	.nav-wide { display: none; }
-	.header-bar { flex-wrap: wrap; padding: .7rem 0; }
-	.site-nav { position: relative; flex: 1 1 100%; flex-wrap: nowrap; justify-content: flex-start; }
+	.header-bar { flex-wrap: nowrap; align-items: center; gap: .75rem; padding: .7rem 0; }
+	.logo { flex: 0 0 auto; }
+	.site-nav {
+		position: relative;
+		flex: 1 1 auto;
+		min-width: 0;
+		flex-wrap: nowrap;
+		justify-content: flex-end;
+		gap: .15rem .55rem;
+	}
+	.site-nav > a, .menu summary { font-size: .9rem; }
 	.menu { position: static; }
 	.menu-panel {
 		top: calc(100% + .35rem);
-		left: 0;
-		right: auto;
+		left: auto;
+		right: 0;
 		z-index: 20;
 		max-width: calc(100vw - 2rem);
 	}
