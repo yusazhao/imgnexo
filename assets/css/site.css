@@ -342,8 +342,9 @@ button.choice:disabled { opacity: .45; cursor: default; }
 	max-height: none;
 }
 .stage canvas.ink { position: absolute; inset: 0; cursor: crosshair; }
-.stage.is-region .stage-canvas,
-.stage.is-zoomed .stage-canvas { touch-action: none; }
+.stage.is-region .stage-canvas { touch-action: none; }
+.stage.is-zoomed:not(.is-region) .stage-canvas { touch-action: pan-x pan-y; }
+.stage.is-zoomed.is-region .stage-canvas { touch-action: none; }
 .stage.is-space .stage-canvas,
 .stage.is-space .view,
 .stage.is-space .ink { cursor: grab; }

@@ -440,7 +440,7 @@
 	}
 
 	function maxViewportHeight() {
-		if (window.matchMedia('(max-width: 900px)').matches) return Math.round(window.innerHeight * 0.42);
+		if (window.matchMedia('(max-width: 900px)').matches) return Math.round(window.innerHeight * 0.6);
 		return 0;
 	}
 
@@ -474,8 +474,8 @@
 		var fills = frameW >= outerW - 1;
 		var dispW = Math.max(1, Math.floor(frameW * zoom));
 		var dispH = Math.max(1, Math.floor(frameH * zoom));
-		var centerNarrow = narrow && dispW < outerW - 1;
 		var hugged = zoom <= 1.001;
+		var centerNarrow = narrow && hugged && dispW < outerW - 1;
 		var canvasRect = view.getBoundingClientRect();
 		var viewRect = stageViewport.getBoundingClientRect();
 		var hasSize = canvasRect.width > 1 && canvasRect.height > 1;
@@ -499,8 +499,8 @@
 			stageViewport.style.marginRight = '';
 		}
 		stageViewport.style.overflowX = hugged ? 'hidden' : 'auto';
-		stageViewport.style.overflowY = 'hidden';
-		stageViewport.style.height = dispH + 'px';
+		stageViewport.style.overflowY = hugged ? 'hidden' : 'auto';
+		stageViewport.style.height = frameH + 'px';
 		stageSizer.style.width = dispW + 'px';
 		stageSizer.style.height = dispH + 'px';
 		stageSizer.style.marginLeft = !centerNarrow && !narrow && !fills ? 'auto' : '';
@@ -509,9 +509,11 @@
 		stageCanvas.style.height = dispH + 'px';
 		paintCanvasBox(view, dispW, dispH);
 		paintCanvasBox(ink, dispW, dispH);
-		if (!hugged && stageViewport.scrollWidth > stageViewport.clientWidth) {
-			var bar = stageViewport.offsetHeight - stageViewport.clientHeight;
-			if (bar > 0) stageViewport.style.height = (dispH + bar) + 'px';
+		if (!hugged) {
+			var barX = stageViewport.offsetHeight - stageViewport.clientHeight;
+			var barY = stageViewport.offsetWidth - stageViewport.clientWidth;
+			if (barX > 0) stageViewport.style.height = (frameH + barX) + 'px';
+			if (barY > 0 && !centerNarrow) stageViewport.style.width = '100%';
 		}
 		stage.classList.toggle('is-zoomed', !hugged);
 		if (hugged) {

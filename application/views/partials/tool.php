@@ -114,7 +114,7 @@ if ( ! function_exists('tune_icon')) {
 				<button type="button" id="zoom-in-btn" aria-label="Zoom in">+</button>
 				<output id="zoom-out" class="zoom-readout">100%</output>
 				<button type="button" id="zoom-fit">Fit</button>
-				<p class="hint">Zoom in and the photo grows to its full height. Scroll sideways, or hold Space and drag, to reach the sides.</p>
+				<p class="hint">Zoom in to inspect detail. Drag inside the photo to pan, or hold Space and drag on desktop. Fit returns to the full view.</p>
 			</div>
 			<p class="status" id="status" role="status"></p>
 			<div class="history-bar" id="history-bar" hidden>
