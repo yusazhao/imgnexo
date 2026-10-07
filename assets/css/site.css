@@ -858,11 +858,11 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 		min-width: 0;
 		flex-wrap: nowrap;
 		justify-content: flex-end;
-		gap: .1rem;
+		gap: .5rem;
 	}
 	.site-nav > a, .menu summary {
 		font-size: .9rem;
-		padding: .14rem .18rem;
+		padding: .14rem .06rem;
 		border-radius: 999px;
 	}
 	.menu summary:hover,
