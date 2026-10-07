@@ -808,6 +808,29 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .demo figcaption { color: var(--muted); font-size: .92rem; padding: .35rem .2rem 0; }
 .opposite { padding: 1rem 1.15rem; background: var(--soft); }
 .opposite p { margin: 0; }
+.prose .post-tool-card {
+	display: flex;
+	flex-direction: column;
+	gap: .35rem;
+	margin: 1.1rem 0 1.25rem;
+	padding: 1.05rem 1.05rem 1.1rem;
+	border-radius: 16px;
+	box-shadow: var(--shadow);
+	text-decoration: none;
+	color: var(--ink);
+}
+.prose .post-tool-card strong { color: var(--ink); font-size: 1.12rem; }
+.prose .post-tool-card > span:not(.kicker):not(.feature-go) { color: #475569; }
+.prose .post-tool-card:hover { border-color: #bfdbfe; }
+.prose .post-diagram {
+	margin: 1rem 0 1.2rem;
+	padding: 0;
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	overflow: hidden;
+	background: var(--card);
+}
+.prose .post-diagram svg { display: block; width: 100%; height: auto; }
 
 .faq-item { background: white; border: 1px solid var(--line); border-radius: 14px; margin: .55rem 0; padding: 0 1rem; }
 .faq-item summary {
