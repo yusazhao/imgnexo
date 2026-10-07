@@ -216,6 +216,9 @@ class Site extends CI_Controller {
 		if ($this->posts === NULL)
 		{
 			$this->posts = include APPPATH.'content/posts.php';
+			usort($this->posts, function ($a, $b) {
+				return strcmp($b['date'], $a['date']);
+			});
 		}
 
 		return $this->posts;
