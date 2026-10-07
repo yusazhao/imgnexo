@@ -12,8 +12,8 @@ class Site extends CI_Controller {
 	{
 		$this->render('pages/home', array(
 			'meta' => array(
-				'title' => 'Blur & Unblur Image Online – Add or Remove Blur From Photos',
-				'description' => 'Free online tool to blur image or unblur image. Add blur effect, blur face and background, or fix blurry photos.',
+				'title' => 'Free Online Image Utilities & Photo Tools | Imgnexo',
+				'description' => 'Easy-to-use, browser-based image tools from Imgnexo. Blur faces, text, and backgrounds, or fix blurry and motion-blurred photos—processing stays on your device.',
 				'path' => '',
 			),
 			'nav' => 'home',
@@ -21,16 +21,16 @@ class Site extends CI_Controller {
 			'crumbs' => array(),
 			'faqs' => array(
 				array(
-					'q' => 'Can I blur and unblur an image in the same tool?',
-					'a' => '<p>These are opposite jobs, so they live on separate pages. Blur image applies Gaussian or Pixel. Unblur sharpens a blurry photo. Open the page that matches the result you want.</p>',
+					'q' => 'What image tools are available on Imgnexo?',
+					'a' => '<p>We offer image blurring, photo unblurring, and motion blur restoration—all accessible online for free. The suite is built so more utilities can be added over time.</p>',
 				),
 				array(
-					'q' => 'Is this blur image tool free to use?',
-					'a' => '<p>Yes. You can blur image files or try to clear a blurry photo in the browser without an account. Processing stays on your device, and the original file is not uploaded.</p>',
+					'q' => 'Is my uploaded photo kept private?',
+					'a' => '<p>Yes. Your images stay in your browser and are not uploaded or saved to external servers for processing.</p>',
 				),
 				array(
-					'q' => 'Do I need to install photo blur app on my device?',
-					'a' => '<p>No install is required. Open the blur or unblur page, choose a picture, and adjust the effect. A separate photo blur app is unnecessary for a quick edit.</p>',
+					'q' => 'Are all photo tools completely free to use?',
+					'a' => '<p>Yes. All tools are free, with no account or registration required.</p>',
 				),
 			),
 			'schema_home' => TRUE,

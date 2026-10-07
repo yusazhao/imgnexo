@@ -133,7 +133,56 @@ h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 	padding: 1.2rem 0 1.6rem;
 }
 .home-intro { padding: .4rem 0 .2rem; }
-.home-intro .dek { max-width: none; }
+.home-intro .dek,
+.home .section-intro,
+.home-platform .prose { max-width: none; }
+.home-categories { margin-top: .4rem; }
+.category-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: .9rem;
+}
+.category-card {
+	display: flex;
+	flex-direction: column;
+	gap: .45rem;
+	padding: 1.05rem 1.05rem 1.15rem;
+	background: var(--card);
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	box-shadow: var(--shadow);
+}
+.category-art {
+	margin: 0 0 .35rem;
+	overflow: hidden;
+	border-radius: 14px;
+	background: #f8fafc;
+}
+.category-art svg {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+.category-card h3 { margin: 0; color: var(--ink); font-size: 1.2rem; }
+.category-card > p { margin: 0; color: #475569; }
+.category-card .feature-go { margin-top: .25rem; text-decoration: none; }
+.category-card .feature-go:hover { color: var(--accent-dark); }
+.category-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .45rem .7rem;
+	margin-top: .55rem;
+	padding-top: .75rem;
+	border-top: 1px solid var(--line);
+}
+.category-links a {
+	color: var(--accent);
+	font-weight: 600;
+	font-size: .95rem;
+	text-decoration: none;
+}
+.category-links a:hover { color: var(--accent-dark); text-decoration: underline; text-underline-offset: .16em; }
+.home-platform { margin-top: .6rem; }
 .feature.with-art { display: flex; flex-direction: column; gap: .85rem; }
 .feature.with-art > span { display: flex; flex-direction: column; gap: .35rem; flex: 1; }
 .tool-art {
@@ -947,7 +996,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 }
 @media (max-width: 900px) {
 	#zoom-fit { display: none; }
-	.hero, .editor-layout, .steps, .step-cards, .feature-grid, .feature-grid.pair, .feature-grid.missing-grid, .quick-links, .related, .footer-grid { grid-template-columns: 1fr; }
+	.hero, .editor-layout, .steps, .step-cards, .feature-grid, .feature-grid.pair, .feature-grid.missing-grid, .category-grid, .quick-links, .related, .footer-grid { grid-template-columns: 1fr; }
 	.editor-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
 	.editor-stage { display: contents; }
 	.editor-layout > .controls { margin-top: .85rem; }
