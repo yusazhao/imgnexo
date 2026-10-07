@@ -745,6 +745,11 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	.control-group label, .control-label { font-size: 1.15rem; }
 	.choice-row.angle-presets .choice { font-size: 1rem; }
 	.tune-icon { width: 1.2rem; height: 1.2rem; }
+	.steps li:before, .step-cards li:before {
+		width: 1.85rem;
+		height: 1.85rem;
+		font-size: 1.05rem;
+	}
 	.sheet > .tool-links { display: flex; align-items: center; flex-wrap: nowrap; gap: .75rem; }
 	.sheet > .tool-links .tool-links-title { margin: 0; }
 	.sheet > .tool-links .tool-links-row { flex-wrap: nowrap; }
@@ -782,7 +787,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	.steps li:before, .step-cards li:before {
 		display: inline-grid;
 		margin: 0 .4rem 0 0;
-		vertical-align: -0.2rem;
+		vertical-align: middle;
 	}
 	.header-bar { flex-wrap: wrap; padding: .7rem 0; }
 	.menu-panel { position: static; margin-top: .4rem; }
