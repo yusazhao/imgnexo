@@ -103,16 +103,16 @@
 				<p>Cover people in a portrait or a group shot before you publish it.</p>
 				<span class="feature-go">Open tool</span>
 			</a>
-			<a class="feature" href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">
-				<span class="kicker">Motion</span>
-				<h3>Fix Motion Blur Photo</h3>
-				<p>A short camera shake may tighten a little. A subject that moved through the frame usually cannot be rebuilt.</p>
-				<span class="feature-go">Open tool</span>
-			</a>
 			<a class="feature" href="<?= html_escape(page_url('blur-image/effect')) ?>">
 				<span class="kicker">Effect</span>
 				<h3>Gaussian Blur Effect</h3>
 				<p>Compare a smooth Gaussian soften with blocky Pixel. The editor uses one of them at a time.</p>
+				<span class="feature-go">Open tool</span>
+			</a>
+			<a class="feature" href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">
+				<span class="kicker">Motion</span>
+				<h3>Fix Motion Blur Photo</h3>
+				<p>A short camera shake may tighten a little. A subject that moved through the frame usually cannot be rebuilt.</p>
 				<span class="feature-go">Open tool</span>
 			</a>
 		</div>

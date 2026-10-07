@@ -79,7 +79,7 @@ img { max-width: 100%; height: auto; }
 	letter-spacing: -0.04em;
 	font-size: .78rem;
 }
-.logo-text { display: grid; line-height: 1.05; }
+.logo-text { display: grid; line-height: 1.05; row-gap: .22rem; }
 .logo-text strong { font-size: 1.05rem; letter-spacing: -0.03em; }
 .logo-text small {
 	color: var(--muted);
@@ -689,8 +689,23 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .feature p, .quick-links a, .related a { color: #475569; }
 .feature h3 { color: var(--ink); }
 .feature:hover, .quick-links a:hover, .related a:hover { border-color: #bfdbfe; }
-.kicker { color: var(--accent); font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-.feature-go { margin-top: auto; color: var(--accent); font-weight: 700; font-size: .92rem; }
+.related a {
+	color: var(--accent);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: .16em;
+	background: var(--card);
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	box-shadow: var(--shadow);
+}
+.related a:hover {
+	color: var(--accent-dark);
+	border-color: #93c5fd;
+	background: var(--soft);
+}
+.kicker { color: var(--accent); font-size: .9rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.feature-go { margin-top: auto; color: var(--accent); font-weight: 700; font-size: 1.05rem; }
 
 .section-intro { max-width: 40rem; color: #475569; margin-top: -.2rem; }
 
@@ -733,7 +748,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	.site-nav a, .menu summary { font-size: 1.3125rem; }
 	.logo-text strong { font-size: 1.5rem; }
 	.logo-text small { font-size: .95rem; }
+	.logo-text { row-gap: .4rem; }
 	.dek { font-size: 1.5rem; }
+	.kicker { font-size: 1.05rem; }
+	.feature-go { font-size: 1.25rem; }
 	.crumbs ol { font-size: 1.25rem; }
 	h3 { font-size: 1.55rem; }
 	.faq-item summary h3 { font-size: 1.4rem; }
