@@ -84,7 +84,7 @@ if (isset($nav) && $nav === 'home')
 <header class="site-header">
 	<div class="wrap header-bar">
 		<a class="logo" href="<?= html_escape(page_url('')) ?>">
-			<span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><defs><radialGradient id="logo-gauss" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff"/><stop offset="38%" stop-color="#fff" stop-opacity=".92"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><circle cx="18" cy="18" r="14" fill="url(#logo-gauss)"/></svg></span>
+			<span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="14" cy="24" r="6.2" fill="#fff" opacity=".42"/><circle cx="20" cy="17.5" r="4.5" fill="#fff" opacity=".72"/><circle cx="25.5" cy="12" r="2.9" fill="#fff"/></svg></span>
 			<span class="logo-text"><strong>Imgnexo</strong><small>Online</small></span>
 		</a>
 		<nav class="site-nav" aria-label="Primary">
