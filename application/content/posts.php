@@ -5,6 +5,7 @@ return array(
 	array(
 		'slug' => 'how-to-make-picture-blurry',
 		'path' => 'blog/how-to-make-picture-blurry',
+		'category' => 'blur-privacy',
 		'date' => '2026-04-02',
 		'title' => 'How to Make a Picture Blurry Online',
 		'description' => 'Make a picture blurry or make image blurry online with a blurry image maker. Soften the whole frame or one region—no app install.',
@@ -53,6 +54,7 @@ HTML
 	array(
 		'slug' => 'how-to-remove-blur-from-photo',
 		'path' => 'blog/how-to-remove-blur-from-photo',
+		'category' => 'restoration',
 		'date' => '2026-04-16',
 		'title' => 'How to Remove Blur From a Photo Without Software',
 		'description' => 'Remove blur from photo without software in your browser. Remove blur from image online with blur removal without software—no Photoshop install.',
@@ -95,6 +97,7 @@ HTML
 	array(
 		'slug' => 'how-to-fix-fuzzy-photos',
 		'path' => 'blog/how-to-fix-fuzzy-photos',
+		'category' => 'restoration',
 		'date' => '2026-05-07',
 		'title' => 'How to Fix Fuzzy Photos for Old Snapshots',
 		'description' => 'Fix fuzzy photos and old scans with a light blurry picture fix. Keep grain natural when you fix fuzzy photos for old snapshots.',
@@ -138,6 +141,7 @@ HTML
 	array(
 		'slug' => 'gaussian-blur-guide',
 		'path' => 'blog/gaussian-blur-guide',
+		'category' => 'blur-privacy',
 		'date' => '2026-05-21',
 		'title' => 'Gaussian Blur Complete Guide for Beginners',
 		'description' => 'What is gaussian blur, how the gaussian blur effect softens photos, and how it differs from box blur and motion blur.',
@@ -176,6 +180,7 @@ HTML
 	array(
 		'slug' => 'how-to-blur-face-in-photo',
 		'path' => 'blog/how-to-blur-face-in-photo',
+		'category' => 'blur-privacy',
 		'date' => '2026-06-11',
 		'title' => 'How to Blur a Face in a Photo for Privacy',
 		'description' => 'Blur face in photo, photo blur face, or blur a face in a picture before you post group shots, street photos, or pictures of minors.',
@@ -208,6 +213,7 @@ HTML
 	array(
 		'slug' => 'unblur-motion-blur-photo',
 		'path' => 'blog/unblur-motion-blur-photo',
+		'category' => 'restoration',
 		'date' => '2026-07-02',
 		'title' => 'Can You Unblur a Motion Blur Photo? Limits, Science & Solutions',
 		'description' => 'Learn when a motion blur photo can be tightened, how directional deblur works, and when a streaked subject cannot be rebuilt.',
@@ -252,6 +258,7 @@ HTML
 	array(
 		'slug' => 'how-to-blur-writing-in-photo',
 		'path' => 'blog/how-to-blur-writing-in-photo',
+		'category' => 'blur-privacy',
 		'date' => '2026-08-14',
 		'title' => 'How to Blur Writing in a Photo',
 		'description' => 'Blur text image content, blur writing in photo, and hide text in picture files for bills, IDs, and chat screenshots.',
@@ -326,6 +333,7 @@ HTML
 	array(
 		'slug' => 'what-is-blur-removal',
 		'path' => 'blog/what-is-blur-removal',
+		'category' => 'restoration',
 		'date' => '2026-09-03',
 		'title' => 'What Is Blur Removal and How Does It Work?',
 		'description' => 'What is blur removal for digital photos, how blur removal works in image processing, and what soft focus or motion streaks can still recover.',
@@ -364,6 +372,7 @@ HTML
 	array(
 		'slug' => 'how-to-unblur-photos-on-iphone',
 		'path' => 'blog/how-to-unblur-photos-on-iphone',
+		'category' => 'restoration',
 		'date' => '2026-10-06',
 		'title' => 'How to Fix Blurry Photos on iPhone (3 Easy Ways)',
 		'description' => 'Fix blurry photos iPhone users get from shake, Night mode, or a dirty lens. Unblur photo iPhone files in Safari with no App Store install.',

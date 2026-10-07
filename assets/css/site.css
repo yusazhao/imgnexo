@@ -913,12 +913,40 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .faq-item[open] summary:after { content: "–"; }
 .faq-item .prose { padding: 0 0 .9rem; }
 
+.blog-index .dek { max-width: none; }
+.blog-cats {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5rem;
+	margin: 1rem 0 1.25rem;
+}
+.blog-cat {
+	appearance: none;
+	border: 1px solid var(--line);
+	background: #fff;
+	color: #475569;
+	border-radius: 999px;
+	padding: .4rem .9rem;
+	font: inherit;
+	font-size: .92rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+.blog-cat:hover { border-color: #bfdbfe; color: var(--accent); }
+.blog-cat.is-active {
+	border-color: var(--accent);
+	background: #eff6ff;
+	color: var(--accent-dark);
+}
 .post-list { display: grid; gap: .9rem; list-style: none; padding: 0; }
 .post-list li { padding: 1.1rem 1.2rem; }
 .post-list h2 { margin: .15rem 0 .35rem; font-size: 1.4rem; }
 .post-list a { color: var(--ink); text-decoration: none; }
 .post-list a:hover { color: var(--accent); }
+.post-cat { margin: 0 0 .2rem; }
+.post-cat .kicker { font-size: .78rem; }
 .post-date { margin: 0; font-size: .88rem; }
+.blog-empty { color: var(--muted); margin: .5rem 0 0; }
 
 .site-footer { border-top: 1px solid var(--line); background: rgba(255, 255, 255, 0.72); padding: 2.2rem 0 1.4rem; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 1.5rem; }

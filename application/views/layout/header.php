@@ -122,40 +122,25 @@ if ( ! empty($schema_blog))
 	{
 		foreach ($collection_items as $item)
 		{
-			$entry = array(
+			$list_items[] = array(
 				'@type' => 'ListItem',
 				'position' => $position++,
-				'name' => $item['name'],
 				'url' => canonical_url($item['path']),
-				'item' => array(
-					'@type' => 'BlogPosting',
-					'headline' => $item['name'],
-					'url' => canonical_url($item['path']),
-					'description' => isset($item['description']) ? $item['description'] : '',
-				),
 			);
-
-			if ( ! empty($item['date']))
-			{
-				$entry['item']['datePublished'] = $item['date'];
-			}
-
-			$list_items[] = $entry;
 		}
 	}
 
 	$graph[] = array(
 		'@type' => 'CollectionPage',
-		'@id' => canonical_url('blog').'#collection',
-		'name' => 'Photo Blur Guides',
-		'description' => isset($meta['description']) ? $meta['description'] : '',
+		'@id' => canonical_url('blog').'#webpage',
 		'url' => canonical_url('blog'),
-		'mainEntity' => array(
-			'@type' => 'ItemList',
-			'name' => 'Photo blur and unblur guides',
-			'numberOfItems' => count($list_items),
-			'itemListElement' => $list_items,
-		),
+		'name' => 'Image Editing & Photo Utility Guides',
+		'description' => isset($meta['description']) ? $meta['description'] : '',
+	);
+
+	$graph[] = array(
+		'@type' => 'ItemList',
+		'itemListElement' => $list_items,
 	);
 }
 

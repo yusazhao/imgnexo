@@ -66,17 +66,14 @@ class Site extends CI_Controller {
 		foreach ($posts as $post)
 		{
 			$items[] = array(
-				'name' => $post['h1'],
 				'path' => $post['path'],
-				'description' => $post['excerpt'],
-				'date' => $post['date'],
 			);
 		}
 
 		$this->render('pages/blog_index', array(
 			'meta' => array(
-				'title' => 'Photo Blur Guides – Make Pictures Blurry or Fix Blurry Photos',
-				'description' => 'Tutorials for blur image edits and blurry photo repair: gaussian blur, blur face in photo, remove blur from photo, and motion blur limits.',
+				'title' => 'Image Editing & Photo Utility Guides | Imgnexo',
+				'description' => 'Discover step-by-step tutorials and technical guides for blurring photos, restoring soft or motion-blurred images, and other browser-based photo utilities.',
 				'path' => 'blog',
 			),
 			'nav' => 'blog',
