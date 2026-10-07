@@ -164,17 +164,17 @@ return array(
 		'title' => 'Blur Face in Photo Online – Pixelate or Blur Faces',
 		'description' => 'Blur face in photo online. Blur a face in a picture to protect privacy, apply photo blur face in one click.',
 		'h1' => 'Blur Face in Photo Online – Pixelate or Blur Faces',
-		'lead' => '<p>Blur face in photo before you post a street shot, a classroom, or a picture of a minor. The finder marks each face and widens the box past the eyes and chin. Remove a wrong box, or paint a face it missed. The photo stays on your device.</p>',
+		'lead' => '<p>Blur face in photo before you post a street shot, a classroom, or a picture of a minor. The finder marks each face and widens the box past the eyes and chin. Drag a box to move or resize it, or click × to remove a wrong one. Paint a face it missed. The photo stays on your device.</p>',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'face',
 			'face' => TRUE,
 			'note_below' => TRUE,
-			'note' => 'Each found face is widened past the eyes and chin. Click a box to remove a wrong one. Paint any face the finder missed. Pixel blocks the features. Gaussian softens them. Black bar covers the box in solid black.',
+			'note' => 'Each found face is widened past the eyes and chin. Drag a box to move it, or a corner to resize it. Click × to remove a wrong one. Paint any face the finder missed. Pixel blocks the features. Gaussian softens them. Black bar covers the box in solid black.',
 			'heading' => 'How to blur a face in a photo',
 			'steps' => array(
 				'Upload the photo, then click Blur faces.',
-				'Click a box to remove a wrong face. Paint any face the finder missed.',
+				'Drag a box to move it, or a corner to resize it. Click × to remove a wrong face. Paint any face the finder missed.',
 				'Pixel blocks the features. Gaussian softens them. Black bar fills the box. Then download.',
 			),
 		),
@@ -185,7 +185,7 @@ return array(
 			),
 			array(
 				'h2' => 'How to blur a face in a picture',
-				'html' => '<p>Add the photo, then click Blur faces. The first time, this tab downloads the finder. Each box is already wider than the eyes and chin, so hair and ears are inside the cover. Click a box to drop a miss. Paint any face that was skipped. Pixel is the privacy default. Gaussian is a soft cover. Black bar fills the box with solid black, so Strength does not apply.</p>',
+				'html' => '<p>Add the photo, then click Blur faces. The first time, this tab downloads the finder. Each box is already wider than the eyes and chin, so hair and ears are inside the cover. Drag a box to move the cover, or a corner to resize it. Click × to drop a miss. Paint any face that was skipped. Pixel is the privacy default. Gaussian is a soft cover. Black bar fills the box with solid black, so Strength does not apply.</p>',
 			),
 			array(
 				'h2' => 'Pixelate vs soft blur for photo blur face',
@@ -193,7 +193,7 @@ return array(
 			),
 		),
 		'faqs' => array(
-			array('q' => 'Can I blur multiple faces in one photo?', 'a' => '<p>Yes. Blur faces marks every face it finds. Click a box to remove one that is wrong. Paint anyone the finder skipped, including a person in the back row. A crowd shot is not private if one person stays sharp. The photo is not uploaded. The first click downloads the finder; later clicks reuse it.</p>'),
+			array('q' => 'Can I blur multiple faces in one photo?', 'a' => '<p>Yes. Blur faces marks every face it finds. Drag a box to move it, or a corner to resize it. Click × to remove one that is wrong. Paint anyone the finder skipped, including a person in the back row. A crowd shot is not private if one person stays sharp. The photo is not uploaded. The first click downloads the finder; later clicks reuse it.</p>'),
 			array('q' => 'Will blur face in photo permanently change my original file?', 'a' => '<p>No. Blur face in photo here builds a new PNG in the browser. Your camera file stays where it was unless you overwrite it yourself later.</p>'),
 		),
 		'opposite' => array(

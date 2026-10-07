@@ -144,6 +144,8 @@
 	var thingTensor = null;
 	var LIFE_CLASSES = { 3: 1, 8: 1, 10: 1, 12: 1, 13: 1, 15: 1, 17: 1 };
 	var faceBoxes = [];
+	var faceDrag = null;
+	var faceResize = null;
 	var faceBusy = false;
 	var faceDetector = null;
 	var faceDetectorNear = null;
@@ -672,7 +674,7 @@
 			setStatus(note || (subjectMode
 				? 'Choose People and animals, or Objects, then blur the background.'
 				: faceMode
-					? 'Click Blur faces. Then remove a wrong box, or paint any face it missed.'
+					? 'Click Blur faces. Drag a box to move it, or a corner to resize it.'
 					: textMode
 						? 'Click Auto Blur All Text, or Blur Sensitive Only. Then remove a wrong box, or mark any text it missed.'
 						: 'Preview ready. Your image stays in this browser.'));
@@ -2549,31 +2551,208 @@
 		blurFacesBtn.disabled = !ready || faceBusy;
 	}
 
+	function layoutFaceBox(el, box) {
+		el.style.left = (box.x / source.width * 100) + '%';
+		el.style.top = (box.y / source.height * 100) + '%';
+		el.style.width = (box.w / source.width * 100) + '%';
+		el.style.height = (box.h / source.height * 100) + '%';
+	}
+
+	function paintFaceBoxes() {
+		redrawMask();
+		requestRender();
+	}
+
+	function roundFaceBox(box) {
+		box.x = Math.round(box.x);
+		box.y = Math.round(box.y);
+		box.w = Math.max(1, Math.round(box.w));
+		box.h = Math.max(1, Math.round(box.h));
+	}
+
+	function moveFaceBox(box, x, y) {
+		var maxX = Math.max(0, source.width - box.w);
+		var maxY = Math.max(0, source.height - box.h);
+		box.x = Math.min(maxX, Math.max(0, x));
+		box.y = Math.min(maxY, Math.max(0, y));
+	}
+
+	function resizeFaceBox(box, gesture, point) {
+		var ratio = gesture.ratio || 1;
+		var corner = gesture.corner;
+		var dw = Math.abs(gesture.ax - point.x);
+		var dh = Math.abs(gesture.ay - point.y);
+		var w = dw;
+		var h = ratio ? w / ratio : dh;
+		if (h > dh && ratio) {
+			h = dh;
+			w = h * ratio;
+		}
+		var roomW = (corner === 'nw' || corner === 'sw') ? gesture.ax : (source.width - gesture.ax);
+		var roomH = (corner === 'nw' || corner === 'ne') ? gesture.ay : (source.height - gesture.ay);
+		roomW = Math.max(1, roomW);
+		roomH = Math.max(1, roomH);
+		if (w > roomW) {
+			w = roomW;
+			h = ratio ? w / ratio : h;
+		}
+		if (h > roomH) {
+			h = roomH;
+			w = ratio ? h * ratio : w;
+		}
+		var minW = 16;
+		var minH = ratio ? minW / ratio : 16;
+		if (minH < 16) {
+			minH = 16;
+			minW = ratio ? minH * ratio : 16;
+		}
+		if (w < minW || h < minH) {
+			w = minW;
+			h = minH;
+			if (w > roomW || h > roomH) {
+				w = Math.min(w, roomW);
+				h = ratio ? w / ratio : Math.min(h, roomH);
+				if (h > roomH) {
+					h = roomH;
+					w = ratio ? h * ratio : w;
+				}
+			}
+		}
+		box.w = Math.max(1, w);
+		box.h = Math.max(1, h);
+		box.x = (corner === 'nw' || corner === 'sw') ? gesture.ax - box.w : gesture.ax;
+		box.y = (corner === 'nw' || corner === 'ne') ? gesture.ay - box.h : gesture.ay;
+		if (box.x < 0) box.x = 0;
+		if (box.y < 0) box.y = 0;
+		if (box.x + box.w > source.width) box.x = source.width - box.w;
+		if (box.y + box.h > source.height) box.y = source.height - box.h;
+	}
+
+	function faceBoxKey(box) {
+		return Math.round(box.x) + ',' + Math.round(box.y) + ',' + Math.round(box.w) + ',' + Math.round(box.h);
+	}
+
+	function endFaceGesture(before) {
+		var box = faceDrag ? faceDrag.box : (faceResize ? faceResize.box : null);
+		var el = faceDrag ? faceDrag.el : (faceResize ? faceResize.el : null);
+		if (el) el.classList.remove('is-dragging');
+		faceDrag = null;
+		faceResize = null;
+		if (box) roundFaceBox(box);
+		placeFaceBoxes();
+		paintFaceBoxes();
+		if (box && faceBoxKey(box) !== before) commitSettings();
+	}
+
 	function placeFaceBoxes() {
 		if (!faceLayer) return;
 		faceLayer.innerHTML = '';
 		faceLayer.hidden = !faceBoxes.length || !source.width;
 		if (!source.width || !source.height) return;
 		faceBoxes.forEach(function (box, index) {
-			var btn = document.createElement('button');
-			btn.type = 'button';
-			btn.className = 'face-box';
-			btn.setAttribute('aria-label', 'Remove this face');
-			btn.style.left = (box.x / source.width * 100) + '%';
-			btn.style.top = (box.y / source.height * 100) + '%';
-			btn.style.width = (box.w / source.width * 100) + '%';
-			btn.style.height = (box.h / source.height * 100) + '%';
-			btn.addEventListener('click', function (event) {
+			var el = document.createElement('div');
+			el.className = 'face-box';
+			el.setAttribute('role', 'group');
+			el.setAttribute('aria-label', 'Face cover');
+			layoutFaceBox(el, box);
+			var removeBtn = document.createElement('button');
+			removeBtn.type = 'button';
+			removeBtn.className = 'face-remove';
+			removeBtn.setAttribute('aria-label', 'Remove this face');
+			removeBtn.textContent = '×';
+			removeBtn.addEventListener('pointerdown', function (event) {
+				event.preventDefault();
+				event.stopPropagation();
+			});
+			removeBtn.addEventListener('click', function (event) {
 				event.preventDefault();
 				event.stopPropagation();
 				faceBoxes.splice(index, 1);
 				placeFaceBoxes();
-				redrawMask();
-				requestRender();
+				paintFaceBoxes();
 				commitSettings();
 				setStatus('That box is removed. Paint any face that should still be covered.');
 			});
-			faceLayer.appendChild(btn);
+			el.appendChild(removeBtn);
+			['nw', 'ne', 'sw', 'se'].forEach(function (corner) {
+				var handle = document.createElement('button');
+				handle.type = 'button';
+				handle.className = 'face-handle';
+				handle.setAttribute('data-corner', corner);
+				handle.setAttribute('aria-label', 'Resize face cover');
+				handle.addEventListener('pointerdown', function (event) {
+					if (event.button !== 0) return;
+					event.preventDefault();
+					event.stopPropagation();
+					faceResize = {
+						box: box,
+						el: el,
+						corner: corner,
+						ratio: box.h ? box.w / box.h : 1,
+						ax: (corner === 'nw' || corner === 'sw') ? box.x + box.w : box.x,
+						ay: (corner === 'nw' || corner === 'ne') ? box.y + box.h : box.y,
+						before: faceBoxKey(box)
+					};
+					el.classList.add('is-dragging');
+					try { handle.setPointerCapture(event.pointerId); } catch (err) {}
+				});
+				handle.addEventListener('pointermove', function (event) {
+					if (!faceResize || faceResize.box !== box) return;
+					event.preventDefault();
+					event.stopPropagation();
+					resizeFaceBox(box, faceResize, imagePoint(event));
+					layoutFaceBox(el, box);
+					paintFaceBoxes();
+				});
+				handle.addEventListener('pointerup', function (event) {
+					if (!faceResize || faceResize.box !== box) return;
+					event.stopPropagation();
+					endFaceGesture(faceResize.before);
+				});
+				handle.addEventListener('pointercancel', function () {
+					if (!faceResize || faceResize.box !== box) return;
+					endFaceGesture(faceResize.before);
+				});
+				el.appendChild(handle);
+			});
+			el.addEventListener('pointerdown', function (event) {
+				if (event.button !== 0) return;
+				if (event.target.closest && event.target.closest('.face-handle, .face-remove')) return;
+				event.preventDefault();
+				event.stopPropagation();
+				faceDrag = {
+					box: box,
+					el: el,
+					px: event.clientX,
+					py: event.clientY,
+					x: box.x,
+					y: box.y,
+					before: faceBoxKey(box)
+				};
+				el.classList.add('is-dragging');
+				try { el.setPointerCapture(event.pointerId); } catch (err) {}
+			});
+			el.addEventListener('pointermove', function (event) {
+				if (!faceDrag || faceDrag.box !== box) return;
+				event.preventDefault();
+				event.stopPropagation();
+				var rect = view.getBoundingClientRect();
+				var scaleX = rect.width ? view.width / rect.width : 1;
+				var scaleY = rect.height ? view.height / rect.height : 1;
+				moveFaceBox(box, faceDrag.x + (event.clientX - faceDrag.px) * scaleX, faceDrag.y + (event.clientY - faceDrag.py) * scaleY);
+				layoutFaceBox(el, box);
+				paintFaceBoxes();
+			});
+			el.addEventListener('pointerup', function (event) {
+				if (!faceDrag || faceDrag.box !== box) return;
+				event.stopPropagation();
+				endFaceGesture(faceDrag.before);
+			});
+			el.addEventListener('pointercancel', function () {
+				if (!faceDrag || faceDrag.box !== box) return;
+				endFaceGesture(faceDrag.before);
+			});
+			faceLayer.appendChild(el);
 		});
 	}
 
@@ -2627,24 +2806,33 @@
 		return clampFaceBox(cx - w / 2, cy - h * 0.38, w, h, width, height);
 	}
 
-	function faceIou(a, b) {
-		var x1 = Math.max(a.x, b.x);
-		var y1 = Math.max(a.y, b.y);
-		var x2 = Math.min(a.x + a.w, b.x + b.w);
-		var y2 = Math.min(a.y + a.h, b.y + b.h);
-		var iw = x2 - x1;
-		var ih = y2 - y1;
+	function faceInter(a, b) {
+		var iw = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+		var ih = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
 		if (iw <= 0 || ih <= 0) return 0;
-		var inter = iw * ih;
+		return iw * ih;
+	}
+
+	function faceIou(a, b) {
+		var inter = faceInter(a, b);
+		if (!inter) return 0;
 		return inter / (a.w * a.h + b.w * b.h - inter);
 	}
 
+	function faceCenterInside(x, y, box) {
+		return x >= box.x && x <= box.x + box.w && y >= box.y && y <= box.y + box.h;
+	}
+
 	function faceSame(a, b) {
+		var inter = faceInter(a, b);
+		var smaller = Math.min(a.w * a.h, b.w * b.h);
+		if (smaller > 0 && inter / smaller >= 0.45) return true;
 		if (faceIou(a, b) > 0.32) return true;
 		var ax = a.x + a.w / 2;
 		var ay = a.y + a.h / 2;
 		var bx = b.x + b.w / 2;
 		var by = b.y + b.h / 2;
+		if (faceCenterInside(ax, ay, b) || faceCenterInside(bx, by, a)) return true;
 		var dist = Math.sqrt((ax - bx) * (ax - bx) + (ay - by) * (ay - by));
 		var scale = (Math.max(a.w, a.h) + Math.max(b.w, b.h)) / 2;
 		return dist < scale * 0.42;
@@ -2827,8 +3015,8 @@
 			commitSettings();
 			setStatus(boxes.length
 				? (boxes.length === 1
-					? '1 face covered. Click the box to remove it, or paint any face that was missed.'
-					: boxes.length + ' faces covered. Click a box to remove it, or paint any face that was missed.')
+					? '1 face covered. Drag the box to move it, or a corner to resize it. Click × to remove it.'
+					: boxes.length + ' faces covered. Drag a box to move it, or a corner to resize it. Click × to remove it.')
 				: 'No face was found. Paint any face that should be covered.');
 		}).catch(function () {
 			if (token !== autoToken) return;

@@ -213,7 +213,7 @@ if ( ! function_exists('tune_icon')) {
 			<?php elseif ( ! empty($tool['face'])): ?>
 			<div class="tune-step" id="auto-group">
 				<p class="tune-step-title">Find the faces</p>
-				<p class="hint">Each box is widened past the eyes and chin. Click a box to remove it.</p>
+				<p class="hint">Each box is widened past the eyes and chin. Drag a box to move it, or a corner to resize it. Click × to remove a wrong one.</p>
 				<button type="button" class="primary" id="blur-faces" disabled>Blur faces</button>
 				<div class="auto-progress" id="auto-progress" hidden>
 					<div class="auto-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Working"><div class="auto-progress-bar" id="auto-progress-bar"></div></div>

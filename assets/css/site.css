@@ -480,32 +480,55 @@ button.text-btn.is-on, button.text-btn.is-on:hover { color: var(--accent); }
 .dir-overlay[hidden] { display: none; }
 .dir-overlay svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 1px 2px rgba(15, 23, 42, .28)); }
 .face-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-button.face-box, button.face-box:hover {
+.face-box {
 	position: absolute;
 	display: block;
-	width: auto;
-	min-width: 0;
-	min-height: 0;
-	padding: 0;
+	box-sizing: border-box;
 	touch-action: none;
 	border: 2px dashed #2563eb;
 	border-radius: 2px;
 	background: rgba(37, 99, 235, 0.16);
-	color: #fff;
-	box-shadow: none;
 	pointer-events: auto;
-	cursor: pointer;
+	cursor: grab;
 }
-button.face-box:hover { background: rgba(220, 38, 38, 0.28); border-color: #dc2626; }
-button.face-box::after {
-	content: "×";
+.face-box.is-dragging { cursor: grabbing; }
+button.face-remove, button.face-remove:hover {
 	position: absolute;
-	top: 1px;
-	right: 4px;
+	top: 0;
+	right: 0;
+	z-index: 2;
+	width: 18px;
+	height: 18px;
+	min-width: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: #fff;
 	font-size: 1rem;
+	font-weight: 700;
 	line-height: 1;
 	text-shadow: 0 1px 2px rgba(15, 23, 42, 0.7);
+	cursor: pointer;
 }
+button.face-remove:hover { color: #fecaca; }
+button.face-handle, button.face-handle:hover {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	min-width: 0;
+	padding: 0;
+	border: 2px solid #2563eb;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.25);
+	z-index: 3;
+	touch-action: none;
+}
+button.face-handle[data-corner="nw"] { left: 0; top: 0; margin: -6px 0 0 -6px; cursor: nwse-resize; }
+button.face-handle[data-corner="ne"] { right: 0; top: 0; margin: -6px -6px 0 0; cursor: nesw-resize; }
+button.face-handle[data-corner="sw"] { left: 0; bottom: 0; margin: 0 0 -6px -6px; cursor: nesw-resize; }
+button.face-handle[data-corner="se"] { right: 0; bottom: 0; margin: 0 -6px -6px 0; cursor: nwse-resize; }
 .text-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 button.ocr-box, button.ocr-box:hover {
 	position: absolute;
