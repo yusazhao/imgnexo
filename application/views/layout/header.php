@@ -256,13 +256,17 @@ if ( ! empty($organization) && is_array($organization))
 	<?php if ( ! empty($meta['robots'])): ?>
 	<meta name="robots" content="<?= html_escape($meta['robots']) ?>">
 	<?php endif; ?>
-	<?php if (empty($meta['robots'])): ?>
-	<link rel="canonical" href="<?= html_escape(canonical_url($meta['path'])) ?>">
+	<?php
+	$canonical_href = canonical_url(isset($meta['path']) ? $meta['path'] : '');
+	$skip_canonical = ! empty($meta['robots']) && strpos($meta['robots'], 'noindex') !== FALSE;
+	?>
+	<?php if ( ! $skip_canonical): ?>
+	<link rel="canonical" href="<?= html_escape($canonical_href) ?>">
 	<?php endif; ?>
 	<meta property="og:title" content="<?= html_escape($meta['title']) ?>">
 	<meta property="og:description" content="<?= html_escape($meta['description']) ?>">
 	<meta property="og:type" content="website">
-	<meta property="og:url" content="<?= html_escape(canonical_url($meta['path'])) ?>">
+	<meta property="og:url" content="<?= html_escape($canonical_href) ?>">
 	<link rel="icon" href="<?= html_escape(asset_url('favicon.svg')) ?>" type="image/svg+xml">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
