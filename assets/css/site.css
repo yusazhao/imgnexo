@@ -758,6 +758,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 		position: sticky;
 		top: var(--header-offset, 4.4rem);
 		z-index: 6;
+		justify-self: center;
 		background: var(--card);
 		border-bottom: 1px solid var(--line);
 	}
