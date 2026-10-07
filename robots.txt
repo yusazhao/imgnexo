@@ -1,0 +1,67 @@
+# Imgnexo — https://www.imgnexo.com/
+# Allow search engines and AI crawlers to read public pages, sitemap, and llms.txt.
+
+User-agent: *
+Allow: /
+Allow: /llms.txt
+Allow: /sitemap.xml
+
+# Search
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# AI / answer engines (GEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Google-CloudVertexBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+Sitemap: https://www.imgnexo.com/sitemap.xml
+# Machine-readable site summary for LLMs:
+# https://www.imgnexo.com/llms.txt

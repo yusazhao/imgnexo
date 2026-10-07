@@ -55,7 +55,6 @@ $route['404_override'] = 'site/not_found';
 $route['translate_uri_dashes'] = FALSE;
 
 $route['sitemap.xml'] = 'site/sitemap';
-$route['robots.txt'] = 'site/robots';
 
 $route['blur-image'] = 'site/blur';
 $route['blur-image/(:any)'] = 'site/blur/$1';
@@ -68,7 +67,4 @@ $route['privacy-policy'] = 'site/info/privacy-policy';
 $route['terms-of-service'] = 'site/info/terms-of-service';
 $route['about-us'] = 'site/info/about-us';
 $route['contact'] = 'site/info/contact';
-
-$route['site'] = 'site/not_found';
-$route['site/(:any)'] = 'site/not_found';
 

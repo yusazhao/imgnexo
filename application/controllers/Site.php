@@ -145,12 +145,6 @@ class Site extends CI_Controller {
 		$this->load->view('pages/sitemap', array('urls' => $urls));
 	}
 
-	public function robots()
-	{
-		$body = "User-agent: *\nAllow: /\n\nSitemap: ".canonical_url('sitemap.xml', FALSE)."\n";
-		$this->output->set_content_type('text/plain', 'UTF-8')->set_output($body);
-	}
-
 	public function not_found()
 	{
 		$this->output->set_status_header(404);

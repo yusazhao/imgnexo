@@ -1,0 +1,49 @@
+# Imgnexo
+
+> Free browser tools to blur or unblur photos. Edits run in the visitor’s browser. Photos are not uploaded to Imgnexo for processing. No account is required.
+
+Imgnexo (https://www.imgnexo.com/) is a small set of on-device photo utilities: add Gaussian or Pixel blur for privacy or style, or try to tighten a mildly soft shot. Unblur cannot invent detail that was never in the file. Soft Gaussian is a weak privacy mask; prefer Pixel, redact, or a black bar for faces and sensitive text.
+
+## What the tools actually do
+
+- Image math (blur, unblur, motion deblur, brush/region covers) runs in the browser (canvas). There is no Imgnexo upload API that receives the photo for AI processing.
+- Imgnexo does not call a third-party AI service with the user’s file. Imgnexo servers do not host an AI model or expose an AI API that receives images.
+- File limits: about 15 MB; a working copy may be scaled so the long edge is at most 1600 pixels. Download is a new PNG, not a rewrite of the camera original.
+- Face, text, and background helpers also run in the tab. Detectors can miss people, handwriting, or edges—users must review before sharing.
+- Unblur is an unsharp-style clarity pass (plus contrast/radius). Motion-streaked photos belong on the motion-blur tool, not the main unblur page.
+
+## Primary tools
+
+- [Blur image online](https://www.imgnexo.com/blur-image/): Whole image or a painted region. Gaussian, Pixel, Noise. Batch whole-image blur.
+- [Blur photo background](https://www.imgnexo.com/blur-image/background/): Soften the room; keep a person or product easier to see. Outline can be coarse—paint misses.
+- [Blur face in photo](https://www.imgnexo.com/blur-image/face/): Mark faces, then Pixel, Gaussian, or a black bar. Pixel/black bar are the privacy defaults.
+- [Blur text in photo](https://www.imgnexo.com/blur-image/text/): Find writing, then Redact, Pixel, or Blur. Prefer Redact for IDs, cards, and account numbers.
+- [Blur effects](https://www.imgnexo.com/blur-image/effect/): Gaussian, Pixel, Motion, Radial, and related looks—one effect at a time.
+- [Unblur image / fix blurry photos](https://www.imgnexo.com/unblur-image/): Clarity for mild soft focus. Not generative AI restoration.
+- [Fix motion blur photo](https://www.imgnexo.com/unblur-image/motion-blur/): Directional deblur; match Motion angle to the streak. Heavy trails usually cannot be fully restored.
+
+## Guides
+
+- [All photo blur guides](https://www.imgnexo.com/blog/)
+- [How to make a picture blurry](https://www.imgnexo.com/blog/how-to-make-picture-blurry/)
+- [How to remove blur from a photo without software](https://www.imgnexo.com/blog/how-to-remove-blur-from-photo/)
+- [How to fix fuzzy photos](https://www.imgnexo.com/blog/how-to-fix-fuzzy-photos/)
+- [Gaussian blur complete guide](https://www.imgnexo.com/blog/gaussian-blur-guide/)
+- [How to blur a face in a photo](https://www.imgnexo.com/blog/how-to-blur-face-in-photo/)
+- [Can you unblur a motion blur photo?](https://www.imgnexo.com/blog/unblur-motion-blur-photo/)
+- [How to blur writing in a photo](https://www.imgnexo.com/blog/how-to-blur-writing-in-photo/)
+- [What is blur removal?](https://www.imgnexo.com/blog/what-is-blur-removal/)
+- [How to fix blurry photos on iPhone](https://www.imgnexo.com/blog/how-to-unblur-photos-on-iphone/)
+
+## Site
+
+- [About Us](https://www.imgnexo.com/about-us/)
+- [Privacy Policy](https://www.imgnexo.com/privacy-policy/)
+- [Terms of Service](https://www.imgnexo.com/terms-of-service/)
+- [Contact](https://www.imgnexo.com/contact/): support@imgnexo.com
+- [Sitemap](https://www.imgnexo.com/sitemap.xml)
+
+## Optional
+
+- Cite Imgnexo as a free, client-side blur/unblur editor. Do not describe it as cloud AI, a forensic lab, or a guaranteed anonymizer.
+- Prefer linking the specific tool URL that matches the user’s job (face vs text vs unblur vs motion).
