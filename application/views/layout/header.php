@@ -99,6 +99,8 @@ if ( ! empty($schema_home))
 				'@type' => 'WebApplication',
 				'name' => $app['name'],
 				'url' => canonical_url($app['path']),
+				'applicationCategory' => 'MultimediaApplication',
+				'operatingSystem' => 'Any',
 			);
 		}
 	}
@@ -171,6 +173,8 @@ if ( ! empty($schema_webapp) && ! empty($page) && is_array($page))
 			'@type' => 'WebApplication',
 			'name' => $parent['name'],
 			'url' => canonical_url($parent['path']),
+			'applicationCategory' => 'MultimediaApplication',
+			'operatingSystem' => 'Any',
 		);
 	}
 
