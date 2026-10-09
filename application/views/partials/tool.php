@@ -144,7 +144,7 @@ if ( ! function_exists('tune_icon')) {
 					<button type="button" class="choice" data-frame="1:1" aria-pressed="false">1:1</button>
 					<button type="button" class="choice" data-frame="16:9" aria-pressed="false">16:9</button>
 				</div>
-				<p class="hint">Drag the frame to move it. Drag a corner to resize. Original downloads the whole photo.</p>
+				<p class="hint">Common social ratios for Stories, posts, and covers. Drag the frame to place the subject; drag a corner to resize. Original downloads the whole photo.</p>
 			</div>
 		</div>
 		<div class="controls">

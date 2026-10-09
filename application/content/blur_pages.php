@@ -82,6 +82,7 @@ return array(
 			array('q' => 'How to put blur on image easily?', 'a' => '<p>To put blur on image, drop the file on the editor, choose Gaussian or Pixel, and move Strength. Set Apply to Brush when only a license plate, a face, or a line of text should change. Batch is the whole-image path for several files at once.</p>'),
 			array('q' => 'Do I need account for blur image online service?', 'a' => '<p>No. The blur image online editor does not ask you to sign in. There is no library of your past uploads because the file never leaves the device.</p>'),
 			array('q' => 'What file size limit for blur picture online?', 'a' => '<p>One file can be up to 15 MB. JPG, PNG, and WEBP are accepted. If the long edge is above 1600 pixels, the editor scales the working copy down so blur picture online stays usable on a phone. The download is a PNG of that working copy.</p>'),
+			array('q' => 'Can I crop to social sizes when I download a blurred photo?', 'a' => '<p>Yes. After you blur, use Download frame to save the full image (Original) or crop to a common social ratio—9:16, 3:4, 4:5, 1:1, or 16:9—then download the PNG. Drag the frame to place the subject before you save.</p>'),
 		),
 		'opposite' => array(
 			'text' => 'This page adds blur. If the photo is already soft and you want it clearer, switch tools.',

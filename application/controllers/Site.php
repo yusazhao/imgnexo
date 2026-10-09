@@ -13,7 +13,7 @@ class Site extends CI_Controller {
 		$this->render('pages/home', array(
 			'meta' => array(
 				'title' => 'Free Online Image Utilities & Photo Tools | Imgnexo',
-				'description' => 'Free online image processing tools by Imgnexo. Easily blur backgrounds, mask text, fix blurry photos, and generate placeholder graphics—all right inside your browser.',
+				'description' => 'Free online image processing tools by Imgnexo. Easily blur backgrounds, mask text, and fix blurry photos—all right inside your browser.',
 				'path' => '',
 			),
 			'nav' => 'home',

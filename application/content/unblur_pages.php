@@ -64,6 +64,7 @@ return array(
 			array('q' => 'How do I perform blur remove from photo without software?', 'a' => '<p>Use the editor on this page. Blur remove from photo here is the clarity slider plus a small radius. A walkthrough is in <a href="{{path:blog/how-to-remove-blur-from-photo}}">how to remove blur from photo</a>.</p>'),
 			array('q' => 'Is blur remove photo process fully automatic?', 'a' => '<p>The blur remove photo math runs as soon as you move the slider, but you choose the strength. Automatic does not mean every picture has a correct preset.</p>'),
 			array('q' => 'What is blur pic clear feature for?', 'a' => '<p>Blur pic clear is the gentle setting: a small clarity boost for a slightly soft snapshot. It is the wrong control for hiding a face. That job is <a href="{{path:blur-image/face}}">blur face in photo</a>.</p>'),
+			array('q' => 'Can I crop to social sizes when I download an unblurred photo?', 'a' => '<p>Yes. After you unblur, use Download frame to save the full image (Original) or crop to a common social ratio—9:16, 3:4, 4:5, 1:1, or 16:9—then download the PNG. Drag the frame to place the subject before you save.</p>'),
 		),
 		'opposite' => array(
 			'text' => 'This page tries to clear blur. If you want to add blur, hide a face, or cover writing, switch tools.',

@@ -244,6 +244,24 @@ if ( ! empty($organization) && is_array($organization))
 	<?php if ($graph): ?>
 	<script type="application/ld+json"><?= json_encode(array('@context' => 'https://schema.org', '@graph' => $graph), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
 	<?php endif; ?>
+	<script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "yukwtxekbo");
+    </script>
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-HT3SR64T42"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-HT3SR64T42');
+    </script>
+	<script defer data-domain="imgnexo.com" src="https://plausible.randomlocker.com/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
+	<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 </head>
 <body class="theme-<?= html_escape($nav) ?>">
 <a class="skip" href="#content">Skip to content</a>

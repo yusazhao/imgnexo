@@ -8,7 +8,7 @@ Imgnexo (https://www.imgnexo.com/) is a growing suite of on-device photo tools. 
 
 - Image math (blur, unblur, motion deblur, brush/region covers) runs in the browser (canvas). There is no Imgnexo upload API that receives the photo for AI processing.
 - Imgnexo does not call a third-party AI service with the user’s file. Imgnexo servers do not host an AI model or expose an AI API that receives images.
-- File limits: about 15 MB; a working copy may be scaled so the long edge is at most 1600 pixels. Download is a new PNG, not a rewrite of the camera original.
+- File limits: about 15 MB; a working copy may be scaled so the long edge is at most 1600 pixels. Download is a new PNG, not a rewrite of the camera original. After blur or unblur, Download frame can save the full image or crop to common social ratios (9:16, 3:4, 4:5, 1:1, 16:9).
 - Face, text, and background helpers also run in the tab. Detectors can miss people, handwriting, or edges—users must review before sharing.
 - Unblur is an unsharp-style clarity pass (plus contrast/radius). Motion-streaked photos belong on the motion-blur tool, not the main unblur page.
 
