@@ -1,20 +1,20 @@
 # ImgNexo
 
-> Free browser-based image utilities for privacy blur and mild unblur. Edits run in the visitor’s browser. Images are not uploaded to ImgNexo for processing. No account is required.
+> Free browser-based image utilities for privacy blur and mild unblur. Edits run locally in the visitor’s browser. Images are not uploaded to ImgNexo servers for processing. 100% free with no watermark and no account required.
 
-ImgNexo (https://www.imgnexo.com/) is a growing suite of on-device photo tools. The home page groups work into categories: **Image Blurring & Effects** (add blur for privacy or style) and **Image Enhancement & Unblurring** (clarity for mildly soft shots). Pick the job first—adding blur and removing blur are opposite edits. Unblur cannot invent detail that was never in the file. Soft Gaussian is a weak privacy mask; prefer Pixel, redact, or a black bar for faces and sensitive text.
+ImgNexo (https://www.imgnexo.com/) is a growing suite of on-device photo tools. The home page groups work into categories: **Image Blurring & Effects** (add blur for privacy, hide objects, or style) and **Image Enhancement & Unblurring** (clarity for mildly soft shots). Pick the job first—adding blur and removing blur are opposite edits. Unblur cannot invent detail that was never in the file. Soft Gaussian is a weak privacy mask; prefer Pixel, redact, or a black bar for faces and sensitive text.
 
 ## What the tools actually do
 
 - Image math (blur, unblur, motion deblur, brush/region covers) runs in the browser (canvas). There is no ImgNexo upload API that receives the photo for AI processing.
 - ImgNexo does not call a third-party AI service with the user’s file. ImgNexo servers do not host an AI model or expose an AI API that receives images.
 - File limits: about 15 MB; a working copy may be scaled so the long edge is at most 1600 pixels. Download is a new PNG, not a rewrite of the camera original. After blur or unblur, Download frame can save the full image or crop to common social ratios (9:16, 3:4, 4:5, 1:1, 16:9).
-- Face, text, and background helpers also run in the tab. Detectors can miss people, handwriting, or edges—users must review before sharing.
+- Face, text, object, and background helpers also run in the tab. Detectors can miss people, handwriting, or edges—users must review before sharing.
 - Unblur is an unsharp-style clarity pass (plus contrast/radius). Motion-streaked photos belong on the motion-blur tool, not the main unblur page.
 
 ## Primary tools
 
-- [Blur image online](https://www.imgnexo.com/blur-image/): Whole image or a painted region. Gaussian, Pixel, Noise. Batch whole-image blur.
+- [Blur image online](https://www.imgnexo.com/blur-image/): Whole image, selected regions, or specific objects in photos using Brush, Marquee, or Lasso tools. Gaussian, Pixel, Noise effects, plus batch whole-image blur.
 - [Blur photo background](https://www.imgnexo.com/blur-image/background/): Soften the room; keep a person or product easier to see. Outline can be coarse—paint misses.
 - [Blur face in photo](https://www.imgnexo.com/blur-image/face/): Mark faces, then Pixel, Gaussian, or a black bar. Pixel/black bar are the privacy defaults.
 - [Blur text in photo](https://www.imgnexo.com/blur-image/text/): Find writing, then Redact, Pixel, or Blur. Prefer Redact for IDs, cards, and account numbers.
