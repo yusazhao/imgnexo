@@ -792,6 +792,12 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .history-bar .icon-btn:not(:disabled):hover { background: #dbeafe; color: var(--accent-dark); }
 .history-bar .icon-btn:disabled { opacity: 1; color: #cbd5e1; background: white; }
 
+.how-to .prose p.how-dek {
+	margin: .15rem 0 0;
+	color: var(--muted);
+	font-size: .92rem;
+	line-height: 1.45;
+}
 .steps, .step-cards {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));

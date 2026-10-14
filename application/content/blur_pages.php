@@ -55,8 +55,8 @@ return array(
 				'html' => '<p>A blur effect on pictures can be a light soft-focus look or a heavy blur effect on photos. Blur effect image settings are on the <a href="{{path:blur-image/effect}}">blur effect</a> page. Gaussian, pixelate, motion, radial, noise, and color are there, one at a time.</p>',
 			),
 			array(
-				'h2' => 'Make Picture Blurry',
-				'html' => '<p>Make picture blurry when the whole frame should be hard to inspect: a teaser, a spoiler cover, or a placeholder. The same slider lets you make image blurry or make a pic blurry. For make images blurry across a series, switch the editor to Batch: one strength covers every whole photo, then one zip downloads them. This blurry image maker is also the blurry picture maker for a one-off edit.</p>',
+				'h2' => 'Blur Objects & Selected Areas in Photo',
+				'html' => '<p>Need to cover an unwanted object, hide a distractor, or censor private details in a picture? ImgNexo gives you full control to blur objects in photos or soften specific areas using precise Brush, Marquee, or Lasso tools. Simply draw over any item or photo element you want to conceal, adjust the Strength slider, and download your edited image instantly—all processed safely in your browser.</p>',
 			),
 			array(
 				'h2' => 'Online Blur Image Tool',
@@ -68,9 +68,7 @@ return array(
 			),
 		),
 		'faqs' => array(
-			array('q' => 'How do I blur out picture?', 'a' => '<p>Upload the file, choose Gaussian or Pixel, and raise Strength until the detail you care about disappears. Download the PNG. To blur out picture content in only one spot, set Apply to Brush and stroke that area.</p>'),
-			array('q' => 'How can I blur out photo?', 'a' => '<p>Open the editor, choose the photo, and blur out photo regions that show a face, a plate, or private writing. Hold the original button if you want to confirm you did not soften the wrong part.</p>'),
-			array('q' => 'How to blur out image?', 'a' => '<p>To blur out image detail, use gaussian blur for a smooth cover or pixelate for blocks. Pixelate is harder to reverse by squinting at the file.</p>'),
+			array('q' => 'How do I blur an object or specific area in a photo?', 'a' => '<p>Upload your image and select a target area using the Brush, Marquee, or Lasso tool. Paint or draw over any item to blur objects in photos or conceal specific details. Then, adjust the Strength slider until the area is adequately blurred and download your edited picture.</p>'),
 			array('q' => 'What is gaussian blur?', 'a' => '<p>Gaussian blur averages nearby pixels with a bell-curve falloff, so edges melt instead of turning into squares. The blur slider on this page is that style of soften. A longer guide is in <a href="{{path:blog/gaussian-blur-guide}}">the gaussian blur article</a>.</p>'),
 			array('q' => 'How to use pixelate blur on pictures?', 'a' => '<p>Choose Pixel and raise Strength. At 1 the picture stays as it is. Larger blocks hide faces and text more reliably than a light Gaussian soften. Pixel and Gaussian are separate, so switch effects instead of stacking them.</p>'),
 			array('q' => 'Can I blur image for WhatsApp?', 'a' => '<p>Yes. Edit first, download the PNG, then send that file in WhatsApp. Blurring inside this page does not connect to WhatsApp. A whatsapp blur image search usually means you want the censored file before you attach it to a chat.</p>'),
@@ -175,6 +173,7 @@ return array(
 			'note_below' => TRUE,
 			'note' => 'Each found face is widened past the eyes and chin. Drag a box to move it, or a corner to resize it. Click × to remove a wrong one. Paint any face the finder missed. Pixel blocks the features. Gaussian softens them. Black bar covers the box in solid black.',
 			'heading' => 'How to blur a face in a photo',
+			'intro' => '<p class="how-dek">Whether you need to blur a face in a picture for social media or blur objects in photos for privacy, follow these quick steps:</p>',
 			'steps' => array(
 				'Upload the photo, then click Blur faces.',
 				'Drag a box to move it, or a corner to resize it. Click × to remove a wrong face. Paint any face the finder missed.',
@@ -247,7 +246,7 @@ return array(
 			),
 		),
 		'faqs' => array(
-			array('q' => 'Can I selectively blur partial text on an image?', 'a' => '<p>Yes. Blur Sensitive Only covers emails, phone numbers, and long numbers, and leaves other writing sharp. Drag a red box to move it, or a corner to resize it. Click × to remove one line. Drag a rectangle or paint a phrase the finder skipped.</p>'),
+			array('q' => 'Can I selectively blur partial text on an image?', 'a' => '<p>Yes, you can easily blur text or numbers in specific areas of your document. "Blur Sensitive Only" automatically covers emails, phone numbers, and long numbers while leaving other writing sharp. You can also drag a red box to move it, resize it from the corner, or paint over any phrase manually.</p>'),
 			array('q' => 'Is blur text image function free?', 'a' => '<p>Yes. The blur text image control is part of the same free browser editor. No account is required. The photo is not uploaded. The first click downloads the finder; later clicks reuse it.</p>'),
 		),
 		'opposite' => array(
