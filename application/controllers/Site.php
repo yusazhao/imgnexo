@@ -12,8 +12,8 @@ class Site extends CI_Controller {
 	{
 		$this->render('pages/home', array(
 			'meta' => array(
-				'title' => 'Free Online Image Utilities & Photo Tools | Imgnexo',
-				'description' => 'Free online image processing tools by Imgnexo. Easily blur backgrounds, mask text, and fix blurry photos—all right inside your browser.',
+				'title' => 'Free Online Image Processing Tools (No Watermark) | ImgNexo',
+				'description' => 'Process images online in your browser. 100% free with zero server uploads (privacy-safe), no registration, and no watermarks. Blur or restore photos in seconds.',
 				'path' => '',
 			),
 			'nav' => 'home',
@@ -72,8 +72,8 @@ class Site extends CI_Controller {
 
 		$this->render('pages/blog_index', array(
 			'meta' => array(
-				'title' => 'Image Editing & Photo Utility Guides | Imgnexo',
-				'description' => 'Discover step-by-step tutorials and technical guides for blurring photos, restoring soft or motion-blurred images, and other browser-based photo utilities.',
+				'title' => 'Image Editing & Photo Utility Guides | ImgNexo',
+				'description' => 'Learn how to blur, unblur, and protect photo privacy with step-by-step guides using free browser-based tools—no software installation required.',
 				'path' => 'blog',
 			),
 			'nav' => 'blog',

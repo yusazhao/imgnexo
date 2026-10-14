@@ -6,8 +6,8 @@ return array(
 		'group' => 'unblur',
 		'slug' => 'index',
 		'path' => 'unblur-image',
-		'title' => 'Unblur Image Online | Fix Blurry Photos & Remove Blur From Photo',
-		'description' => 'Unblurring an image online. Un blur an image, fix blurry photo, remove blur from photo and clear blurry image quickly.',
+		'title' => 'Free Unblur Image Tool Online - Fix Blurry Photos | ImgNexo',
+		'description' => 'Unblur images and fix soft-focus photos online for free. Clear blurry pictures instantly in Safari or Chrome without software installation or watermarks.',
 		'h1' => 'Unblur Image Online | Fix Blurry Photos & Remove Blur From Photo',
 		'lead' => '<p>Start here when a blurry photo is an accident. Un blur an image by sharpening edges the camera almost kept. Unblurring an image cannot invent a face or a sign that was never recorded. Mild softness often improves. A heavy smear usually does not.</p>',
 		'tool' => array(
@@ -86,8 +86,8 @@ return array(
 		'slug' => 'motion-blur',
 		'path' => 'unblur-image/motion-blur',
 		'faq_heading' => 'FAQ',
-		'title' => 'Fix Motion Blur Photo Online | Recover Motion-Blurred Shots',
-		'description' => 'Try to restore motion blur photo. Repair photos ruined by moving subject or camera shake.',
+		'title' => 'Free Motion Blur Remover Online - Repair Shaky Shots | ImgNexo',
+		'description' => 'Fix motion-blurred photos caused by camera shake or moving subjects. Free browser-based photo restoration with zero uploads, no registration, and no watermarks.',
 		'h1' => 'Fix Motion Blur Photo Online | Recover Motion-Blurred Shots',
 		'lead' => '<p>A motion blur photo smears detail along one direction. Set Motion angle to that streak, then raise length until it matches the smear. A short streak can tighten. A running subject cannot be pulled back into a still pose.</p>',
 		'tool' => array(
