@@ -3,7 +3,7 @@
 <footer class="site-footer">
 	<div class="wrap footer-grid">
 		<div>
-			<strong>Imgnexo</strong>
+			<strong>ImgNexo</strong>
 			<p>Blur faces, text, and backgrounds in your browser, or sharpen a soft photo. Images stay on your device.</p>
 		</div>
 		<div>
@@ -48,7 +48,7 @@
 	?>
 	<div class="wrap footer-legal-links">
 		<p class="legal">
-			Copyright <?= date('Y') ?> Imgnexo.
+			Copyright <?= date('Y') ?> ImgNexo.
 			<span class="legal-sep" aria-hidden="true">·</span>
 			<a href="mailto:<?= html_escape($footer_email) ?>"><?= html_escape($footer_email) ?></a>
 			<span class="legal-sep" aria-hidden="true">·</span>

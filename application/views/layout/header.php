@@ -7,7 +7,7 @@ if (file_exists(APPPATH.'config/site_info.php'))
 	$info = include APPPATH.'config/site_info.php';
 }
 
-$brand = (is_array($info) && ! empty($info['brand'])) ? $info['brand'] : 'Imgnexo';
+$brand = (is_array($info) && ! empty($info['brand'])) ? $info['brand'] : 'ImgNexo';
 $org_id = canonical_url('').'#organization';
 $website_id = canonical_url('').'#website';
 
@@ -269,7 +269,7 @@ if ( ! empty($organization) && is_array($organization))
 	<div class="wrap header-bar">
 		<a class="logo" href="<?= html_escape(page_url('')) ?>">
 			<span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="14" cy="24" r="6.2" fill="#fff" opacity=".42"/><circle cx="20" cy="17.5" r="4.5" fill="#fff" opacity=".72"/><circle cx="25.5" cy="12" r="2.9" fill="#fff"/></svg></span>
-			<span class="logo-text"><strong>Imgnexo</strong><small>Online</small></span>
+			<span class="logo-text"><strong>ImgNexo</strong><small>Online</small></span>
 		</a>
 		<nav class="site-nav" aria-label="Primary">
 			<a href="<?= html_escape(page_url('blur-image')) ?>"<?= nav_is_current('blur-image') ? ' aria-current="page"' : '' ?>>Blur Image</a>

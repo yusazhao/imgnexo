@@ -115,7 +115,7 @@ img { max-width: 100%; height: auto; }
 .menu-panel a:hover { background: var(--soft); }
 
 h1, h2, h3 { font-weight: 700; letter-spacing: -0.035em; line-height: 1.15; color: var(--ink); }
-h1 { font-size: clamp(2.05rem, 3.6vw, 3.25rem); margin: .35rem 0 .9rem; font-weight: 800; }
+h1 { font-size: clamp(1.8rem, 3.15vw, 2.85rem); margin: .35rem 0 .9rem; font-weight: 800; }
 h2 { font-size: clamp(1.6rem, 2.5vw, 2.15rem); margin: 2.6rem 0 .7rem; }
 h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 
@@ -136,7 +136,9 @@ h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 .home-intro .dek,
 .home .section-intro,
 .home-platform .prose { max-width: none; }
-.home-categories { margin-top: .4rem; }
+.home-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1rem; }
+.home-actions .button { text-decoration: none; }
+.home-categories { margin-top: 1.4rem; }
 .category-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -165,8 +167,7 @@ h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 }
 .category-card h3 { margin: 0; color: var(--ink); font-size: 1.2rem; }
 .category-card > p { margin: 0; color: #475569; }
-.category-card .feature-go { margin-top: .25rem; text-decoration: none; }
-.category-card .feature-go:hover { color: var(--accent-dark); }
+.category-card .button { align-self: flex-start; margin-top: .35rem; text-decoration: none; }
 .category-links {
 	display: flex;
 	flex-wrap: wrap;
@@ -182,7 +183,40 @@ h3 { font-size: 1.12rem; margin: 0 0 .35rem; }
 	text-decoration: none;
 }
 .category-links a:hover { color: var(--accent-dark); text-decoration: underline; text-underline-offset: .16em; }
-.home-platform { margin-top: .6rem; }
+.home-platform { margin-top: 1.6rem; }
+.home-points {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: .9rem;
+	list-style: none;
+	margin: .2rem 0 0;
+	padding: 0;
+}
+.home-points li {
+	display: flex;
+	flex-direction: column;
+	gap: .35rem;
+	background: var(--card);
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	padding: 1rem 1.05rem 1.1rem;
+	box-shadow: var(--shadow);
+}
+.home-points strong { color: var(--ink); }
+.home-points span { color: #475569; }
+.home-note { margin: .9rem 0 0; color: #475569; }
+.home .feature {
+	transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.home .feature:hover {
+	transform: translateY(-4px);
+	border-color: #bfdbfe;
+	box-shadow: 0 16px 36px rgba(37, 99, 235, 0.12);
+}
+@media (prefers-reduced-motion: reduce) {
+	.home .feature { transition: none; }
+	.home .feature:hover { transform: none; }
+}
 .feature.with-art { display: flex; flex-direction: column; gap: .85rem; }
 .feature.with-art > span { display: flex; flex-direction: column; gap: .35rem; flex: 1; }
 .tool-art {
@@ -1047,7 +1081,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 }
 @media (max-width: 900px) {
 	#zoom-fit { display: none; }
-	.hero, .editor-layout, .steps, .step-cards, .feature-grid, .feature-grid.pair, .feature-grid.missing-grid, .category-grid, .quick-links, .related, .footer-grid { grid-template-columns: 1fr; }
+	.hero, .editor-layout, .steps, .step-cards, .feature-grid, .feature-grid.pair, .feature-grid.missing-grid, .category-grid, .home-points, .quick-links, .related, .footer-grid { grid-template-columns: 1fr; }
 	.editor-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
 	.editor-stage { display: contents; }
 	.editor-layout > .controls { margin-top: .85rem; }
@@ -1083,15 +1117,17 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 	}
 	.nav-wide { display: none; }
 	.lang-picker:not(.is-open) button.lang-chip.is-extra:not(.is-on) { display: none; }
-	.header-bar { flex-wrap: nowrap; align-items: center; gap: .75rem; padding: .7rem 0; }
-	.logo { flex: 0 0 auto; }
+	.header-bar { flex-wrap: wrap; align-items: center; column-gap: .85rem; row-gap: .4rem; padding: .7rem 0; }
+	.logo { flex: 0 0 auto; margin-right: 0; }
 	.site-nav {
 		position: relative;
 		flex: 1 1 auto;
-		min-width: 0;
-		flex-wrap: nowrap;
+		margin-left: auto;
+		min-width: max-content;
+		max-width: 100%;
+		flex-wrap: wrap;
 		justify-content: flex-end;
-		gap: .5rem;
+		gap: .35rem .7rem;
 	}
 	.site-nav > a, .menu summary {
 		font-size: .9rem;
@@ -1109,5 +1145,5 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 		z-index: 20;
 		max-width: calc(100vw - 2rem);
 	}
-	h1 { font-size: 1.9rem; }
+	h1 { font-size: 1.65rem; }
 }

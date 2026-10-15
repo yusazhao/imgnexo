@@ -21,7 +21,7 @@ class Site extends CI_Controller {
 			'crumbs' => array(),
 			'faqs' => array(
 				array(
-					'q' => 'What image tools are available on Imgnexo?',
+					'q' => 'What image tools are available on ImgNexo?',
 					'a' => '<p>We offer image blurring, photo unblurring, and motion blur restoration—all accessible online for free. The suite is built so more utilities can be added over time.</p>',
 				),
 				array(
@@ -310,19 +310,19 @@ class Site extends CI_Controller {
 		$jurisdiction = trim(isset($info['jurisdiction']) ? $info['jurisdiction'] : '');
 		$effective = isset($info['effective_date']) ? $info['effective_date'] : '';
 		$response = isset($info['response_window']) ? $info['response_window'] : 'within a few business days';
-		$brand = isset($info['brand']) ? $info['brand'] : 'Imgnexo';
+		$brand = isset($info['brand']) ? $info['brand'] : 'ImgNexo';
 
 		if ($operator !== '')
 		{
 			$operator_line = html_escape($operator).' operates this website and publishes free browser photo tools under the brand <strong>'.html_escape($brand).'</strong>.';
 			$operator_short = html_escape($operator);
-			$about_operator = '<p>'.html_escape($operator).' publishes Imgnexo. We focus on clear product limits rather than marketing claims that the tools cannot keep.</p>';
+			$about_operator = '<p>'.html_escape($operator).' publishes ImgNexo. We focus on clear product limits rather than marketing claims that the tools cannot keep.</p>';
 		}
 		else
 		{
 			$operator_line = 'This website is published under the brand <strong>'.html_escape($brand).'</strong>. Free browser tools to blur or unblur photos are offered without an account.';
 			$operator_short = html_escape($brand);
-			$about_operator = '<p>Imgnexo is published as an independent browser-tools project. The legal operator name will be listed here once confirmed. Until then, treat the brand name Imgnexo as the public face of the service, and use <a href="'.html_escape(page_url('contact')).'">Contact</a> for accountability requests.</p>';
+			$about_operator = '<p>ImgNexo is published as an independent browser-tools project. The legal operator name will be listed here once confirmed. Until then, treat the brand name ImgNexo as the public face of the service, and use <a href="'.html_escape(page_url('contact')).'">Contact</a> for accountability requests.</p>';
 		}
 
 		if ($email !== '')
@@ -372,7 +372,7 @@ class Site extends CI_Controller {
 		$info = $this->site_info();
 		$org = array(
 			'@type' => 'Organization',
-			'name' => isset($info['brand']) ? $info['brand'] : 'Imgnexo',
+			'name' => isset($info['brand']) ? $info['brand'] : 'ImgNexo',
 			'url' => canonical_url(''),
 			'description' => 'Free browser tools to blur or unblur photos. Image edits run on your device.',
 		);

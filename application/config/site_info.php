@@ -6,9 +6,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Fill the empty fields before launch. Do not invent a legal entity.
 */
 return array(
-	'brand' => 'Imgnexo',
+	'brand' => 'ImgNexo',
 	// Legal or trading name of the operator (person or company).
-	'operator_name' => 'Imgnexo',
+	'operator_name' => 'ImgNexo',
 	// Public support mailbox (required for a usable Contact page).
 	'contact_email' => 'support@imgnexo.com',
 	// Governing law / venue short label, e.g. "California, United States".

@@ -1,8 +1,12 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <article class="sheet home">
 	<section class="home-intro">
-		<h1>Free Online Image Utilities &amp; Photo Tools | Imgnexo</h1>
-		<p class="dek">Imgnexo is a free suite of browser-based image tools. Soften a photo for privacy or style, or try to clear a mildly blurry shot when the detail is still almost there. Pick the job first—adding blur and removing blur are opposite edits—and keep the file in this tab either way. No account and no install.</p>
+		<h1>Free Online Image Utilities &amp; Photo Tools | ImgNexo</h1>
+		<p class="dek">Free browser tools to add blur or clear a mildly soft photo. No account, no install, and the image stays on this device.</p>
+		<div class="home-actions">
+			<a class="button" href="<?= html_escape(page_url('blur-image')) ?>">Blur an image</a>
+			<a class="button" href="<?= html_escape(page_url('unblur-image')) ?>">Fix a blurry photo</a>
+		</div>
 	</section>
 
 	<section class="home-categories">
@@ -42,7 +46,7 @@
 				<span class="kicker">Add blur</span>
 				<h3>Image Blurring &amp; Effects</h3>
 				<p>Add background blur, anonymize faces, mask sensitive text, or apply creative camera blur effects. Soften one picture with Gaussian or Pixel—including a brush stroke—or apply the same whole-image blur to several files and download them together.</p>
-				<a class="feature-go" href="<?= html_escape(page_url('blur-image')) ?>">Go to Blur Image Tools</a>
+				<a class="button" href="<?= html_escape(page_url('blur-image')) ?>">Go to Blur Image Tools</a>
 				<nav class="category-links" aria-label="Blur tools">
 					<a href="<?= html_escape(page_url('blur-image/background')) ?>">Blur Background</a>
 					<a href="<?= html_escape(page_url('blur-image/face')) ?>">Blur Face</a>
@@ -86,7 +90,7 @@
 				<span class="kicker">Clear soft photos</span>
 				<h3>Image Enhancement &amp; Unblurring</h3>
 				<p>Clear blurry photos, fix motion blur from camera shake, and restore soft snapshot details online. A clarity pass can help when edges are still almost there. It does not invent a sharper face or a readable sign from a smooth blob.</p>
-				<a class="feature-go" href="<?= html_escape(page_url('unblur-image')) ?>">Go to Unblur Image Tools</a>
+				<a class="button" href="<?= html_escape(page_url('unblur-image')) ?>">Go to Unblur Image Tools</a>
 				<nav class="category-links" aria-label="Unblur tools">
 					<a href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">Fix Motion Blur</a>
 				</nav>
@@ -145,10 +149,21 @@
 
 	<section class="home-platform">
 		<h2>All-in-One Online Photo Processing Platform</h2>
-		<div class="prose">
-			<p>Imgnexo provides a fast, free, and privacy-focused suite of online image tools. Whether you need to blur sensitive information before you post, recover a mildly soft or motion-blurred picture, or prepare images for everyday sharing and product work, the edit runs directly inside your web browser.</p>
-			<p>There is no software install and no sign-in wall. Soften and clarify stay separate so you open the page that matches the result you want. Guides on the <a href="<?= html_escape(page_url('blog')) ?>">blog</a> explain limits in plain language—for example when a long motion trail cannot be rebuilt—so expectations match what a single frame can still give back.</p>
-		</div>
+		<ul class="home-points">
+			<li>
+				<strong>Stays on this device</strong>
+				<span>Blur and unblur run in your browser. The image is not uploaded for processing.</span>
+			</li>
+			<li>
+				<strong>No install, no account</strong>
+				<span>Open a tool and download a new PNG. There is nothing to sign in for.</span>
+			</li>
+			<li>
+				<strong>Blur and unblur stay separate</strong>
+				<span>Pick the job first. A long motion trail still cannot be rebuilt from one frame.</span>
+			</li>
+		</ul>
+		<p class="home-note">Guides on the <a href="<?= html_escape(page_url('blog')) ?>">blog</a> explain what a single frame can still give back.</p>
 	</section>
 
 	<?php $this->load->view('partials/faq', array('faqs' => $faqs, 'faq_heading' => 'Frequently Asked Questions')); ?>

@@ -5,15 +5,15 @@ return array(
 	array(
 		'slug' => 'privacy-policy',
 		'path' => 'privacy-policy',
-		'title' => 'Privacy Policy – Imgnexo',
-		'description' => 'How Imgnexo handles photos and server logs. Image edits run in your browser—no photo upload to a cloud AI.',
+		'title' => 'Privacy Policy – ImgNexo',
+		'description' => 'How ImgNexo handles photos and server logs. Image edits run in your browser—no photo upload to a cloud AI.',
 		'h1' => 'Privacy Policy',
 		'crumbs' => array(
 			array('name' => 'Home', 'path' => ''),
 			array('name' => 'Privacy Policy', 'path' => 'privacy-policy'),
 		),
 		'html' => <<<'HTML'
-<p class="lead">Effective date: {{effective_date}}. This policy explains what Imgnexo does—and does not—do with information when you use our free browser tools to blur or unblur photos.</p>
+<p class="lead">Effective date: {{effective_date}}. This policy explains what ImgNexo does—and does not—do with information when you use our free browser tools to blur or unblur photos.</p>
 
 <h2>Who we are</h2>
 <p>{{operator_line}} For privacy questions, use the details on our <a href="{{path:contact}}">Contact</a> page.</p>
@@ -28,7 +28,7 @@ return array(
 
 <h2>Photos and on-device processing</h2>
 <p>When you open a JPG, PNG, or WEBP in a blur or unblur tool, the file is read in your tab (for example via the browser canvas). Clarity, Gaussian, Pixel, motion deblur, brush masks, and downloads of a new PNG are produced on your device.</p>
-<p>Optional face, text, and background helpers also run in the tab with browser-side scripts. Imgnexo does not ship its own local AI models with the site, and these helpers are not a remote API that receives your image pixels for cloud inference.</p>
+<p>Optional face, text, and background helpers also run in the tab with browser-side scripts. ImgNexo does not ship its own local AI models with the site, and these helpers are not a remote API that receives your image pixels for cloud inference.</p>
 <p>Practical limits that affect what leaves your camera roll:</p>
 <ul>
 <li>Files larger than about 15&nbsp;MB are rejected in the editor.</li>
@@ -40,7 +40,7 @@ return array(
 <p>HTML, CSS, JavaScript, and any helper assets for the editors are served from our own origin with the page. Loading those files is not a photo upload.</p>
 
 <h2>Accounts, cookies, and payments</h2>
-<p>Imgnexo’s blur and unblur tools do not require sign-in, and we do not sell subscriptions inside these editors. We do not set a login cookie for the tools. Your browser may still store ordinary technical data such as cached scripts or local preferences if the product uses them later; that stays on your device.</p>
+<p>ImgNexo’s blur and unblur tools do not require sign-in, and we do not sell subscriptions inside these editors. We do not set a login cookie for the tools. Your browser may still store ordinary technical data such as cached scripts or local preferences if the product uses them later; that stays on your device.</p>
 
 <h2>Server logs and hosting</h2>
 <p>When you load a page (home, tool, blog, or this policy), our web host may record request data such as IP address, approximate time, requested URL, referrer, and user agent. We use that only to keep the site running (security, abuse prevention, reliability)—not to rebuild the contents of photos you edit in the browser.</p>
@@ -70,8 +70,8 @@ HTML
 	array(
 		'slug' => 'terms-of-service',
 		'path' => 'terms-of-service',
-		'title' => 'Terms of Service – Imgnexo',
-		'description' => 'Terms for using Imgnexo’s free browser blur and unblur tools: licenses, limits, and acceptable use.',
+		'title' => 'Terms of Service – ImgNexo',
+		'description' => 'Terms for using ImgNexo’s free browser blur and unblur tools: licenses, limits, and acceptable use.',
 		'h1' => 'Terms of Service',
 		'crumbs' => array(
 			array('name' => 'Home', 'path' => ''),
