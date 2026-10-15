@@ -5,7 +5,7 @@
 		<p class="dek">Free browser tools to add blur or clear a mildly soft photo. No account, no install, and the image stays on this device.</p>
 		<div class="home-actions">
 			<a class="button" href="<?= html_escape(page_url('blur-image')) ?>">Blur an image</a>
-			<a class="button" href="<?= html_escape(page_url('unblur-image')) ?>">Fix a blurry photo</a>
+			<a class="button button-quiet" href="<?= html_escape(page_url('unblur-image')) ?>">Fix a blurry photo</a>
 		</div>
 	</section>
 
@@ -14,86 +14,110 @@
 		<p class="section-intro">Start with a category when you are not sure which page to open. Each card links to the main tool for that job, plus shortcuts for common tasks. New categories can sit beside these as the suite grows—blur and unblur are only the first two.</p>
 		<div class="category-grid">
 			<article class="category-card">
-				<figure class="category-art" aria-label="A sharp person in front of a blurred background figure">
-					<svg viewBox="0 0 640 420" role="img" aria-hidden="true">
-						<rect width="640" height="420" rx="22" fill="#f8fafc"/>
-						<rect x="28" y="28" width="168" height="364" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
-						<rect x="46" y="52" width="132" height="74" rx="10" fill="#dbeafe"/>
-						<rect x="46" y="138" width="132" height="74" rx="10" fill="#bfdbfe"/>
-						<rect x="46" y="224" width="132" height="74" rx="10" fill="#93c5fd"/>
-						<rect x="46" y="310" width="132" height="58" rx="10" fill="#e0e7ff"/>
-						<rect x="214" y="28" width="398" height="364" rx="18" fill="#ffffff" stroke="#e2e8f0"/>
+				<figure class="category-art" aria-label="The same photo of two people, then with the background and one face blurred">
+					<svg viewBox="0 0 640 220" role="img" aria-hidden="true">
+						<rect width="640" height="220" rx="18" fill="#f8fafc"/>
 						<defs>
-							<linearGradient id="blur-sky" x1="0" y1="0" x2="0" y2="1">
-								<stop offset="0" stop-color="#dbeafe"/>
-								<stop offset="1" stop-color="#eff6ff"/>
-							</linearGradient>
-							<filter id="blur-soft"><feGaussianBlur stdDeviation="8"/></filter>
+							<filter id="add-blur-bg"><feGaussianBlur stdDeviation="5"/></filter>
+							<clipPath id="add-blur-left"><rect x="16" y="12" width="296" height="168" rx="14"/></clipPath>
+							<clipPath id="add-blur-right"><rect x="328" y="12" width="296" height="168" rx="14"/></clipPath>
+							<clipPath id="add-blur-pix"><circle cx="520" cy="86" r="24"/></clipPath>
 						</defs>
-						<rect x="236" y="52" width="354" height="250" rx="14" fill="url(#blur-sky)"/>
-						<g filter="url(#blur-soft)">
-							<circle cx="470" cy="150" r="54" fill="#93c5fd"/>
-							<rect x="410" y="190" width="120" height="70" rx="12" fill="#2563eb" opacity=".45"/>
+						<g clip-path="url(#add-blur-left)">
+							<rect x="16" y="12" width="296" height="168" fill="#e0f2fe"/>
+							<rect x="36" y="28" width="78" height="50" rx="6" fill="#93c5fd" stroke="#ffffff" stroke-width="4"/>
+							<rect x="16" y="128" width="296" height="52" fill="#e8eef6"/>
+							<circle cx="118" cy="86" r="22" fill="#fecdd3"/>
+							<circle cx="110" cy="84" r="2.4" fill="#1e293b"/>
+							<circle cx="126" cy="84" r="2.4" fill="#1e293b"/>
+							<path d="M110 94c5 5 13 5 18 0" fill="none" stroke="#fb7185" stroke-width="2" stroke-linecap="round"/>
+							<rect x="96" y="108" width="44" height="48" rx="12" fill="#1d4ed8"/>
+							<circle cx="210" cy="86" r="22" fill="#fecdd3"/>
+							<circle cx="202" cy="84" r="2.4" fill="#1e293b"/>
+							<circle cx="218" cy="84" r="2.4" fill="#1e293b"/>
+							<path d="M202 94c5 5 13 5 18 0" fill="none" stroke="#fb7185" stroke-width="2" stroke-linecap="round"/>
+							<rect x="188" y="108" width="44" height="48" rx="12" fill="#0f766e"/>
 						</g>
-						<circle cx="330" cy="168" r="36" fill="#fecdd3"/>
-						<rect x="300" y="204" width="60" height="62" rx="10" fill="#1d4ed8"/>
-						<rect x="236" y="318" width="78" height="52" rx="8" fill="#e2e8f0"/>
-						<rect x="324" y="318" width="78" height="52" rx="8" fill="#cbd5e1"/>
-						<rect x="412" y="318" width="78" height="52" rx="8" fill="#94a3b8"/>
-						<rect x="500" y="318" width="78" height="52" rx="8" fill="#64748b"/>
+						<rect x="16" y="12" width="296" height="168" rx="14" fill="none" stroke="#e2e8f0"/>
+						<g clip-path="url(#add-blur-right)">
+							<g filter="url(#add-blur-bg)">
+								<rect x="328" y="12" width="296" height="168" rx="14" fill="#e0f2fe"/>
+								<rect x="348" y="28" width="78" height="50" rx="6" fill="#93c5fd" stroke="#ffffff" stroke-width="4"/>
+								<rect x="328" y="128" width="296" height="52" fill="#e8eef6"/>
+							</g>
+							<rect x="328" y="12" width="296" height="168" rx="14" fill="none" stroke="#e2e8f0"/>
+							<circle cx="430" cy="86" r="22" fill="#fecdd3"/>
+							<circle cx="422" cy="84" r="2.4" fill="#1e293b"/>
+							<circle cx="438" cy="84" r="2.4" fill="#1e293b"/>
+							<path d="M422 94c5 5 13 5 18 0" fill="none" stroke="#fb7185" stroke-width="2" stroke-linecap="round"/>
+							<rect x="408" y="108" width="44" height="48" rx="12" fill="#1d4ed8"/>
+							<rect x="498" y="108" width="44" height="48" rx="12" fill="#0f766e"/>
+							<g clip-path="url(#add-blur-pix)">
+								<rect x="496" y="62" width="8" height="8" fill="#fdba74"/><rect x="504" y="62" width="8" height="8" fill="#fb923c"/><rect x="512" y="62" width="8" height="8" fill="#fdba74"/><rect x="520" y="62" width="8" height="8" fill="#f97316"/><rect x="528" y="62" width="8" height="8" fill="#fdba74"/><rect x="536" y="62" width="8" height="8" fill="#fb923c"/>
+								<rect x="496" y="70" width="8" height="8" fill="#fecdd3"/><rect x="504" y="70" width="8" height="8" fill="#fda4af"/><rect x="512" y="70" width="8" height="8" fill="#fecdd3"/><rect x="520" y="70" width="8" height="8" fill="#fb7185"/><rect x="528" y="70" width="8" height="8" fill="#fecdd3"/><rect x="536" y="70" width="8" height="8" fill="#fda4af"/>
+								<rect x="496" y="78" width="8" height="8" fill="#fda4af"/><rect x="504" y="78" width="8" height="8" fill="#fecdd3"/><rect x="512" y="78" width="8" height="8" fill="#fb7185"/><rect x="520" y="78" width="8" height="8" fill="#fecdd3"/><rect x="528" y="78" width="8" height="8" fill="#fda4af"/><rect x="536" y="78" width="8" height="8" fill="#fecdd3"/>
+								<rect x="496" y="86" width="8" height="8" fill="#fecdd3"/><rect x="504" y="86" width="8" height="8" fill="#fb7185"/><rect x="512" y="86" width="8" height="8" fill="#fecdd3"/><rect x="520" y="86" width="8" height="8" fill="#fda4af"/><rect x="528" y="86" width="8" height="8" fill="#fecdd3"/><rect x="536" y="86" width="8" height="8" fill="#fb7185"/>
+								<rect x="496" y="94" width="8" height="8" fill="#fda4af"/><rect x="504" y="94" width="8" height="8" fill="#fecdd3"/><rect x="512" y="94" width="8" height="8" fill="#fda4af"/><rect x="520" y="94" width="8" height="8" fill="#fecdd3"/><rect x="528" y="94" width="8" height="8" fill="#fb7185"/><rect x="536" y="94" width="8" height="8" fill="#fecdd3"/>
+								<rect x="496" y="102" width="8" height="8" fill="#fecdd3"/><rect x="504" y="102" width="8" height="8" fill="#fda4af"/><rect x="512" y="102" width="8" height="8" fill="#fecdd3"/><rect x="520" y="102" width="8" height="8" fill="#fb7185"/><rect x="528" y="102" width="8" height="8" fill="#fecdd3"/><rect x="536" y="102" width="8" height="8" fill="#fda4af"/>
+							</g>
+						</g>
+						<text x="164" y="206" text-anchor="middle" fill="#64748b" font-size="15" font-family="Segoe UI, sans-serif">Original</text>
+						<text x="476" y="206" text-anchor="middle" fill="#64748b" font-size="15" font-family="Segoe UI, sans-serif">Blur added</text>
 					</svg>
 				</figure>
 				<span class="kicker">Add blur</span>
 				<h3>Image Blurring &amp; Effects</h3>
 				<p>Add background blur, anonymize faces, mask sensitive text, or apply creative camera blur effects. Soften one picture with Gaussian or Pixel—including a brush stroke—or apply the same whole-image blur to several files and download them together.</p>
-				<a class="button" href="<?= html_escape(page_url('blur-image')) ?>">Go to Blur Image Tools</a>
-				<nav class="category-links" aria-label="Blur tools">
-					<a href="<?= html_escape(page_url('blur-image/background')) ?>">Blur Background</a>
-					<a href="<?= html_escape(page_url('blur-image/face')) ?>">Blur Face</a>
-					<a href="<?= html_escape(page_url('blur-image/text')) ?>">Blur Text</a>
-					<a href="<?= html_escape(page_url('blur-image/effect')) ?>">Gaussian Blur</a>
-				</nav>
+				<div class="category-foot">
+					<a class="button" href="<?= html_escape(page_url('blur-image')) ?>">Go to Blur Image Tools</a>
+					<nav class="category-links" aria-label="Blur tools">
+						<a href="<?= html_escape(page_url('blur-image/background')) ?>">Blur Background</a>
+						<a href="<?= html_escape(page_url('blur-image/face')) ?>">Blur Face</a>
+						<a href="<?= html_escape(page_url('blur-image/text')) ?>">Blur Text</a>
+						<a href="<?= html_escape(page_url('blur-image/effect')) ?>">Gaussian Blur</a>
+					</nav>
+				</div>
 			</article>
 			<article class="category-card">
-				<figure class="category-art" aria-label="A soft portrait beside the same portrait with clearer edges">
-					<svg viewBox="0 0 640 420" role="img" aria-hidden="true">
-						<rect width="640" height="420" rx="22" fill="#f8fafc"/>
-						<rect x="28" y="28" width="168" height="364" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
-						<rect x="46" y="52" width="132" height="74" rx="10" fill="#e2e8f0"/>
-						<rect x="46" y="138" width="132" height="74" rx="10" fill="#cbd5e1"/>
-						<rect x="46" y="224" width="132" height="74" rx="10" fill="#94a3b8"/>
-						<rect x="46" y="310" width="132" height="58" rx="10" fill="#e2e8f0"/>
-						<rect x="214" y="28" width="398" height="364" rx="18" fill="#ffffff" stroke="#e2e8f0"/>
+				<figure class="category-art" aria-label="The same portrait, soft on the left and clearer on the right">
+					<svg viewBox="0 0 640 220" role="img" aria-hidden="true">
+						<rect width="640" height="220" rx="18" fill="#f8fafc"/>
 						<defs>
-							<linearGradient id="clear-sky" x1="0" y1="0" x2="0" y2="1">
+							<linearGradient id="clear-wall" x1="0" y1="0" x2="0" y2="1">
 								<stop offset="0" stop-color="#e0f2fe"/>
 								<stop offset="1" stop-color="#f8fafc"/>
 							</linearGradient>
-							<filter id="clear-soft"><feGaussianBlur stdDeviation="6"/></filter>
+							<filter id="clear-soft"><feGaussianBlur stdDeviation="2.4"/></filter>
 						</defs>
-						<rect x="236" y="52" width="168" height="250" rx="14" fill="url(#clear-sky)"/>
+						<rect x="16" y="12" width="296" height="168" rx="14" fill="url(#clear-wall)" stroke="#e2e8f0"/>
 						<g filter="url(#clear-soft)">
-							<circle cx="320" cy="150" r="34" fill="#fecdd3"/>
-							<rect x="292" y="186" width="56" height="58" rx="10" fill="#93c5fd"/>
+							<circle cx="164" cy="78" r="32" fill="#fecdd3"/>
+							<path d="M140 70c6-14 22-18 32-8" fill="none" stroke="#9a3412" stroke-width="4" stroke-linecap="round"/>
+							<circle cx="152" cy="76" r="3.2" fill="#1e293b"/>
+							<circle cx="176" cy="76" r="3.2" fill="#1e293b"/>
+							<path d="M152 90c8 7 16 7 24 0" fill="none" stroke="#fb7185" stroke-width="2.4" stroke-linecap="round"/>
+							<rect x="132" y="108" width="64" height="58" rx="16" fill="#1d4ed8"/>
 						</g>
-						<rect x="412" y="52" width="178" height="250" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-						<circle cx="501" cy="146" r="34" fill="#fecdd3"/>
-						<circle cx="489" cy="142" r="4" fill="#1e293b"/>
-						<circle cx="513" cy="142" r="4" fill="#1e293b"/>
-						<rect x="473" y="184" width="56" height="62" rx="10" fill="#1d4ed8"/>
-						<rect x="236" y="318" width="78" height="52" rx="8" fill="#e2e8f0"/>
-						<rect x="324" y="318" width="78" height="52" rx="8" fill="#cbd5e1"/>
-						<rect x="412" y="318" width="78" height="52" rx="8" fill="#94a3b8"/>
-						<rect x="500" y="318" width="78" height="52" rx="8" fill="#64748b"/>
+						<rect x="328" y="12" width="296" height="168" rx="14" fill="url(#clear-wall)" stroke="#e2e8f0"/>
+						<circle cx="476" cy="78" r="32" fill="#fecdd3"/>
+						<path d="M452 70c6-14 22-18 32-8" fill="none" stroke="#9a3412" stroke-width="4" stroke-linecap="round"/>
+						<circle cx="464" cy="76" r="3.2" fill="#1e293b"/>
+						<circle cx="488" cy="76" r="3.2" fill="#1e293b"/>
+						<path d="M464 90c8 7 16 7 24 0" fill="none" stroke="#fb7185" stroke-width="2.4" stroke-linecap="round"/>
+						<rect x="444" y="108" width="64" height="58" rx="16" fill="#1d4ed8"/>
+						<text x="164" y="206" text-anchor="middle" fill="#64748b" font-size="15" font-family="Segoe UI, sans-serif">Soft</text>
+						<text x="476" y="206" text-anchor="middle" fill="#64748b" font-size="15" font-family="Segoe UI, sans-serif">Clearer</text>
 					</svg>
 				</figure>
 				<span class="kicker">Clear soft photos</span>
 				<h3>Image Enhancement &amp; Unblurring</h3>
 				<p>Clear blurry photos, fix motion blur from camera shake, and restore soft snapshot details online. A clarity pass can help when edges are still almost there. It does not invent a sharper face or a readable sign from a smooth blob.</p>
-				<a class="button" href="<?= html_escape(page_url('unblur-image')) ?>">Go to Unblur Image Tools</a>
-				<nav class="category-links" aria-label="Unblur tools">
-					<a href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">Fix Motion Blur</a>
-				</nav>
+				<div class="category-foot">
+					<a class="button" href="<?= html_escape(page_url('unblur-image')) ?>">Go to Unblur Image Tools</a>
+					<nav class="category-links" aria-label="Unblur tools">
+						<a href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>">Fix Motion Blur</a>
+					</nav>
+				</div>
 			</article>
 		</div>
 	</section>
