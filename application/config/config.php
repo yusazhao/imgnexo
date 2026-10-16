@@ -24,7 +24,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 // $config['base_url'] = 'http://www.imgnexo.com/';
-$config['base_url'] = 'http://192.168.2.4:8080/';
+// $config['base_url'] = 'http://192.168.2.4:8080/';
+$config['base_url'] = 'http://192.168.31.34:8080/';
 
 
 /*

@@ -146,59 +146,6 @@ h3 { font-size: 1.125rem; margin: 1.25rem 0 .35rem; letter-spacing: 0; line-heig
 	align-items: center;
 	padding: 1.2rem 0 1.6rem;
 }
-body.theme-home {
-	background: #f8fafc;
-	color: #0f172a;
-	font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-	font-size: 1rem;
-	line-height: 1.5;
-	-webkit-font-smoothing: antialiased;
-}
-body.theme-home ::selection { background: #dbeafe; color: #1e3a8a; }
-body.theme-home .wrap,
-body.theme-home .sheet {
-	box-sizing: border-box;
-	width: min(72rem, 100%);
-	padding-inline: 1rem;
-}
-body.theme-home .sheet { padding-top: 2.5rem; padding-bottom: 2.5rem; }
-body.theme-home .site-header {
-	background: rgba(255, 255, 255, 0.8);
-	backdrop-filter: blur(12px);
-	border-bottom: 1px solid #e2e8f0;
-}
-body.theme-home .header-bar {
-	width: min(72rem, 100%);
-	max-width: none;
-	min-height: 4rem;
-	justify-content: space-between;
-	gap: 1.5rem;
-}
-body.theme-home .site-nav {
-	gap: 1.5rem;
-	justify-content: flex-end;
-}
-body.theme-home .site-nav > a,
-body.theme-home .menu summary {
-	padding: 0;
-	border-radius: 0;
-	background: transparent;
-	color: #475569;
-	font-size: .875rem;
-	font-weight: 500;
-}
-body.theme-home .site-nav > a:hover,
-body.theme-home .menu summary:hover { background: transparent; color: #2563eb; }
-body.theme-home .site-nav > a[aria-current="page"] { background: transparent; color: #2563eb; }
-body.theme-home .site-footer {
-	background: #fff;
-	border-top: 1px solid #e2e8f0;
-}
-body.theme-home .site-footer p:not(.legal),
-body.theme-home .site-footer li,
-body.theme-home .site-footer strong { font-size: .875rem; }
-body.theme-home .site-footer .legal { font-size: .75rem; }
-
 .home {
 	font-size: 1rem;
 	line-height: 1.5;
@@ -414,9 +361,7 @@ body.theme-home .site-footer .legal { font-size: .75rem; }
 .home .faq-item summary h3 { font-size: 1rem; font-weight: 600; letter-spacing: 0; }
 .home .faq-item .prose { color: #475569; font-size: .875rem; line-height: 1.625; }
 @media (min-width: 640px) {
-	.wrap, .sheet,
-	body.theme-home .wrap,
-	body.theme-home .sheet { padding-inline: 1.5rem; }
+	.wrap, .sheet { padding-inline: 1.5rem; }
 	h1, .home h1 { font-size: 2.25rem; line-height: 2.5rem; }
 	.dek, .home-intro .dek { font-size: 1.125rem; }
 }
@@ -1325,7 +1270,7 @@ button:hover { background: #f8fafc; color: #0f172a; }
 	}
 	.nav-wide { display: none; }
 	.lang-picker:not(.is-open) button.lang-chip.is-extra:not(.is-on) { display: none; }
-	.header-bar { flex-wrap: wrap; align-items: center; column-gap: .85rem; row-gap: .4rem; padding: .7rem 0; }
+	.header-bar { flex-wrap: wrap; align-items: center; column-gap: .85rem; row-gap: .4rem; padding-block: .7rem; }
 	.logo { flex: 0 0 auto; margin-right: 0; }
 	.site-nav {
 		position: relative;
