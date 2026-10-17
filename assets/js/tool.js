@@ -105,6 +105,7 @@
 	var jobBatchBtn = document.getElementById('job-batch');
 	var batchBox = document.getElementById('batch');
 	var historyBar = document.getElementById('history-bar');
+	var desktopHistoryPreview = window.matchMedia('(min-width: 901px)');
 	var editorNote = document.getElementById('editor-note');
 	var dropTitle = dropzone.querySelector('.drop-title');
 	var selectBtn = dropzone.querySelector('.select-btn');
@@ -332,13 +333,30 @@
 		ink.style.visibility = regional ? 'visible' : 'hidden';
 	}
 
+	function syncHistoryBar() {
+		if (!historyBar) return;
+		var batch = jobName === 'batch';
+		if (batch) {
+			historyBar.hidden = true;
+			if (replaceBtn) replaceBtn.hidden = true;
+			updateHistoryButtons();
+			return;
+		}
+		var show = ready || desktopHistoryPreview.matches;
+		historyBar.hidden = !show;
+		if (replaceBtn) replaceBtn.hidden = !show;
+		updateHistoryButtons();
+	}
+
 	function syncJob() {
-		if (!batchEnabled) return;
+		if (!batchEnabled) {
+			syncHistoryBar();
+			return;
+		}
 		var batch = jobName === 'batch';
 		setChoice(jobSingleBtn, !batch);
 		setChoice(jobBatchBtn, batch);
 		fileInput.multiple = batch;
-		historyBar.hidden = batch || !ready;
 		if (sampleBtn) sampleBtn.hidden = batch;
 		originalBtn.hidden = batch;
 		if (editorNote && editorNote.getAttribute('data-batch')) {
@@ -356,12 +374,12 @@
 		}
 		if (batchClearBtn) batchClearBtn.hidden = !(batch && batchItems.length);
 		if (batch) {
-			replaceBtn.hidden = true;
 			stage.hidden = true;
 			zoomBar.hidden = true;
 			batchBox.hidden = !batchItems.length;
 			dropzone.hidden = batchItems.length > 0;
 		}
+		syncHistoryBar();
 		syncScope();
 	}
 
@@ -370,7 +388,7 @@
 	}
 
 	function idleStatus() {
-		setStatus(subjectMode
+		var base = subjectMode
 			? 'Click or drag an image here. Then choose what to keep sharp and blur the background.'
 			: faceMode
 				? 'Click or drag an image here. Then blur the faces.'
@@ -378,7 +396,8 @@
 					? 'Click or drag an image here. Then blur the text.'
 					: presetName === 'soft'
 						? 'Click or drag an image here. Brush is ready. Raise Strength, then paint what should be harder to read.'
-						: 'Click or drag an image here. Editing stays in this browser.');
+						: 'Click or drag an image here. Editing stays in this browser.';
+		setStatus(base + ' After you select an image, Undo and Download stay in this browser.');
 	}
 
 	function sizeTo(canvas, w, h) {
@@ -408,8 +427,7 @@
 		editor.classList.add('is-editing');
 		dropzone.hidden = true;
 		stage.hidden = false;
-		historyBar.hidden = false;
-		replaceBtn.hidden = false;
+		syncHistoryBar();
 		downloadBtn.disabled = false;
 		originalBtn.disabled = false;
 		zoom = 1;
@@ -1064,9 +1082,26 @@
 	}
 
 	function updateHistoryButtons() {
+		var needImage = 'Upload an image first';
 		undoBtn.disabled = !ready || historyAt <= 0;
 		redoBtn.disabled = !ready || historyAt >= history.length - 1;
 		resetBtn.disabled = !ready;
+		if (replaceBtn) replaceBtn.disabled = !ready;
+		if (removeBtn) removeBtn.disabled = !ready;
+		undoBtn.title = !ready ? needImage : 'Undo (Ctrl+Z)';
+		undoBtn.setAttribute('aria-label', !ready ? needImage : 'Undo');
+		redoBtn.title = !ready ? needImage : 'Redo (Ctrl+Y)';
+		redoBtn.setAttribute('aria-label', !ready ? needImage : 'Redo');
+		resetBtn.title = !ready ? needImage : 'Reset';
+		resetBtn.setAttribute('aria-label', !ready ? needImage : 'Reset');
+		if (replaceBtn) {
+			replaceBtn.title = !ready ? needImage : 'Replace';
+			replaceBtn.setAttribute('aria-label', !ready ? needImage : 'Replace');
+		}
+		if (removeBtn) {
+			removeBtn.title = !ready ? needImage : 'Delete';
+			removeBtn.setAttribute('aria-label', !ready ? needImage : 'Delete');
+		}
 	}
 
 	function pushHistory() {
@@ -1750,8 +1785,6 @@
 		clearMask();
 		stage.hidden = true;
 		zoomBar.hidden = true;
-		historyBar.hidden = true;
-		replaceBtn.hidden = true;
 		downloadBtn.disabled = true;
 		originalBtn.disabled = true;
 		syncAutoButton();
@@ -1759,7 +1792,7 @@
 		syncTextButtons();
 		syncRefine();
 		placeCrop();
-		updateHistoryButtons();
+		syncHistoryBar();
 	}
 
 	function removeImage() {
@@ -1955,6 +1988,7 @@
 		fileInput.value = '';
 	});
 	replaceBtn.addEventListener('click', function () {
+		if (!ready) return;
 		batchAppend = false;
 		fileInput.click();
 	});
@@ -4225,5 +4259,11 @@
 	syncLabels();
 	updateZoomControls();
 	syncJob();
+	syncHistoryBar();
 	idleStatus();
+	if (desktopHistoryPreview.addEventListener) {
+		desktopHistoryPreview.addEventListener('change', syncHistoryBar);
+	} else if (desktopHistoryPreview.addListener) {
+		desktopHistoryPreview.addListener(syncHistoryBar);
+	}
 })();

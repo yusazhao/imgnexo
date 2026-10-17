@@ -56,10 +56,7 @@ if ( ! empty($faqs))
 
 if ( ! empty($schema_home))
 {
-	$https = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-		OR (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
-	$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '127.0.0.1';
-	$logo_url = ($https ? 'https' : 'http').'://'.$host.asset_url('favicon.svg');
+	$logo_url = 'https://www.imgnexo.com'.asset_url('favicon.svg');
 
 	$org = array(
 		'@type' => 'Organization',

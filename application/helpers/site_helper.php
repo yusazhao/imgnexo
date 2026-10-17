@@ -46,11 +46,7 @@ function asset_url($path)
 
 function canonical_url($path = '', $trailing_slash = TRUE)
 {
-	$https = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-		OR (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
-	$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '127.0.0.1';
-
-	return ($https ? 'https' : 'http').'://'.$host.page_url($path, $trailing_slash);
+	return 'https://www.imgnexo.com'.page_url($path, $trailing_slash);
 }
 
 function format_date($iso)
