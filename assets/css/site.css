@@ -1196,16 +1196,24 @@ button:hover { background: #f8fafc; color: #0f172a; }
 .site-footer { border-top: 1px solid #e2e8f0; background: #fff; padding: 2.2rem 0 1.4rem; }
 .site-footer p:not(.legal), .site-footer li, .site-footer strong { font-size: .875rem; }
 .site-footer .legal { font-size: .75rem; }
-.footer-grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 1.5rem; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr minmax(0, 3fr); gap: 1.5rem; align-items: start; }
+.footer-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
 .site-footer strong { display: block; margin: 0 0 .55rem; font-size: inherit; letter-spacing: 0; }
 .site-footer ul { list-style: none; margin: 0; padding: 0; }
 .site-footer a { color: #334155; text-decoration: none; }
 .site-footer a:hover { color: var(--accent); }
 .site-footer p { color: var(--muted); }
-.legal { margin: 1.4rem 0 0; padding-top: 1rem; border-top: 1px solid var(--line); color: #94a3b8; font-size: .7rem; text-align: center; }
+.legal { margin: 1.4rem 0 0; padding-top: 1rem; border-top: 1px solid var(--line); color: #94a3b8; font-size: .75rem; text-align: center; }
 .legal a { color: #64748b; text-decoration: none; }
 .legal a:hover { color: var(--accent); }
-.legal-sep { display: inline-block; margin: 0 .85em; color: #cbd5e1; }
+.legal-mail::before,
+.legal-nav::before,
+.legal-nav a + a::before {
+	content: "·";
+	display: inline-block;
+	margin: 0 .85em;
+	color: #cbd5e1;
+}
 .prose > .lead { font-size: 1.05rem; color: #334155; margin-bottom: 1.25rem; }
 .prose h2 { margin: 1.6rem 0 .55rem; font-size: 1.25rem; color: var(--ink); }
 
@@ -1238,7 +1246,31 @@ button:hover { background: #f8fafc; color: #0f172a; }
 }
 @media (max-width: 900px) {
 	#zoom-fit { display: none; }
-	.hero, .editor-layout, .steps, .step-cards, .feature-grid, .feature-grid.pair, .feature-grid.missing-grid, .category-grid, .home-points, .quick-links, .related, .footer-grid { grid-template-columns: 1fr; }
+	.hero, .editor-layout, .steps, .step-cards, .feature-grid, .feature-grid.pair, .feature-grid.missing-grid, .category-grid, .home-points, .quick-links, .related { grid-template-columns: 1fr; }
+	.footer-grid { grid-template-columns: 1fr; gap: 1.35rem; }
+	.footer-cols { grid-template-columns: 1fr 1fr; gap: 1.5rem 1.25rem; align-items: start; }
+	.footer-cols > div:first-child { grid-row: span 2; }
+	.site-footer .footer-cols li,
+	.site-footer .footer-cols a { font-size: .8125rem; line-height: 1.35; }
+	.footer-cols li + li { margin-top: .35rem; }
+	.site-footer .legal {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: .55rem;
+		font-size: .8125rem;
+		line-height: 1.5;
+	}
+	.legal-mail::before,
+	.legal-nav::before,
+	.legal-nav a + a::before { content: none; margin: 0; }
+	.legal-nav {
+		display: grid;
+		grid-template-columns: auto auto;
+		justify-content: center;
+		column-gap: 1.15rem;
+		row-gap: .4rem;
+	}
 	.editor-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
 	.editor-stage { display: contents; }
 	.editor-layout > .controls { margin-top: .85rem; }
