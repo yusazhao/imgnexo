@@ -1,8 +1,8 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <article class="sheet home">
 	<section class="home-intro">
-		<h1>Free Online Image Utilities &amp; Photo Tools | ImgNexo</h1>
-		<p class="dek">Free browser tools to add blur or clear a mildly soft photo. No account, no install, and the image stays on this device.</p>
+		<h1>Free Online Image Utilities</h1>
+		<?php $this->load->view('partials/value_points'); ?>
 		<div class="home-actions">
 			<a class="button" href="<?= html_escape(page_url('blur-image')) ?>">Blur an image</a>
 			<a class="button button-quiet" href="<?= html_escape(page_url('unblur-image')) ?>">Fix a blurry photo</a>
@@ -11,7 +11,6 @@
 
 	<section class="home-categories">
 		<h2>Explore Photo Tool Categories</h2>
-		<p class="section-intro">Start with a category when you are not sure which page to open. Each card links to the main tool for that job, plus shortcuts for common tasks. New categories can sit beside these as the suite grows—blur and unblur are only the first two.</p>
 		<div class="category-grid">
 			<article class="category-card">
 				<figure class="category-art" aria-label="Mini editor window painting blur on a canvas with a brush control">
