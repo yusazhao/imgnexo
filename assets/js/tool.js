@@ -273,9 +273,9 @@
 		document.getElementById('brush-out').textContent = brush.value + ' px';
 		document.getElementById('zoom-out').textContent = Math.round(zoom * 100) + '%';
 		if (sharpen) {
-			document.getElementById('sharpen-out').textContent = (Number(sharpen.value) / 100).toFixed(2);
-			document.getElementById('radius-out').textContent = Number(radius.value).toFixed(1) + ' px';
-			document.getElementById('contrast-out').textContent = contrast.value;
+		document.getElementById('sharpen-out').textContent = (Number(sharpen.value) / 100).toFixed(2);
+		document.getElementById('radius-out').textContent = Number(radius.value).toFixed(1) + ' px';
+		document.getElementById('contrast-out').textContent = contrast.value;
 		}
 		if (deblurAngleInput) {
 			deblurAngleInput.value = String(deblurAngle);
@@ -632,17 +632,17 @@
 
 	function decodeWithImage(file) {
 		return new Promise(function (resolve, reject) {
-			var url = URL.createObjectURL(file);
-			var img = new Image();
-			img.onload = function () {
-				URL.revokeObjectURL(url);
+		var url = URL.createObjectURL(file);
+		var img = new Image();
+		img.onload = function () {
+			URL.revokeObjectURL(url);
 				resolve(img);
-			};
-			img.onerror = function () {
-				URL.revokeObjectURL(url);
+		};
+		img.onerror = function () {
+			URL.revokeObjectURL(url);
 				reject();
-			};
-			img.src = url;
+		};
+		img.src = url;
 		});
 	}
 
@@ -827,8 +827,8 @@
 		setStatus(motionDeblur
 			? 'Sample loaded. Match Motion angle to the light streaks, then compare with the original.'
 			: mode === 'unblur'
-				? 'Sample loaded. Raise clarity and compare it with the original.'
-				: 'Sample loaded. Blur the whole image, or paint over the face and text.');
+			? 'Sample loaded. Raise clarity and compare it with the original.'
+			: 'Sample loaded. Blur the whole image, or paint over the face and text.');
 	}
 
 	function clearMask() {
@@ -3893,10 +3893,10 @@
 	}
 
 	function saveBlob(blob, filename) {
-		var link = document.createElement('a');
-		link.href = URL.createObjectURL(blob);
+			var link = document.createElement('a');
+			link.href = URL.createObjectURL(blob);
 		link.download = filename;
-		link.click();
+			link.click();
 		setTimeout(function () { URL.revokeObjectURL(link.href); }, 1500);
 	}
 
@@ -3936,8 +3936,8 @@
 					if (left === 0) finishZip(files);
 				};
 				reader.readAsArrayBuffer(blob);
-			}, 'image/png');
-		});
+		}, 'image/png');
+	});
 		function finishZip(entries) {
 			var readyFiles = entries.filter(Boolean);
 			downloadBtn.disabled = false;
