@@ -8,8 +8,7 @@ return array(
 		'path' => 'unblur-image',
 		'title' => 'Free Unblur Image Tool Online - Fix Blurry Photos | ImgNexo',
 		'description' => 'Unblur images and fix soft-focus photos online for free. Clear blurry pictures instantly in Safari or Chrome without software installation or watermarks.',
-		'h1' => 'Unblur Image Online | Fix Blurry Photos & Remove Blur From Photo',
-		'lead' => '<p>Start here when a blurry photo is an accident. Un blur an image by sharpening edges the camera almost kept. Unblurring an image cannot invent a face or a sign that was never recorded. Mild softness often improves. A heavy smear usually does not.</p>',
+		'h1' => 'Unblur Image',
 		'tool' => array(
 			'mode' => 'unblur',
 			'preset' => 'sharpen',
@@ -88,8 +87,7 @@ return array(
 		'faq_heading' => 'FAQ',
 		'title' => 'Free Motion Blur Remover Online - Repair Shaky Shots | ImgNexo',
 		'description' => 'Fix motion-blurred photos caused by camera shake or moving subjects. Free browser-based photo restoration with zero uploads, no registration, and no watermarks.',
-		'h1' => 'Fix Motion Blur Photo Online | Recover Motion-Blurred Shots',
-		'lead' => '<p>A motion blur photo smears detail along one direction. Set Motion angle to that streak, then raise length until it matches the smear. A short streak can tighten. A running subject cannot be pulled back into a still pose.</p>',
+		'h1' => 'Fix Motion Blur',
 		'tool' => array(
 			'mode' => 'unblur',
 			'preset' => 'motion',
@@ -108,7 +106,7 @@ return array(
 			),
 			array(
 				'h2' => 'Limitations for repairing motion blur photo',
-				'html' => '<p>The repair follows the angle and length you set. It does not find the streak by itself. Strong settings outline the smear instead of removing it. A long streak still cannot become a sharp still, because that position was never stored. The <a href="{{path:blog/unblur-motion-blur-photo}}">motion blur article</a> lists what to change on the next shot. Soft focus that is not a streak belongs on <a href="{{path:unblur-image}}">unblur image</a>.</p>',
+				'html' => '<p>Recover motion-blurred shots only when the streak is short. The repair follows the angle and length you set. It does not find the streak by itself. Strong settings outline the smear instead of removing it. A long streak still cannot become a sharp still, because that position was never stored. The <a href="{{path:blog/unblur-motion-blur-photo}}">motion blur article</a> lists what to change on the next shot. Soft focus that is not a streak belongs on <a href="{{path:unblur-image}}">unblur image</a>.</p>',
 			),
 		),
 		'faqs' => array(

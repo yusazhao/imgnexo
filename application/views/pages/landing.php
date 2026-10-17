@@ -2,17 +2,11 @@
 <article class="sheet tool-page">
 	<?php $this->load->view('partials/breadcrumbs', array('crumbs' => $crumbs)); ?>
 	<h1><?= html_escape($page['h1']) ?></h1>
-	<div class="lead prose"><?= $page['lead'] ?></div>
-	<?php if ( ! empty($page['tool']['shortcuts'])): ?>
-	<nav class="tool-links" aria-label="Common jobs">
-		<p class="tool-links-title">Common jobs</p>
-		<div class="tool-links-row">
-			<?php foreach ($page['tool']['shortcuts'] as $link): ?>
-			<a href="<?= html_escape(page_url($link['path'])) ?>"><?= html_escape($link['label']) ?></a>
-			<?php endforeach; ?>
-		</div>
-	</nav>
-	<?php endif; ?>
+	<ul class="value-points">
+		<li><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4.25" y="1.75" width="7.5" height="12.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M7 12.15h2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>No upload</li>
+		<li><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3.1 12.3 12.9 3.7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>No watermarks</li>
+		<li><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.75" y="2.5" width="6.1" height="11" rx="1.1" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="6.7" y="5.15" width="7.55" height="5.7" rx="1.1" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Social sizes</li>
+	</ul>
 
 	<?php if ( ! empty($page['figure'])): ?>
 	<figure class="demo">
@@ -25,12 +19,18 @@
 
 	<?php if ( ! empty($page['tool'])): ?>
 	<section class="tool-block">
-		<p class="privacy-ondevice">
-			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-			Your image never leaves this device.
-		</p>
 		<?php $this->load->view('partials/tool', array('tool' => $page['tool'])); ?>
 	</section>
+	<?php if ( ! empty($page['tool']['shortcuts'])): ?>
+	<nav class="tool-links" aria-label="Common jobs">
+		<p class="tool-links-title">Common jobs</p>
+		<div class="tool-links-row">
+			<?php foreach ($page['tool']['shortcuts'] as $link): ?>
+			<a href="<?= html_escape(page_url($link['path'])) ?>"><?= html_escape($link['label']) ?></a>
+			<?php endforeach; ?>
+		</div>
+	</nav>
+	<?php endif; ?>
 	<?php if ( ! empty($page['tool']['heading']) || ! empty($page['tool']['intro']) || ! empty($page['tool']['steps'])): ?>
 	<section class="how-to">
 		<?php if ( ! empty($page['tool']['heading'])): ?>

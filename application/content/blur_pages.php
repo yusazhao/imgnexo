@@ -8,8 +8,7 @@ return array(
 		'path' => 'blur-image',
 		'title' => 'Free Online Image Blur Tool (No Watermark) | ImgNexo',
 		'description' => 'Easily blur images or select areas online for free. Protect privacy with zero server uploads, no sign-up, and instant full-resolution export with no watermarks.',
-		'h1' => 'Blur Image Online – Add Blur Effect to Pictures & Photos',
-		'lead' => '<p>Blur a picture in your browser when part of the frame should be harder to read. Brush is selected, so you can paint a face, some text, or a busy background, then raise Strength. Gaussian softens, Pixel blocks, and Noise scatters. Batch applies that same whole-image blur to several photos. Motion and radial effects are on the <a href="{{path:blur-image/effect}}">blur effect</a> page. The originals stay on your device.</p>',
+		'h1' => 'Blur Image Online',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'soft',
@@ -52,7 +51,7 @@ return array(
 			),
 			array(
 				'h2' => 'Blur Effect on Photos & Pictures',
-				'html' => '<p>A blur effect on pictures can be a light soft-focus look or a heavy blur effect on photos. Blur effect image settings are on the <a href="{{path:blur-image/effect}}">blur effect</a> page. Gaussian, pixelate, motion, radial, noise, and color are there, one at a time.</p>',
+				'html' => '<p>A blur effect on pictures can be a light soft-focus look or a heavy blur effect on photos. Blur effect image settings are on the <a href="{{path:blur-image/effect}}">blur effect</a> page, where you can add a blur effect to pictures and photos. Gaussian, pixelate, motion, radial, noise, and color are there, one at a time.</p>',
 			),
 			array(
 				'h2' => 'Blur Objects & Selected Areas in Photo',
@@ -104,8 +103,7 @@ return array(
 		'faq_heading' => 'FAQ',
 		'title' => 'Free Online Photo Background Blur Tool | ImgNexo',
 		'description' => 'Blur photo backgrounds online for free. Soften picture backdrops for portraits instantly in your browser—100% private, no sign-up, and no watermarks.',
-		'h1' => 'Blur Background of Photo Online | Blur Image Background',
-		'lead' => '<p>Blur background of photo when the subject is fine and the room behind them is not. A blur image background edit keeps a person, or the main object in front, readable while the street, office, or backdrop falls out of focus. Hair, fur, writing, and shapes that blend in can be missed. Paint those parts. The photo stays on your device.</p>',
+		'h1' => 'Blur Background of Photo',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'background',
@@ -122,7 +120,7 @@ return array(
 		'sections' => array(
 			array(
 				'h2' => 'Why blur background in a photo',
-				'html' => '<p>You blur background in a photo to cut distractions: a messy desk, other people, or a bright sign. It is a framing choice. It is not a way to hide the main subject.</p>',
+				'html' => '<p>You blur background in a photo to cut distractions: a messy desk, other people, or a bright sign. A blur image background edit keeps the person or product readable while the room falls soft. It is a framing choice. It is not a way to hide the main subject.</p>',
 			),
 			array(
 				'h2' => 'How to blur picture background step-by-step',
@@ -164,8 +162,7 @@ return array(
 		'faq_heading' => 'FAQ',
 		'title' => 'Free Face Blur Tool Online - Protect Photo Privacy | ImgNexo',
 		'description' => 'Blur faces in photos automatically or manually for free. Keep your images private with 100% browser-based processing, no app download, and no watermarks.',
-		'h1' => 'Blur Face in Photo Online – Pixelate or Blur Faces',
-		'lead' => '<p>Blur face in photo before you post a street shot, a classroom, or a picture of a minor. The finder marks each face and widens the box past the eyes and chin. Drag a box to move or resize it, or click × to remove a wrong one. Paint a face it missed. The photo stays on your device.</p>',
+		'h1' => 'Blur Face in Photo',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'face',
@@ -191,7 +188,7 @@ return array(
 			),
 			array(
 				'h2' => 'Pixelate vs soft blur for photo blur face',
-				'html' => '<p>Pixel breaks the features into blocks and is the default for privacy. A light Gaussian can still look like the person. Black bar hides the widened box completely. Use it when the face must not be recognizable at all.</p>',
+				'html' => '<p>Pixelate or blur faces when the person should not be recognizable. Pixel breaks the features into blocks and is the default for privacy. A light Gaussian can still look like the person. Black bar hides the widened box completely.</p>',
 			),
 		),
 		'faqs' => array(
@@ -220,8 +217,7 @@ return array(
 		'faq_heading' => 'FAQ',
 		'title' => 'Free Text Blur Tool - Hide Sensitive Info in Photos | ImgNexo',
 		'description' => 'Blur text and private numbers in photos online for free. Hide sensitive document data safely in your browser without uploading files or creating an account.',
-		'h1' => 'Blur Text Image Online | Blur Writing in Photo',
-		'lead' => '<p>Blur text image content when a picture shows an address, account number, medical note, or private message. The finder marks the writing. Remove a wrong box, or mark anything it missed. The photo stays on your device.</p>',
+		'h1' => 'Blur Text in Photo',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'text',
@@ -271,8 +267,7 @@ return array(
 		'faq_heading' => 'FAQ',
 		'title' => 'Free Online Photo Blur Effects Generator | ImgNexo',
 		'description' => 'Add Gaussian, Pixelate, and Motion blur effects to photos for free. Customize blur strength instantly in your browser with zero server uploads and no watermarks.',
-		'h1' => 'Blur Effect Image Online – Gaussian, Pixelate & Motion Effects',
-		'lead' => '<p>Apply photo-style blur effects instantly. Choose from Gaussian, Pixelate, Motion, and Radial blurs. Adjust strength and apply to the whole image or specific areas.</p>',
+		'h1' => 'Blur Effects',
 		'tool' => array(
 			'mode' => 'blur',
 			'preset' => 'effect',
