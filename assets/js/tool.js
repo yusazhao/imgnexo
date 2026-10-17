@@ -387,19 +387,6 @@
 		status.textContent = message;
 	}
 
-	function idleStatus() {
-		var base = subjectMode
-			? 'Click or drag an image here. Then choose what to keep sharp and blur the background.'
-			: faceMode
-				? 'Click or drag an image here. Then blur the faces.'
-				: textMode
-					? 'Click or drag an image here. Then blur the text.'
-					: presetName === 'soft'
-						? 'Click or drag an image here. Brush is ready. Raise Strength, then paint what should be harder to read.'
-						: 'Click or drag an image here. Editing stays in this browser.';
-		setStatus(base + ' After you select an image, Undo and Download stay in this browser.');
-	}
-
 	function sizeTo(canvas, w, h) {
 		canvas.width = w;
 		canvas.height = h;
@@ -1802,7 +1789,6 @@
 		dropzone.hidden = false;
 		if (batchBox) batchBox.hidden = true;
 		fileInput.value = '';
-		idleStatus();
 	}
 
 	function batchStatus() {
@@ -4260,7 +4246,6 @@
 	updateZoomControls();
 	syncJob();
 	syncHistoryBar();
-	idleStatus();
 	if (desktopHistoryPreview.addEventListener) {
 		desktopHistoryPreview.addEventListener('change', syncHistoryBar);
 	} else if (desktopHistoryPreview.addListener) {

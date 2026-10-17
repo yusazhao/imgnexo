@@ -16,14 +16,12 @@ return array(
 			'intro' => '<p>The photo stays in your browser. Choose Single for one picture, including a brush stroke, or Batch when several pictures should get the same whole-image blur. Download a PNG, or one zip of every image.</p>',
 			'batch' => TRUE,
 			'basic' => TRUE,
-			'note_below' => TRUE,
 			'shortcuts' => array(
 				array('path' => 'blur-image/background', 'label' => 'Blur Background'),
 				array('path' => 'blur-image/face', 'label' => 'Blur Face'),
 				array('path' => 'blur-image/text', 'label' => 'Blur Text'),
 				array('path' => 'blur-image/effect', 'label' => 'Blur Effects'),
 			),
-			'note' => 'Brush is ready. Gaussian softens, Pixel blocks detail, and Noise scatters pixels. Raise Strength, then paint. Marquee and Lasso cover a box or a freehand shape.',
 			'steps' => array(
 				'Choose Single or Batch, then upload a JPG, PNG, or WEBP.',
 				'Brush is selected. Raise Strength, then paint the part that should be harder to read. Marquee and Lasso cover a box or a freehand shape. Batch covers every whole image.',
@@ -108,8 +106,6 @@ return array(
 			'mode' => 'blur',
 			'preset' => 'background',
 			'subject' => TRUE,
-			'note_below' => TRUE,
-			'note' => 'Objects keeps the main subject, such as a product, and blurs the backdrop. People and animals means a person or a common animal. Writing, logos, and edges that blend in are often missed. Paint those. Feather softens the edge.',
 			'heading' => 'How to blur a photo background',
 			'steps' => array(
 				'Upload the portrait or product shot.',
@@ -167,8 +163,6 @@ return array(
 			'mode' => 'blur',
 			'preset' => 'face',
 			'face' => TRUE,
-			'note_below' => TRUE,
-			'note' => 'Each found face is widened past the eyes and chin. Drag a box to move it, or a corner to resize it. Click × to remove a wrong one. Paint any face the finder missed. Pixel blocks the features. Gaussian softens them. Black bar covers the box in solid black.',
 			'heading' => 'How to blur a face in a photo',
 			'intro' => '<p class="how-dek">Whether you need to blur a face in a picture for social media or blur objects in photos for privacy, follow these quick steps:</p>',
 			'steps' => array(
@@ -222,8 +216,6 @@ return array(
 			'mode' => 'blur',
 			'preset' => 'text',
 			'text' => TRUE,
-			'note_below' => TRUE,
-			'note' => 'Auto Blur All Text covers every line it can read. English and Chinese are on. Add another language when the photo uses it, up to 4. Blur Sensitive Only covers emails, phone numbers, and long numbers such as a card or an ID. Drag a red box to move it, or a corner to resize it. Click × to remove it. Handwriting and very faint, widely spaced letters are often missed. Drag a rectangle or paint those.',
 			'heading' => 'How to blur writing in a photo',
 			'steps' => array(
 				'Upload the photo.',
