@@ -478,7 +478,7 @@ h3 { font-size: 1rem; margin: 1.25rem 0 .35rem; letter-spacing: 0; line-height: 
 }
 .dropzone.hot { border-color: var(--accent); background: white; }
 .dropzone input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.cloud {
+.pick-mark {
 	display: grid;
 	place-items: center;
 	width: 3.2rem;
@@ -992,6 +992,7 @@ button:hover { background: #f8fafc; color: #0f172a; }
 .button-quiet { background: #fff; color: #334155; border-color: #cbd5e1; box-shadow: none; margin-left: .4rem; }
 .button-quiet:hover { background: #f8fafc; color: #0f172a; }
 .button-row, .history-bar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.button-row + .note { margin: .75rem 0 0; font-size: .92rem; line-height: 1.45; }
 .history-bar { margin-top: .55rem; flex-wrap: nowrap; }
 .history-bar button:not(.icon-btn) { padding: .5rem .75rem; white-space: nowrap; }
 .button-row button:disabled, .history-bar button:disabled { opacity: .45; cursor: default; }
@@ -1280,6 +1281,9 @@ button:hover { background: #f8fafc; color: #0f172a; }
 		column-gap: 1.15rem;
 		row-gap: .4rem;
 	}
+	.dropzone { min-height: 0; padding: 1.15rem 1rem; gap: .4rem; }
+	.pick-mark { width: 2.6rem; height: 2.6rem; }
+	.pick-mark svg { width: 22px; height: 22px; }
 	.editor-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
 	.editor-stage { display: contents; }
 	.editor-layout > .controls { margin-top: .85rem; }

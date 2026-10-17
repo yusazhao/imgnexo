@@ -264,6 +264,7 @@ return array(
 			'mode' => 'blur',
 			'preset' => 'effect',
 			'effects' => TRUE,
+			'note_below' => TRUE,
 			'note' => 'Whole image is selected. Motion adds Speed and Angle. Radial uses Blur Radius and a center you can drag. Pixel uses block size.',
 			'heading' => 'How to apply a blur effect',
 			'steps' => array(

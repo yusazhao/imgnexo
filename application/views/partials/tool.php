@@ -47,8 +47,8 @@ if ( ! function_exists('tune_icon')) {
 		<div class="editor-stage">
 			<label class="dropzone" id="dropzone">
 				<input id="file" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-				<span class="cloud" aria-hidden="true">
-					<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 18h10a4 4 0 0 0 .4-8 6 6 0 0 0-11.5-1.5A3.5 3.5 0 0 0 7 18z"/><path d="M12 12v6M9.5 14.5 12 12l2.5 2.5"/></svg>
+				<span class="pick-mark" aria-hidden="true">
+					<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="8.5" cy="9.2" r="1.15" fill="currentColor" stroke="none"/><path d="M4.8 16.6 8.7 12.8 12 15.6 15.1 12.9 19.2 16.8"/></svg>
 				</span>
 				<span class="drop-title"><?= $mode === 'unblur' ? 'Click or drag a blurry photo here' : 'Click or drag an image here' ?></span>
 				<span>JPG, PNG, or WEBP, up to 15 MB. Nothing is uploaded.</span>
@@ -148,9 +148,17 @@ if ( ! function_exists('tune_icon')) {
 			</div>
 		</div>
 		<div class="controls">
-			<?php if ( ! empty($tool['note'])): ?>
+			<?php
+			$note_below = ! empty($tool['note_below']);
+			ob_start();
+			if ( ! empty($tool['note'])):
+			?>
 			<p class="note" id="editor-note" data-single="<?= html_escape($tool['note']) ?>"<?php if ( ! empty($tool['batch'])): ?> data-batch="Batch uses one blur strength on every whole image. Each photo shows before and after, sized against the largest file."<?php endif; ?>><?= html_escape($tool['note']) ?></p>
-			<?php endif; ?>
+			<?php
+			endif;
+			$editor_note = ob_get_clean();
+			if ( ! $note_below) echo $editor_note;
+			?>
 			<div class="tune">
 			<?php if ( ! empty($tool['subject'])): ?>
 			<div class="tune-step" id="auto-group">
@@ -417,6 +425,7 @@ if ( ! function_exists('tune_icon')) {
 				<button type="button" id="original" disabled>Hold for original</button>
 				<button type="button" id="download" class="primary" disabled>Download</button>
 			</div>
+			<?php if ($note_below) echo $editor_note; ?>
 		</div>
 	</div>
 </section>
