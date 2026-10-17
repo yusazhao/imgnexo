@@ -128,9 +128,9 @@ img { max-width: 100%; height: auto; }
 .menu-panel a:hover { background: var(--soft); }
 
 h1, h2, h3 { font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; color: #0f172a; }
-h1 { font-size: 1.875rem; margin: 0 0 1rem; font-weight: 800; letter-spacing: -0.025em; line-height: 1.2; }
-h2 { font-size: 1.5rem; margin: 2.5rem 0 .75rem; font-weight: 700; letter-spacing: -0.025em; line-height: 2rem; }
-h3 { font-size: 1.125rem; margin: 1.25rem 0 .35rem; letter-spacing: 0; line-height: 1.5; }
+h1 { font-size: 1.5rem; margin: 0 0 1rem; font-weight: 800; letter-spacing: -0.025em; line-height: 1.25; }
+h2 { font-size: 1.25rem; margin: 2.5rem 0 .75rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.75rem; }
+h3 { font-size: 1rem; margin: 1.25rem 0 .35rem; letter-spacing: 0; line-height: 1.5; }
 
 .dek, .lead, .prose { color: #475569; }
 .dek { font-size: 1rem; line-height: 1.625; max-width: 42rem; }
@@ -157,17 +157,17 @@ h3 { font-size: 1.125rem; margin: 1.25rem 0 .35rem; letter-spacing: 0; line-heig
 .home > section + section { margin-top: 4rem; }
 .home h1 {
 	margin: 0;
-	font-size: 1.875rem;
+	font-size: 1.5rem;
 	font-weight: 800;
 	letter-spacing: -0.025em;
-	line-height: 1.2;
+	line-height: 1.25;
 }
 .home h2 {
 	margin: 0;
-	font-size: 1.5rem;
+	font-size: 1.25rem;
 	font-weight: 700;
 	letter-spacing: -0.025em;
-	line-height: 2rem;
+	line-height: 1.75rem;
 }
 .home-intro {
 	width: 100%;
@@ -249,7 +249,6 @@ h3 { font-size: 1.125rem; margin: 1.25rem 0 .35rem; letter-spacing: 0; line-heig
 .category-card h3 {
 	margin: .125rem 0 0;
 	color: #0f172a;
-	font-size: 1.125rem;
 	font-weight: 700;
 	letter-spacing: 0;
 	line-height: 1.75rem;
@@ -367,6 +366,8 @@ h3 { font-size: 1.125rem; margin: 1.25rem 0 .35rem; letter-spacing: 0; line-heig
 @media (min-width: 640px) {
 	.wrap, .sheet { padding-inline: 1.5rem; }
 	h1, .home h1 { font-size: 2.25rem; line-height: 2.5rem; }
+	h2, .home h2 { font-size: 1.5rem; line-height: 2rem; }
+	h3 { font-size: 1.125rem; }
 	.dek, .home-intro .dek { font-size: 1.125rem; }
 }
 @media (min-width: 768px) {

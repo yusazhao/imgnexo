@@ -277,7 +277,7 @@ if ( ! empty($organization) && is_array($organization))
 			<a class="nav-main-unblur" href="<?= html_escape(page_url('unblur-image')) ?>"<?= nav_is_current('unblur-image') ? ' aria-current="page"' : '' ?>>Unblur</a>
 			<a class="nav-wide" href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>"<?= nav_is_current('unblur-image/motion-blur') ? ' aria-current="page"' : '' ?>>Motion Blur</a>
 			<details class="menu">
-				<summary>Image Tools</summary>
+				<summary>Tools</summary>
 				<div class="menu-panel">
 					<a href="<?= html_escape(page_url('blur-image/effect')) ?>"<?= nav_is_current('blur-image/effect') ? ' aria-current="page"' : '' ?>>Blur Effects</a>
 					<a href="<?= html_escape(page_url('blur-image/face')) ?>"<?= nav_is_current('blur-image/face') ? ' aria-current="page"' : '' ?>>Blur Face</a>
