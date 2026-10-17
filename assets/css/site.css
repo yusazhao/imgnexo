@@ -138,6 +138,10 @@ h3 { font-size: 1.125rem; margin: 1.25rem 0 .35rem; letter-spacing: 0; line-heig
 .sheet > .dek { max-width: none; }
 .prose p, .lead p { margin: 0 0 .9rem; }
 .prose ul, .prose ol { margin: 0 0 1rem; padding-left: 1.15rem; }
+.tool-page > .lead,
+.tool-page > section:not(.faq) .prose { line-height: 1.7; }
+.tool-page > .lead p,
+.tool-page > section:not(.faq) .prose p:not(.how-dek) { margin-bottom: 1.25rem; }
 
 .hero {
 	display: grid;
