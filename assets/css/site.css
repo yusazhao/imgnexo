@@ -1304,7 +1304,50 @@ button:hover { background: #f8fafc; color: #0f172a; }
 		margin: 0 .4rem 0 0;
 		vertical-align: middle;
 	}
-	.nav-wide { display: none; }
+	.nav-wide, .nav-main-unblur { display: none; }
+	.faq-item { margin: .875rem 0; }
+	input[type="range"] {
+		-webkit-appearance: none;
+		appearance: none;
+		height: 44px;
+		background: transparent;
+		touch-action: none;
+	}
+	input[type="range"]:focus { outline: none; }
+	input[type="range"]:focus-visible {
+		outline: 2px solid #93c5fd;
+		outline-offset: 2px;
+	}
+	input[type="range"]::-webkit-slider-runnable-track {
+		height: 4px;
+		background: #cbd5e1;
+		border-radius: 999px;
+	}
+	input[type="range"]::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 28px;
+		height: 28px;
+		margin-top: -12px;
+		border: 2px solid #fff;
+		border-radius: 50%;
+		background: #2563eb;
+		box-shadow: 0 1px 3px rgba(15, 23, 42, .28);
+	}
+	input[type="range"]::-moz-range-track {
+		height: 4px;
+		background: #cbd5e1;
+		border: 0;
+		border-radius: 999px;
+	}
+	input[type="range"]::-moz-range-thumb {
+		width: 28px;
+		height: 28px;
+		border: 2px solid #fff;
+		border-radius: 50%;
+		background: #2563eb;
+		box-shadow: 0 1px 3px rgba(15, 23, 42, .28);
+	}
 	.lang-picker:not(.is-open) button.lang-chip.is-extra:not(.is-on) { display: none; }
 	.header-bar { flex-wrap: wrap; align-items: center; column-gap: .85rem; row-gap: .4rem; padding-block: .7rem; }
 	.logo { flex: 0 0 auto; margin-right: 0; }

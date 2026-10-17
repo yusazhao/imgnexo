@@ -274,15 +274,16 @@ if ( ! empty($organization) && is_array($organization))
 			<a class="nav-wide" href="<?= html_escape(page_url('blur-image/face')) ?>"<?= nav_is_current('blur-image/face') ? ' aria-current="page"' : '' ?>>Blur Face</a>
 			<a class="nav-wide" href="<?= html_escape(page_url('blur-image/text')) ?>"<?= nav_is_current('blur-image/text') ? ' aria-current="page"' : '' ?>>Blur Text</a>
 			<a class="nav-wide" href="<?= html_escape(page_url('blur-image/effect')) ?>"<?= nav_is_current('blur-image/effect') ? ' aria-current="page"' : '' ?>>Blur Effects</a>
-			<a href="<?= html_escape(page_url('unblur-image')) ?>"<?= nav_is_current('unblur-image') ? ' aria-current="page"' : '' ?>>Unblur</a>
+			<a class="nav-main-unblur" href="<?= html_escape(page_url('unblur-image')) ?>"<?= nav_is_current('unblur-image') ? ' aria-current="page"' : '' ?>>Unblur</a>
 			<a class="nav-wide" href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>"<?= nav_is_current('unblur-image/motion-blur') ? ' aria-current="page"' : '' ?>>Motion Blur</a>
 			<details class="menu">
-				<summary>Tools</summary>
+				<summary>Image Tools</summary>
 				<div class="menu-panel">
-					<a href="<?= html_escape(page_url('blur-image/background')) ?>"<?= nav_is_current('blur-image/background') ? ' aria-current="page"' : '' ?>>Blur Background</a>
+					<a href="<?= html_escape(page_url('blur-image/effect')) ?>"<?= nav_is_current('blur-image/effect') ? ' aria-current="page"' : '' ?>>Blur Effects</a>
 					<a href="<?= html_escape(page_url('blur-image/face')) ?>"<?= nav_is_current('blur-image/face') ? ' aria-current="page"' : '' ?>>Blur Face</a>
 					<a href="<?= html_escape(page_url('blur-image/text')) ?>"<?= nav_is_current('blur-image/text') ? ' aria-current="page"' : '' ?>>Blur Text</a>
-					<a href="<?= html_escape(page_url('blur-image/effect')) ?>"<?= nav_is_current('blur-image/effect') ? ' aria-current="page"' : '' ?>>Blur Effects</a>
+					<a href="<?= html_escape(page_url('blur-image/background')) ?>"<?= nav_is_current('blur-image/background') ? ' aria-current="page"' : '' ?>>Blur Background</a>
+					<a href="<?= html_escape(page_url('unblur-image')) ?>"<?= nav_is_current('unblur-image') ? ' aria-current="page"' : '' ?>>Unblur</a>
 					<a href="<?= html_escape(page_url('unblur-image/motion-blur')) ?>"<?= nav_is_current('unblur-image/motion-blur') ? ' aria-current="page"' : '' ?>>Motion Blur</a>
 				</div>
 			</details>
